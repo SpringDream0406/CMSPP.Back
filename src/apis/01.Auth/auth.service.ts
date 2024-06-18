@@ -60,6 +60,8 @@ export class AuthService {
   }
 
   async signUp({ user, res }: IAuthServiceSignUp): Promise<string> {
+    console.log(user);
+
     let auth = await this.findOne({ user });
     if (!auth) auth = await this.create({ user });
     const uid = auth.uid;
