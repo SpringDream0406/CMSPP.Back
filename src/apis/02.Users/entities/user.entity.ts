@@ -1,6 +1,8 @@
 import { Auth } from 'src/apis/01.Auth/entities/auth.entity';
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
@@ -18,4 +20,19 @@ export class User {
   @OneToOne(() => Auth)
   @JoinColumn({ name: 'authUid', referencedColumnName: 'uid' })
   auth: Auth;
+
+  @Column({ nullable: true })
+  businessNum: string;
+
+  @Column({ nullable: true })
+  address1: string;
+
+  @Column({ nullable: true })
+  address2: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

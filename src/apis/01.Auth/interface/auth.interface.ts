@@ -28,3 +28,7 @@ export interface IAuthServiceSetRefreshToken {
 export interface IAuthServiceGetAccessToken {
   uid: string;
 }
+
+export interface IAuthServiceUid {
+  uid: string;
+}

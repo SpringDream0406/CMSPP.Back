@@ -3,21 +3,19 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  Generated,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
 export class Auth {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
+  uid: string;
+
+  @Column()
   id: string;
 
   @Column()
   provider: string;
-
-  @Generated('uuid')
-  @Column({ unique: true })
-  uid: string;
 
   @CreateDateColumn()
   createdAt: Date;

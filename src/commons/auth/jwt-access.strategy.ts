@@ -1,5 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { IStrategyPayload } from '../interfaces/strategy.interface';
 
 export class JwtAccessStrategy extends PassportStrategy(Strategy, 'access') {
   constructor() {
@@ -9,13 +10,11 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'access') {
     });
   }
 
-  validate(payload) {
-    console.log(payload);
+  validate(payload: IStrategyPayload) {
+    // console.log(payload);
 
     return {
-      uid: payload.uid,
+      uid: payload.sub,
     };
   }
 }
-
-// 테스트

@@ -9,11 +9,13 @@ import { JwtRefreshStrategy } from 'src/commons/auth/jwt-refresh.strategy';
 import { JwtGoogleStrategy } from 'src/commons/auth/jwt-social-google.strategy';
 import { JwtKakaoStrategy } from 'src/commons/auth/jwt-social-kakao.strategy';
 import { JwtNaverStrategy } from 'src/commons/auth/jwt-social-naver.strategy';
+import { UserModule } from '../02.Users/entities/user.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Auth]), //
     JwtModule.register({}),
+    UserModule,
   ],
   providers: [
     AuthService, //
