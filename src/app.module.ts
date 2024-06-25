@@ -4,13 +4,15 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './apis/01.Auth/auth.module';
-import { UserModule } from './apis/02.Users/entities/user.module';
+import { UserModule } from './apis/02.Users/user.module';
+import { SolarModule } from './apis/03.Solar/solar.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }), //
     AuthModule,
     UserModule,
+    SolarModule,
     // GraphQLModule.forRoot<ApolloDriverConfig>({
     //   driver: ApolloDriver,
     //   autoSchemaFile: 'src/commons/graphql/schema.gql',

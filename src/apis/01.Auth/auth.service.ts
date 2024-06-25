@@ -8,10 +8,10 @@ import {
   IAuthServiceSignUp,
   IAuthServiceUid,
   IOAuthUser,
-} from './interface/auth.interface';
+} from './interfaces/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from '../02.Users/entities/user.service';
+import { UserService } from '../02.Users/user.service';
 import { User } from '../02.Users/entities/user.entity';
 
 @Injectable()
