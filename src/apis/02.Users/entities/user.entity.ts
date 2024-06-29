@@ -1,10 +1,12 @@
 import { Auth } from 'src/apis/01.Auth/entities/auth.entity';
+import { Solar } from 'src/apis/SPP/entities/solar.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -20,6 +22,10 @@ export class User {
   @OneToOne(() => Auth)
   @JoinColumn({ name: 'authUid', referencedColumnName: 'uid' })
   auth: Auth;
+
+  @OneToMany(() => Solar, (solar) => solar.user)
+  @JoinColumn({ name: 'authUid', referencedColumnName: 'userUid' })
+  solar: Solar;
 
   @Column({ nullable: true })
   businessNum: string;

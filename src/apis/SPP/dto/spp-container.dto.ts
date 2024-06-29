@@ -1,8 +1,8 @@
-import { OmitType } from '@nestjs/swagger';
+import { OmitType, PickType } from '@nestjs/swagger';
 import { Solar } from '../entities/solar.entity';
 
 export class AddSolarDto extends OmitType(Solar, [
-  // 'solarNumber',
+  'solarNumber',
   'user',
   'year',
   'month',
@@ -10,3 +10,5 @@ export class AddSolarDto extends OmitType(Solar, [
 ]) {
   yearAndMonth: string;
 }
+
+export class DeleteSolarDto extends PickType(Solar, ['year', 'month']) {}

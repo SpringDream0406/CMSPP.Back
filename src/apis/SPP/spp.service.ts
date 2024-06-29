@@ -1,18 +1,25 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   IAddSolarInput,
+  IDeleteSolarInput,
   IFindOneByUidYearMonth,
-} from './interfaces/solar-service.interface';
+} from './interfaces/spp-service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Solar } from './entities/solar.entity';
 import { Repository } from 'typeorm';
+import { UserService } from '../02.Users/user.service';
 
 @Injectable()
-export class SolarService {
+export class SppService {
   constructor(
     @InjectRepository(Solar)
     private readonly solarRepository: Repository<Solar>,
+    private readonly userService: UserService,
   ) {}
+
+  findByUidFromSolar({ uid }) {
+    return this.solarRepository.find({ where: { userUid: uid }, relations: ['user'] });
+  }
 
   findOneByUidYearMonth({ uid, year, month }: IFindOneByUidYearMonth): Promise<Solar> {
     return this.solarRepository.findOne({
@@ -24,7 +31,23 @@ export class SolarService {
     return this.solarRepository.save({ userUid: uid, ...addSolarData });
   }
 
-  async addSolarData({ uid, addSolarDto }: IAddSolarInput): Promise<{ message: string }> {
+  async fetchSppData({ uid }) {
+    const user = await this.userService.findOneByUid({ uid });
+    // console.log(user);
+    const response = {
+      solar: user.solar,
+    };
+    // console.log(user.solar);
+
+    return response;
+  }
+
+  // async fetchSolarData({ uid }) {
+  //   const result = await this.findByUidFromSolar({ uid });
+  // }
+
+  async addSolarData({ uid, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
+    // console.log(addSolarDto);
     // 년-월 합쳐진거 분리
     const { yearAndMonth, ...restAddSolarData } = addSolarDto;
     const [year, month] = yearAndMonth.split('-').map((part) => parseInt(part, 10));
@@ -35,6 +58,14 @@ export class SolarService {
 
     const addSolarData = { year, month, ...restAddSolarData };
     await this.create({ uid, addSolarData });
-    return { message: '성공' };
+    const solarData = await this.findByUidFromSolar({ uid });
+    // console.log(solarData);
+    return solarData;
+  }
+
+  async deletedSolarData({ uid, deleteSolarDto }: IDeleteSolarInput): Promise<Solar[]> {
+    await this.solarRepository.delete({ userUid: uid, ...deleteSolarDto });
+    const solarData = await this.findByUidFromSolar({ uid });
+    return solarData;
   }
 }

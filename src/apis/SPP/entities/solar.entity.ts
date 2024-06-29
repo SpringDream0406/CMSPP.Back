@@ -18,7 +18,7 @@ export class Solar {
   @Column()
   userUid: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.solar)
   @JoinColumn({ name: 'userUid', referencedColumnName: 'authUid' })
   user: User;
 
@@ -31,7 +31,7 @@ export class Solar {
   @Column()
   generation: number;
 
-  @Column()
+  @Column({ type: 'decimal', scale: 2 })
   smp: number;
 
   @Column()

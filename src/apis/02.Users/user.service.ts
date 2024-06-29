@@ -9,4 +9,11 @@ export class UserService {
     @InjectRepository(User)
     private readonly userReposityory: Repository<User>,
   ) {}
+
+  findOneByUid({ uid }): Promise<User> {
+    return this.userReposityory.findOne({
+      where: { authUid: uid },
+      relations: ['solar'],
+    });
+  }
 }
