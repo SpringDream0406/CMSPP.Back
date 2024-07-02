@@ -8,12 +8,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Solar } from './entities/solar.entity';
 import { Repository } from 'typeorm';
 import { UserService } from '../02.Users/user.service';
+import { Rec } from './entities/rec.entity';
 
 @Injectable()
 export class SppService {
   constructor(
     @InjectRepository(Solar)
     private readonly solarRepository: Repository<Solar>,
+    @InjectRepository(Rec)
+    private readonly recRepository: Repository<Rec>,
     private readonly userService: UserService,
   ) {}
 
@@ -36,9 +39,10 @@ export class SppService {
     // console.log(user);
     const response = {
       solar: user.solar,
+      rec: user.rec,
+      fixedExpense: user.fixedExpense,
+      expense: user.expense,
     };
-    // console.log(user.solar);
-
     return response;
   }
 

@@ -13,7 +13,7 @@ export class UserService {
   findOneByUid({ uid }): Promise<User> {
     return this.userReposityory.findOne({
       where: { authUid: uid },
-      relations: ['solar'],
+      relations: ['solar', 'rec', 'fixedExpense', 'expense'],
     });
   }
 }

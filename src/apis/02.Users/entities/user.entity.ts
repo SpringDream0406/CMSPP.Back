@@ -1,4 +1,7 @@
 import { Auth } from 'src/apis/01.Auth/entities/auth.entity';
+import { Expense } from 'src/apis/SPP/entities/expense.entity';
+import { FixedExpense } from 'src/apis/SPP/entities/fixedExpense.entity';
+import { Rec } from 'src/apis/SPP/entities/rec.entity';
 import { Solar } from 'src/apis/SPP/entities/solar.entity';
 import {
   Column,
@@ -26,6 +29,18 @@ export class User {
   @OneToMany(() => Solar, (solar) => solar.user)
   @JoinColumn({ name: 'authUid', referencedColumnName: 'userUid' })
   solar: Solar;
+
+  @OneToMany(() => Rec, (rec) => rec.user)
+  @JoinColumn({ name: 'authUid', referencedColumnName: 'userUid' })
+  rec: Rec;
+
+  @OneToMany(() => FixedExpense, (fixedExpense) => fixedExpense.user)
+  @JoinColumn({ name: 'authUid', referencedColumnName: 'userUid' })
+  fixedExpense: FixedExpense;
+
+  @OneToMany(() => Expense, (expense) => expense.user)
+  @JoinColumn({ name: 'authUid', referencedColumnName: 'userUid' })
+  expense: Expense;
 
   @Column({ nullable: true })
   businessNum: string;
