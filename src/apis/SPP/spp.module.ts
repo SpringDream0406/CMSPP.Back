@@ -4,15 +4,15 @@ import { Solar } from './entities/solar.entity';
 import { SppService } from './spp.service';
 import { SppController } from './spp.controller';
 import { UserModule } from '../02.Users/user.module';
-import { Rec } from './entities/rec.entity';
 import { FixedExpense } from './entities/fixedExpense.entity';
 import { Expense } from './entities/expense.entity';
+import { SRec } from './entities/sRec.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Solar, //
-      Rec,
+      SRec,
       FixedExpense,
       Expense,
     ]),

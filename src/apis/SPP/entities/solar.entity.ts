@@ -10,16 +10,13 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Unique(['userUid', 'year', 'month'])
+@Unique(['year', 'month'])
 export class Solar {
   @PrimaryGeneratedColumn('increment')
   solarNumber: number;
 
-  @Column()
-  userUid: string;
-
-  @ManyToOne(() => User, (user) => user.solar)
-  @JoinColumn({ name: 'userUid', referencedColumnName: 'authUid' })
+  @ManyToOne(() => User)
+  @JoinColumn()
   user: User;
 
   @Column()
@@ -31,7 +28,7 @@ export class Solar {
   @Column()
   generation: number;
 
-  @Column({ type: 'decimal', scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   smp: number;
 
   @Column()

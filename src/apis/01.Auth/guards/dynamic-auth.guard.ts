@@ -7,12 +7,9 @@ import { AuthGuard } from '@nestjs/passport';
 //   naver: new (class extends AuthGuard('naver') {})(),
 // };
 
-const DYNAMISC_AUTH_GUARD = ['google', 'kakao', 'naver'].reduce(
-  (prev, curr) => {
-    return { ...prev, [curr]: new (class extends AuthGuard(curr) {})() };
-  },
-  {},
-);
+const DYNAMISC_AUTH_GUARD = ['google', 'kakao', 'naver'].reduce((prev, curr) => {
+  return { ...prev, [curr]: new (class extends AuthGuard(curr) {})() };
+}, {});
 
 export class DynamicAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext) {

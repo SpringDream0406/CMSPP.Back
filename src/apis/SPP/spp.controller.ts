@@ -1,9 +1,15 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IAuthUser } from '../01.Auth/interfaces/auth.interface';
-import { AddSolarDto, DeleteSolarDto } from './dto/spp-container.dto';
+import {
+  AddSRecDto,
+  AddSolarDto,
+  DeleteSRecDto,
+  DeleteSolarDto,
+} from './dto/spp-container.dto';
 import { SppService } from './spp.service';
 import { Solar } from './entities/solar.entity';
+import { SRec } from './entities/sRec.entity';
 
 @Controller()
 export class SppController {
@@ -12,14 +18,8 @@ export class SppController {
   @Get('/fetchSppData')
   @UseGuards(AuthGuard('access'))
   fetchSppData(@Req() req: Request & IAuthUser) {
-    return this.sppService.fetchSppData({ uid: req.user.uid });
+    return this.sppService.fetchSppData({ ...req.user });
   }
-
-  // @Get('/fetchSolarData')
-  // @UseGuards(AuthGuard('access'))
-  // fetchSolarData(@Req() req: Request & IAuthUser) {
-  //   return this.sppService.fetchSolarData({ uid: req.user.uid });
-  // }
 
   @Post('/addSolar')
   @UseGuards(AuthGuard('access'))
@@ -27,7 +27,7 @@ export class SppController {
     @Req() req: Request & IAuthUser,
     @Body() addSolarDto: AddSolarDto,
   ): Promise<Solar[]> {
-    return this.sppService.addSolarData({ uid: req.user.uid, addSolarDto });
+    return this.sppService.addSolarData({ ...req.user, addSolarDto });
   }
 
   @Post('/deleteSolar')
@@ -36,6 +36,24 @@ export class SppController {
     @Req() req: Request & IAuthUser,
     @Body() deleteSolarDto: DeleteSolarDto,
   ): Promise<Solar[]> {
-    return this.sppService.deletedSolarData({ uid: req.user.uid, deleteSolarDto });
+    return this.sppService.deleteSolarData({ ...req.user, deleteSolarDto });
+  }
+
+  @Post('/addSRec')
+  @UseGuards(AuthGuard('access'))
+  addSRecData(
+    @Req() req: Request & IAuthUser,
+    @Body() addSRecDto: AddSRecDto,
+  ): Promise<SRec[]> {
+    return this.sppService.addSRecData({ ...req.user, addSRecDto });
+  }
+
+  @Post('deleteSRec')
+  @UseGuards(AuthGuard('access'))
+  deleteSRecData(
+    @Req() req: Request & IAuthUser,
+    @Body() deleteSRecDto: DeleteSRecDto,
+  ): Promise<SRec[]> {
+    return this.sppService.deleteSRecData({ ...req.user, deleteSRecDto });
   }
 }

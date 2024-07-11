@@ -3,21 +3,16 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
-export class Rec {
+export class SRec {
   @PrimaryGeneratedColumn('increment')
-  recNumber: number;
+  sRecNumber: number;
 
-  @Column()
-  userUid: string;
-
-  @ManyToOne(() => User, (user) => user.rec)
-  @JoinColumn({ name: 'userUid', referencedColumnName: 'authUid' })
+  @ManyToOne(() => User)
   user: User;
 
   @Column()
@@ -27,16 +22,13 @@ export class Rec {
   month: number;
 
   @Column()
-  fee: number;
+  day: number;
 
   @Column()
-  issusRec: number;
+  sVolume: number;
 
   @Column()
-  salsesVolume: number;
-
-  @Column()
-  salsesPrice: number;
+  sPrice: number;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -19,7 +19,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     // console.log(payload);
 
     return {
-      uid: payload.sub,
+      userNumber: payload.sub,
     };
   }
 }

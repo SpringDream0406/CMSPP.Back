@@ -3,7 +3,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -13,11 +12,7 @@ export class Expense {
   @PrimaryGeneratedColumn('increment')
   expenseNumber: number;
 
-  @Column()
-  userUid: string;
-
-  @ManyToOne(() => User, (user) => user.expense)
-  @JoinColumn({ name: 'userUid', referencedColumnName: 'authUid' })
+  @ManyToOne(() => User)
   user: User;
 
   @Column()

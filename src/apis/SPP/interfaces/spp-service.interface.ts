@@ -1,17 +1,32 @@
-import { AddSolarDto, DeleteSolarDto } from '../dto/spp-container.dto';
+import {
+  AddSRecDto,
+  AddSolarDto,
+  DeleteSRecDto,
+  DeleteSolarDto,
+} from '../dto/spp-container.dto';
 
 export interface IFindOneByUidYearMonth {
-  uid: string;
+  userNumber: number;
   year: number;
   month: number;
 }
 
 export interface IAddSolarInput {
-  uid: string;
+  userNumber: number;
   addSolarDto: AddSolarDto;
 }
 
 export interface IDeleteSolarInput {
-  uid: string;
+  userNumber: number;
   deleteSolarDto: DeleteSolarDto;
+}
+
+export interface IAddSRecInput {
+  userNumber: number;
+  addSRecDto: AddSRecDto;
+}
+
+export interface IDeleteSRecInput {
+  userNumber: number;
+  deleteSRecDto: DeleteSRecDto;
 }

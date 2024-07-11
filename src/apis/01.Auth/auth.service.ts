@@ -1,12 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, DeleteResult, Repository } from 'typeorm';
 import { Auth } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  IAuthServiceGetAccessToken,
   IAuthServiceSetRefreshToken,
   IAuthServiceSignUp,
-  IAuthServiceUid,
   IOAuthUser,
 } from './interfaces/auth.interface';
 import { JwtService } from '@nestjs/jwt';
@@ -20,32 +18,26 @@ export class AuthService {
     @InjectRepository(Auth)
     private readonly authRepository: Repository<Auth>,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService, // env
     private readonly userService: UserService,
-    private readonly dataSource: DataSource,
+    private readonly dataSource: DataSource, // 쿼리러너
   ) {}
 
-  findOne({ user }: IOAuthUser): Promise<Auth> {
+  // 회원 유무조회
+  findOneFromAuth({ user }: IOAuthUser): Promise<Auth> {
     return this.authRepository.findOne({
-      where: { id: user.id, provider: user.provider },
+      where: { ...user },
     });
   }
 
-  findOneByUid({ uid }: IAuthServiceUid) {
-    return this.authRepository.findOne({
-      where: { uid },
-    });
-  }
-
+  // 회원 추가
   async create({ user }: IOAuthUser): Promise<Auth> {
     const queyRunner = this.dataSource.createQueryRunner();
     await queyRunner.connect();
     await queyRunner.startTransaction();
     try {
       const auth = await queyRunner.manager.save(Auth, { ...user });
-      await queyRunner.manager.save(User, {
-        authUid: auth.uid,
-      });
+      await queyRunner.manager.save(User, { auth });
       await queyRunner.commitTransaction();
       return auth;
     } catch (error) {
@@ -57,9 +49,26 @@ export class AuthService {
     }
   }
 
-  getAccessToken({ uid }: IAuthServiceGetAccessToken): string {
+  // 로그인/회원가입
+  async signUp({ user, res }: IAuthServiceSignUp) {
+    let auth = await this.findOneFromAuth({ user });
+    if (!auth) auth = await this.create({ user });
+    const userData = await this.userService.findOneByUid({ uid: auth.uid });
+    const { userNumber } = userData;
+    this.setRefreshToken({ userNumber, res });
+    return userNumber;
+  }
+
+  // 회원탈퇴
+  async withdrawal({ userNumber }): Promise<DeleteResult> {
+    const user = await this.userService.findOneByUserNumber({ userNumber });
+    return this.authRepository.softDelete({ ...user.auth });
+  }
+
+  // 엑세스토큰 발급
+  getAccessToken({ userNumber }): string {
     return this.jwtService.sign(
-      { sub: uid },
+      { sub: userNumber },
       {
         secret: this.configService.get('ACCESSTOKEN_SECRET'),
         expiresIn: '15m',
@@ -67,9 +76,10 @@ export class AuthService {
     );
   }
 
-  setRefreshToken({ uid, res }: IAuthServiceSetRefreshToken): void {
+  // 리프래시토큰 발급
+  setRefreshToken({ userNumber, res }: IAuthServiceSetRefreshToken): void {
     const refreshToken = this.jwtService.sign(
-      { sub: uid },
+      { sub: userNumber },
       {
         secret: this.configService.get('REFRESHTOKEN_SECRET'),
         expiresIn: '1w',
@@ -85,19 +95,5 @@ export class AuthService {
     //   `refreshToken=${refreshToken}; path=/; domain=.도메인주소; SameSite=None; Secure; httpOnly`,
     // );
     // res.setHeader('Access-Control-Allow-Origin', 'https://프론트주소');
-  }
-
-  // 로그인/회원가입
-  async signUp({ user, res }: IAuthServiceSignUp): Promise<string> {
-    let auth = await this.findOne({ user });
-    if (!auth) auth = await this.create({ user });
-    const uid = auth.uid;
-    this.setRefreshToken({ uid, res });
-    return auth.uid;
-  }
-
-  // 회원탈퇴
-  withdrawal({ uid }: IAuthServiceUid) {
-    return this.authRepository.softDelete({ uid });
   }
 }
