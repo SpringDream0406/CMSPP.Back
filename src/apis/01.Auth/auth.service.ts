@@ -6,6 +6,7 @@ import {
   IAuthServiceSetRefreshToken,
   IAuthServiceSignUp,
   IOAuthUser,
+  reqUser,
 } from './interfaces/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -50,23 +51,24 @@ export class AuthService {
   }
 
   // 로그인/회원가입
-  async signUp({ user, res }: IAuthServiceSignUp) {
+  async signUp({ user, res }: IAuthServiceSignUp): Promise<number> {
     let auth = await this.findOneFromAuth({ user });
     if (!auth) auth = await this.create({ user });
-    const userData = await this.userService.findOneByUid({ uid: auth.uid });
-    const { userNumber } = userData;
+    const { userNumber } = await this.userService.findOneByUid({ uid: auth.uid });
     this.setRefreshToken({ userNumber, res });
     return userNumber;
   }
 
   // 회원탈퇴
-  async withdrawal({ userNumber }): Promise<DeleteResult> {
+  async withdrawal({ userNumber }: reqUser): Promise<DeleteResult> {
     const user = await this.userService.findOneByUserNumber({ userNumber });
+    console.log(user);
+
     return this.authRepository.softDelete({ ...user.auth });
   }
 
   // 엑세스토큰 발급
-  getAccessToken({ userNumber }): string {
+  getAccessToken({ userNumber }: reqUser): string {
     return this.jwtService.sign(
       { sub: userNumber },
       {

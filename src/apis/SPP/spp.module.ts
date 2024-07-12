@@ -13,8 +13,8 @@ import { SRec } from './entities/sRec.entity';
     TypeOrmModule.forFeature([
       Solar, //
       SRec,
-      FixedExpense,
       Expense,
+      FixedExpense,
     ]),
     UserModule,
   ],

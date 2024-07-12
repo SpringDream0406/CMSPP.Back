@@ -1,35 +1,57 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
+  IAddExpenseInput,
   IAddSRecInput,
   IAddSolarInput,
+  ICreateExpense,
+  ICreateSRec,
+  ICreateSolar,
   IDeleteSRecInput,
   IDeleteSolarInput,
   IFindOneByUidYearMonth,
+  IRFetchSpp,
 } from './interfaces/spp-service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Solar } from './entities/solar.entity';
 import { Repository } from 'typeorm';
 import { UserService } from '../02.Users/user.service';
 import { SRec } from './entities/sRec.entity';
+import { Expense } from './entities/expense.entity';
+import { FixedExpense } from './entities/fixedExpense.entity';
+import { reqUser } from '../01.Auth/interfaces/auth.interface';
 
 @Injectable()
 export class SppService {
   constructor(
+    private readonly userService: UserService,
     @InjectRepository(Solar)
     private readonly solarRepository: Repository<Solar>,
     @InjectRepository(SRec)
     private readonly sRecRepository: Repository<SRec>,
-    private readonly userService: UserService,
+    @InjectRepository(Expense)
+    private readonly expenseRepository: Repository<Expense>,
+    @InjectRepository(FixedExpense)
+    private readonly fixedExpenseRepository: Repository<FixedExpense>,
   ) {}
 
-  findByUserNumberFromSolar({ userNumber }) {
-    return this.solarRepository.find({ where: { user: { userNumber } } });
+  findByUserNumberFromSolar({ userNumber }: reqUser): Promise<Solar[]> {
+    return this.solarRepository.find({
+      where: { user: { userNumber } },
+      order: { year: 'ASC', month: 'ASC' },
+    });
   }
 
-  findByUserNumberFromSRec({ userNumber }) {
+  findByUserNumberFromSRec({ userNumber }: reqUser): Promise<SRec[]> {
     return this.sRecRepository.find({
-      select: ['sRecNumber', 'year', 'month', 'day', 'sVolume', 'sPrice', 'createdAt'],
       where: { user: { userNumber } },
+      order: { year: 'ASC', month: 'ASC', day: 'ASC' },
+    });
+  }
+
+  findByUserNumberFromExpense({ userNumber }: reqUser): Promise<Expense[]> {
+    return this.expenseRepository.find({
+      where: { user: { userNumber } },
+      order: { year: 'ASC', month: 'ASC', day: 'ASC' },
     });
   }
 
@@ -43,69 +65,72 @@ export class SppService {
     });
   }
 
-  createSolarData({ userNumber, addSolarData }): Promise<Solar> {
-    return this.solarRepository.save({ user: { userNumber }, ...addSolarData });
+  createSolar({ userNumber, addSolar }: ICreateSolar): Promise<Solar> {
+    return this.solarRepository.save({ user: { userNumber }, ...addSolar });
   }
 
-  createSRecData({ userNumber, addSRecData }): Promise<SRec> {
-    return this.sRecRepository.save({ user: { userNumber }, ...addSRecData });
+  createSRec({ userNumber, addSRec }: ICreateSRec): Promise<SRec> {
+    return this.sRecRepository.save({ user: { userNumber }, ...addSRec });
   }
 
-  async fetchSppData({ userNumber }) {
-    const user = await this.userService.findOneByUserNumberRelationed({ userNumber });
-    const returnData = {
-      solarData: user.solar,
-      sRecData: user.sRec,
-      fixedExpense: user.fixedExpense,
-      expense: user.expense,
-      kWh: user.kWh,
-      recWeight: user.recWeight,
-    };
-    return returnData;
+  createExpense({ userNumber, addExpense }: ICreateExpense) {
+    return this.expenseRepository.save({ user: { userNumber }, ...addExpense });
   }
 
-  async addSolarData({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
-    // 년-월 합쳐진거 분리
-    const { yearAndMonth, ...restAddSolarData } = addSolarDto;
-    const [year, month] = yearAndMonth.split('-').map((part) => parseInt(part, 10));
+  async fetchSpp({ userNumber }: reqUser): Promise<IRFetchSpp> {
+    const user = await this.userService.findOneByUserNumberForSpp({ userNumber });
+    delete user.userNumber;
+    return user;
+  }
 
-    // year, month 중복 체크
+  // date 합쳐진거 분리
+  splitDate(date: string): number[] {
+    return date.split('-').map((part) => parseInt(part, 10));
+  }
+
+  // db에 맞는 date들 추가된 데이터 반환
+  makeDate(data: any) {
+    const { date, ...restData } = data;
+    const [year, month, day] = this.splitDate(date);
+    return { year, month, ...(day && { day }), ...restData };
+  }
+
+  async addSolar({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
+    const addSolar = this.makeDate(addSolarDto); // 년-월 합쳐진거 분리
     const result = await this.findOneByUserNumberYearMonthFromSolar({
       userNumber,
-      year,
-      month,
-    });
+      year: addSolar.year,
+      month: addSolar.month,
+    }); // year, month 중복 체크
     if (result) throw new BadRequestException('중복');
-
-    const addSolarData = { year, month, ...restAddSolarData };
-    await this.createSolarData({ userNumber, addSolarData });
-    const solarData = await this.findByUserNumberFromSolar({ userNumber });
-    return solarData;
+    await this.createSolar({ userNumber, addSolar });
+    const solar = await this.findByUserNumberFromSolar({ userNumber });
+    return solar;
   }
 
-  async deleteSolarData({
-    userNumber,
-    deleteSolarDto,
-  }: IDeleteSolarInput): Promise<Solar[]> {
+  async deleteSolar({ userNumber, deleteSolarDto }: IDeleteSolarInput): Promise<Solar[]> {
     await this.solarRepository.delete({ user: { userNumber }, ...deleteSolarDto });
-    const solarData = await this.findByUserNumberFromSolar({ userNumber });
-    return solarData;
+    const solar = await this.findByUserNumberFromSolar({ userNumber });
+    return solar;
   }
 
-  async addSRecData({ userNumber, addSRecDto }: IAddSRecInput): Promise<SRec[]> {
-    // 년-월-일 합쳐진거 분리
-    const { date, ...restAddSRecData } = addSRecDto;
-    const [year, month, day] = date.split('-').map((part) => parseInt(part, 10));
-
-    const addSRecData = { year, month, day, ...restAddSRecData };
-    await this.createSRecData({ userNumber, addSRecData });
-    const sRecData = await this.findByUserNumberFromSRec({ userNumber });
-    return sRecData;
+  async addSRec({ userNumber, addSRecDto }: IAddSRecInput): Promise<SRec[]> {
+    const addSRec = this.makeDate(addSRecDto); // 년-월-일 합쳐진거 분리
+    await this.createSRec({ userNumber, addSRec });
+    const sRec = await this.findByUserNumberFromSRec({ userNumber });
+    return sRec;
   }
 
-  async deleteSRecData({ userNumber, deleteSRecDto }: IDeleteSRecInput): Promise<SRec[]> {
+  async deleteSRec({ userNumber, deleteSRecDto }: IDeleteSRecInput): Promise<SRec[]> {
     await this.sRecRepository.delete({ user: { userNumber }, ...deleteSRecDto });
-    const sRecData = await this.findByUserNumberFromSRec({ userNumber });
-    return sRecData;
+    const sRec = await this.findByUserNumberFromSRec({ userNumber });
+    return sRec;
+  }
+
+  async addExpense({ userNumber, addExpenseDto }: IAddExpenseInput): Promise<Expense[]> {
+    const addExpense = this.makeDate(addExpenseDto); // 년-월-일 합쳐진거 분리
+    await this.createExpense({ userNumber, addExpense });
+    const expense = await this.findByUserNumberFromExpense({ userNumber });
+    return expense;
   }
 }

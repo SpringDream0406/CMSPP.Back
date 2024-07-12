@@ -20,7 +20,10 @@ export interface IAuthUser {
   };
 }
 
-export interface IAuthServiceSetRefreshToken {
+export interface reqUser {
   userNumber: number;
+}
+
+export interface IAuthServiceSetRefreshToken extends reqUser {
   res: Response;
 }

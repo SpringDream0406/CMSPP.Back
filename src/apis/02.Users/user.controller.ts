@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { IAuthUser } from '../01.Auth/interfaces/auth.interface';
 import { UpdateMyInfoDto } from './dto/user-container.dto';
 import { UserService } from './user.service';
-import { IFindOneByUidForMyInfo } from './interfaces/user-service.interface';
+import { IRFindOneByUidForMyInfo } from './interfaces/user-service.interface';
 
 @Controller()
 export class UserController {
@@ -12,7 +12,7 @@ export class UserController {
   // myInfo 데이터 가져오기
   @Get('fetchMyInfo')
   @UseGuards(AuthGuard('access'))
-  fetchKWhAndRecWeight(@Req() req: Request & IAuthUser): Promise<IFindOneByUidForMyInfo> {
+  fetchMyInfo(@Req() req: Request & IAuthUser): Promise<IRFindOneByUidForMyInfo> {
     return this.userService.findOneByUserNumberForMyInfo({ ...req.user });
   }
 
@@ -22,7 +22,7 @@ export class UserController {
   updateMyInfo(
     @Req() req: Request & IAuthUser,
     @Body() updateMyInfoDto: UpdateMyInfoDto,
-  ): Promise<IFindOneByUidForMyInfo> {
+  ): Promise<IRFindOneByUidForMyInfo> {
     return this.userService.updateMyInfo({
       ...req.user,
       updateMyInfoDto,

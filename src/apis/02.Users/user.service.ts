@@ -1,11 +1,19 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import {
-  IFindOneByUidForMyInfo,
+  IFindOneByBusinessNumber,
+  IFindOneByUid,
+  IRFindOneByUidForMyInfo,
+  IRfindOneByUserNumberForSpp,
   IUpdateMyInfoInput,
 } from './interfaces/user-service.interface';
+import { reqUser } from '../01.Auth/interfaces/auth.interface';
 
 @Injectable()
 export class UserService {
@@ -15,29 +23,49 @@ export class UserService {
   ) {}
 
   // auth 로그인/회원가입 에서 사용 중
-  findOneByUid({ uid }): Promise<User> {
+  findOneByUid({ uid }: IFindOneByUid): Promise<User> {
     return this.userReposityory.findOne({
       where: { auth: { uid } },
     });
   }
 
   // auth 회원탈퇴에서 사용 중
-  findOneByUserNumber({ userNumber }): Promise<User> {
+  findOneByUserNumber({ userNumber }: reqUser): Promise<User> {
     return this.userReposityory.findOne({
       where: { userNumber },
     });
   }
 
-  // fetchSppData에서 사용 중
-  findOneByUserNumberRelationed({ userNumber }): Promise<User> {
+  // fetchSpp에서 사용 중
+  findOneByUserNumberForSpp({
+    userNumber,
+  }: reqUser): Promise<IRfindOneByUserNumberForSpp> {
     return this.userReposityory.findOne({
       where: { userNumber },
       relations: ['solar', 'sRec', 'fixedExpense', 'expense'],
+      select: [
+        'userNumber',
+        'kWh',
+        'recWeight',
+        'solar',
+        'sRec',
+        'fixedExpense',
+        'expense',
+      ],
+    });
+  }
+
+  // businessNumber 중복 체크 (businessNumber는 string임)
+  findOneByBusinessNumber({ businessNumber }: IFindOneByBusinessNumber): Promise<User> {
+    return this.userReposityory.findOne({
+      where: { businessNumber },
     });
   }
 
   // myInfo 데이터 가져오기
-  findOneByUserNumberForMyInfo({ userNumber }): Promise<IFindOneByUidForMyInfo> {
+  findOneByUserNumberForMyInfo({
+    userNumber,
+  }: reqUser): Promise<IRFindOneByUidForMyInfo> {
     return this.userReposityory.findOne({
       select: ['kWh', 'recWeight', 'businessNumber', 'address'],
       where: { userNumber },
@@ -45,7 +73,14 @@ export class UserService {
   }
 
   // myInfo 업데이트 (DB)
-  updateMyInfoFromUser({ userNumber, updateMyInfoDto }): Promise<UpdateResult> {
+  async updateMyInfoFromUser({
+    userNumber,
+    updateMyInfoDto,
+  }: IUpdateMyInfoInput): Promise<UpdateResult> {
+    const user = await this.findOneByBusinessNumber({
+      businessNumber: updateMyInfoDto.businessNumber,
+    });
+    if (user.userNumber !== userNumber) throw new BadRequestException('중복');
     return this.userReposityory.update({ userNumber }, updateMyInfoDto);
   }
 
@@ -53,7 +88,7 @@ export class UserService {
   async updateMyInfo({
     userNumber,
     updateMyInfoDto,
-  }: IUpdateMyInfoInput): Promise<IFindOneByUidForMyInfo> {
+  }: IUpdateMyInfoInput): Promise<IRFindOneByUidForMyInfo> {
     const updateResult = await this.updateMyInfoFromUser({
       userNumber,
       updateMyInfoDto,

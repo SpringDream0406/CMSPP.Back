@@ -34,7 +34,7 @@ export class User {
   @OneToMany(() => Expense, (expense) => expense.user)
   expense: Expense;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   businessNumber: string;
 
   @Column({ nullable: true })

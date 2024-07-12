@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-// import { GraphQLModule } from '@nestjs/graphql';
-// import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './apis/01.Auth/auth.module';
@@ -13,10 +11,6 @@ import { SppModule } from './apis/SPP/spp.module';
     AuthModule,
     UserModule,
     SppModule,
-    // GraphQLModule.forRoot<ApolloDriverConfig>({
-    //   driver: ApolloDriver,
-    //   autoSchemaFile: 'src/commons/graphql/schema.gql',
-    // }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'mysql',
       host: process.env.DB_HOST,

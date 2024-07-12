@@ -10,7 +10,7 @@ import {
 @Entity()
 export class Expense {
   @PrimaryGeneratedColumn('increment')
-  expenseNumber: number;
+  eNumber: number;
 
   @ManyToOne(() => User)
   user: User;
@@ -22,10 +22,13 @@ export class Expense {
   month: number;
 
   @Column()
-  expenseName: string;
+  day: number;
 
   @Column()
-  expensePrice: string;
+  eName: string;
+
+  @Column()
+  ePrice: string;
 
   @CreateDateColumn()
   createdAt: Date;
