@@ -16,6 +16,7 @@ import { Solar } from './entities/solar.entity';
 import { SRec } from './entities/sRec.entity';
 import { IRFetchSpp } from './interfaces/spp-service.interface';
 import { Expense } from './entities/expense.entity';
+import { FixedExpense } from './entities/fixedExpense.entity';
 
 @Controller()
 export class SppController {
@@ -77,18 +78,24 @@ export class SppController {
   deleteExpense(
     @Req() req: Request & IAuthUser,
     @Body() deleteExpenseDto: DeleteExpenseDto,
-  ) {}
+  ): Promise<Expense[]> {
+    return this.sppService.deleteExpense({ ...req.user, deleteExpenseDto });
+  }
 
   @Post('/addFixedExpense')
   @UseGuards(AuthGuard('access'))
   addFixedExpense(
     @Req() req: Request & IAuthUser,
     @Body() addFixedExpenseDto: AddFixedExpenseDto,
-  ) {}
+  ): Promise<FixedExpense[]> {
+    return this.sppService.addFixedExpense({ ...req.user, addFixedExpenseDto });
+  }
   @Post('/deleteFixedExpense')
   @UseGuards(AuthGuard('access'))
   deleteFixedExpense(
     @Req() req: Request & IAuthUser,
     @Body() deleteFixedExpenseDto: DeleteFixedExpenseDto,
-  ) {}
+  ): Promise<FixedExpense[]> {
+    return this.sppService.deleteFixedExpense({ ...req.user, deleteFixedExpenseDto });
+  }
 }

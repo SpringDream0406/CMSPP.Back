@@ -1,11 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   IAddExpenseInput,
+  IAddFixedExpenseInput,
   IAddSRecInput,
   IAddSolarInput,
   ICreateExpense,
+  ICreateFixedExpense,
   ICreateSRec,
   ICreateSolar,
+  IDeleteExpenseInput,
+  IDeleteFixedExpenseInput,
   IDeleteSRecInput,
   IDeleteSolarInput,
   IFindOneByUidYearMonth,
@@ -55,6 +59,12 @@ export class SppService {
     });
   }
 
+  findByUserNumberFromFixedExpense({ userNumber }: reqUser): Promise<FixedExpense[]> {
+    return this.fixedExpenseRepository.find({
+      where: { user: { userNumber } },
+    });
+  }
+
   findOneByUserNumberYearMonthFromSolar({
     userNumber,
     year,
@@ -75,6 +85,10 @@ export class SppService {
 
   createExpense({ userNumber, addExpense }: ICreateExpense) {
     return this.expenseRepository.save({ user: { userNumber }, ...addExpense });
+  }
+
+  createFixedExpense({ userNumber, addFixedExpense }: ICreateFixedExpense) {
+    return this.fixedExpenseRepository.save({ user: { userNumber }, ...addFixedExpense });
   }
 
   async fetchSpp({ userNumber }: reqUser): Promise<IRFetchSpp> {
@@ -132,5 +146,36 @@ export class SppService {
     await this.createExpense({ userNumber, addExpense });
     const expense = await this.findByUserNumberFromExpense({ userNumber });
     return expense;
+  }
+
+  async deleteExpense({
+    userNumber,
+    deleteExpenseDto,
+  }: IDeleteExpenseInput): Promise<Expense[]> {
+    await this.expenseRepository.delete({ user: { userNumber }, ...deleteExpenseDto });
+    const expense = await this.findByUserNumberFromExpense({ userNumber });
+    return expense;
+  }
+
+  async addFixedExpense({
+    userNumber,
+    addFixedExpenseDto,
+  }: IAddFixedExpenseInput): Promise<FixedExpense[]> {
+    const addFixedExpense = addFixedExpenseDto;
+    await this.createFixedExpense({ userNumber, addFixedExpense });
+    const fixedExpense = await this.findByUserNumberFromFixedExpense({ userNumber });
+    return fixedExpense;
+  }
+
+  async deleteFixedExpense({
+    userNumber,
+    deleteFixedExpenseDto,
+  }: IDeleteFixedExpenseInput): Promise<FixedExpense[]> {
+    await this.fixedExpenseRepository.delete({
+      user: { userNumber },
+      ...deleteFixedExpenseDto,
+    });
+    const fixedExpense = await this.findByUserNumberFromFixedExpense({ userNumber });
+    return fixedExpense;
   }
 }
