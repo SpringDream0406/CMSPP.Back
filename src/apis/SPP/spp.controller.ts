@@ -79,6 +79,8 @@ export class SppController {
     @Req() req: Request & IAuthUser,
     @Body() deleteExpenseDto: DeleteExpenseDto,
   ): Promise<Expense[]> {
+    console.log(req.user);
+
     return this.sppService.deleteExpense({ ...req.user, deleteExpenseDto });
   }
 

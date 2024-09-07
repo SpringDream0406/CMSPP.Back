@@ -96,6 +96,6 @@ export class UserService {
     if (updateResult.affected) {
       return this.findOneByUserNumberForMyInfo({ userNumber });
     }
-    throw new InternalServerErrorException('회원정보 업데이트 실패1(DB)');
+    throw new InternalServerErrorException('회원정보 업데이트 실패(DB)');
   }
 }

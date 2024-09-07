@@ -62,8 +62,6 @@ export class AuthService {
   // 회원탈퇴
   async withdrawal({ userNumber }: reqUser): Promise<DeleteResult> {
     const user = await this.userService.findOneByUserNumber({ userNumber });
-    console.log(user);
-
     return this.authRepository.softDelete({ ...user.auth });
   }
 

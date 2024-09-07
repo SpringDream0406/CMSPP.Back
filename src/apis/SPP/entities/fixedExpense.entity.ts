@@ -16,6 +16,18 @@ export class FixedExpense {
   user: User;
 
   @Column()
+  startYear: number;
+
+  @Column()
+  startMonth: number;
+
+  @Column()
+  endYear: number;
+
+  @Column()
+  endMonth: number;
+
+  @Column()
   feName: string;
 
   @Column()

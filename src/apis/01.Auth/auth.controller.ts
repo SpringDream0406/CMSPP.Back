@@ -35,7 +35,7 @@ export class AuthController {
   }
 
   // 엑세스 토큰 발급
-  @Post('getAccessToken')
+  @Get('getAccessToken')
   @UseGuards(AuthGuard('refresh'))
   getAccessToken(@Req() req: Request & IAuthUser): string {
     if (req.user) {

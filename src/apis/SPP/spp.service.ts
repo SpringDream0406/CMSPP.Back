@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import {
   IAddExpenseInput,
   IAddFixedExpenseInput,
@@ -161,7 +165,12 @@ export class SppService {
     userNumber,
     addFixedExpenseDto,
   }: IAddFixedExpenseInput): Promise<FixedExpense[]> {
-    const addFixedExpense = addFixedExpenseDto;
+    // 시작년월, 종료년월 합쳐진거 분리
+    const { startDate, endDate, ...redData } = addFixedExpenseDto;
+    const [startYear, startMonth] = this.splitDate(startDate);
+    const [endYear, endMonth] = this.splitDate(endDate);
+    if (startYear > endYear) throw new InternalServerErrorException('년도');
+    const addFixedExpense = { startYear, startMonth, endYear, endMonth, ...redData };
     await this.createFixedExpense({ userNumber, addFixedExpense });
     const fixedExpense = await this.findByUserNumberFromFixedExpense({ userNumber });
     return fixedExpense;

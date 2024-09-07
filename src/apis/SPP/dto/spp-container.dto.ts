@@ -19,5 +19,8 @@ export class AddExpenseDto extends PickType(Expense, ['eName', 'ePrice']) {
 }
 export class DeleteExpenseDto extends PickType(Expense, ['eNumber']) {}
 
-export class AddFixedExpenseDto extends PickType(FixedExpense, ['feName', 'fePrice']) {}
+export class AddFixedExpenseDto extends PickType(FixedExpense, ['feName', 'fePrice']) {
+  startDate: string;
+  endDate: string;
+}
 export class DeleteFixedExpenseDto extends PickType(FixedExpense, ['feNumber']) {}
