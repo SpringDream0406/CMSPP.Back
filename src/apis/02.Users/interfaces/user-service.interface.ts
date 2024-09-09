@@ -16,6 +16,3 @@ export interface IRfindOneByUserNumberForSpp
 export interface IUpdateMyInfoInput extends reqUser {
   updateMyInfoDto: UpdateMyInfoDto;
 }
-
-export interface IRFindOneByUidForMyInfo
-  extends Pick<User, 'kWh' | 'recWeight' | 'businessNumber' | 'address'> {}

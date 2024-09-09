@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DataSource, DeleteResult, Repository } from 'typeorm';
 import { Auth } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -62,7 +66,9 @@ export class AuthService {
   // 회원탈퇴
   async withdrawal({ userNumber }: reqUser): Promise<DeleteResult> {
     const user = await this.userService.findOneByUserNumber({ userNumber });
-    return this.authRepository.softDelete({ ...user.auth });
+    const result = await this.authRepository.softDelete(user.auth.uid);
+    if (result.affected === 0) throw new BadRequestException('탈퇴 실패 DB');
+    return result;
   }
 
   // 엑세스토큰 발급

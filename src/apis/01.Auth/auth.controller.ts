@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DynamicAuthGuard } from './guards/dynamic-auth.guard';
 import { IAuthUser, IOAuthUser } from './interfaces/auth.interface';
@@ -26,7 +26,7 @@ export class AuthController {
   }
 
   // 회원탈퇴
-  @Post('withdrawal')
+  @Delete('withdrawal')
   @UseGuards(AuthGuard('access'))
   withdrawal(@Req() req: Request & IAuthUser): Promise<DeleteResult> {
     if (req.user) {

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IAuthUser } from '../01.Auth/interfaces/auth.interface';
 import {
@@ -18,17 +18,17 @@ import { IRFetchSpp } from './interfaces/spp-service.interface';
 import { Expense } from './entities/expense.entity';
 import { FixedExpense } from './entities/fixedExpense.entity';
 
-@Controller()
+@Controller('spp')
 export class SppController {
   constructor(private readonly sppService: SppService) {}
 
-  @Get('/fetchSpp')
+  @Get()
   @UseGuards(AuthGuard('access'))
   fetchSpp(@Req() req: Request & IAuthUser): Promise<IRFetchSpp> {
     return this.sppService.fetchSpp({ ...req.user });
   }
 
-  @Post('/addSolar')
+  @Put('solar')
   @UseGuards(AuthGuard('access'))
   addSolar(
     @Req() req: Request & IAuthUser,
@@ -37,7 +37,7 @@ export class SppController {
     return this.sppService.addSolar({ ...req.user, addSolarDto });
   }
 
-  @Post('/deleteSolar')
+  @Delete('solar')
   @UseGuards(AuthGuard('access'))
   deleteSolar(
     @Req() req: Request & IAuthUser,
@@ -46,7 +46,7 @@ export class SppController {
     return this.sppService.deleteSolar({ ...req.user, deleteSolarDto });
   }
 
-  @Post('/addSRec')
+  @Put('sRec')
   @UseGuards(AuthGuard('access'))
   addSRec(
     @Req() req: Request & IAuthUser,
@@ -55,7 +55,7 @@ export class SppController {
     return this.sppService.addSRec({ ...req.user, addSRecDto });
   }
 
-  @Post('/deleteSRec')
+  @Delete('sRec')
   @UseGuards(AuthGuard('access'))
   deleteSRec(
     @Req() req: Request & IAuthUser,
@@ -64,7 +64,7 @@ export class SppController {
     return this.sppService.deleteSRec({ ...req.user, deleteSRecDto });
   }
 
-  @Post('/addExpense')
+  @Put('expense')
   @UseGuards(AuthGuard('access'))
   addExpense(
     @Req() req: Request & IAuthUser,
@@ -73,7 +73,7 @@ export class SppController {
     return this.sppService.addExpense({ ...req.user, addExpenseDto });
   }
 
-  @Post('/deleteExpense')
+  @Delete('expense')
   @UseGuards(AuthGuard('access'))
   deleteExpense(
     @Req() req: Request & IAuthUser,
@@ -84,7 +84,7 @@ export class SppController {
     return this.sppService.deleteExpense({ ...req.user, deleteExpenseDto });
   }
 
-  @Post('/addFixedExpense')
+  @Put('fixedExpense')
   @UseGuards(AuthGuard('access'))
   addFixedExpense(
     @Req() req: Request & IAuthUser,
@@ -92,7 +92,7 @@ export class SppController {
   ): Promise<FixedExpense[]> {
     return this.sppService.addFixedExpense({ ...req.user, addFixedExpenseDto });
   }
-  @Post('/deleteFixedExpense')
+  @Delete('/fixedExpense')
   @UseGuards(AuthGuard('access'))
   deleteFixedExpense(
     @Req() req: Request & IAuthUser,
