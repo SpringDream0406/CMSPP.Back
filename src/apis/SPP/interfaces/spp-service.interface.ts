@@ -4,10 +4,6 @@ import {
   AddFixedExpenseDto,
   AddSRecDto,
   AddSolarDto,
-  DeleteExpenseDto,
-  DeleteFixedExpenseDto,
-  DeleteSRecDto,
-  DeleteSolarDto,
 } from '../dto/spp-container.dto';
 import { Solar } from '../entities/solar.entity';
 import { SRec } from '../entities/sRec.entity';
@@ -45,26 +41,26 @@ export interface IAddSolarInput extends reqUser {
   addSolarDto: AddSolarDto;
 }
 export interface IDeleteSolarInput extends reqUser {
-  deleteSolarDto: DeleteSolarDto;
+  solarNumber: number;
 }
 
 export interface IAddSRecInput extends reqUser {
   addSRecDto: AddSRecDto;
 }
 export interface IDeleteSRecInput extends reqUser {
-  deleteSRecDto: DeleteSRecDto;
+  sRecNumber: number;
 }
 
 export interface IAddExpenseInput extends reqUser {
   addExpenseDto: AddExpenseDto;
 }
 export interface IDeleteExpenseInput extends reqUser {
-  deleteExpenseDto: DeleteExpenseDto;
+  eNumber: number;
 }
 
 export interface IAddFixedExpenseInput extends reqUser {
   addFixedExpenseDto: AddFixedExpenseDto;
 }
 export interface IDeleteFixedExpenseInput extends reqUser {
-  deleteFixedExpenseDto: DeleteFixedExpenseDto;
+  feNumber: number;
 }

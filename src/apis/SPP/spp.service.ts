@@ -97,7 +97,7 @@ export class SppService {
 
   async fetchSpp({ userNumber }: reqUser): Promise<IRFetchSpp> {
     const user = await this.userService.findOneByUserNumberForSpp({ userNumber });
-    delete user.userNumber;
+    delete user.userNumber; // 유저번호 삭제해서 보내기
     return user;
   }
 
@@ -113,6 +113,11 @@ export class SppService {
     return { year, month, ...(day && { day }), ...restData };
   }
 
+  // 삭제 요청에 데이터 넘버 있는지 체크
+  checkDeleteReqNumber(number: number, name: string) {
+    if (!number) throw new BadRequestException(`요청에 ${name} 없음`);
+  }
+
   async addSolar({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
     const addSolar = this.makeDate(addSolarDto); // 년-월 합쳐진거 분리
     const result = await this.findOneByUserNumberYearMonthFromSolar({
@@ -126,8 +131,9 @@ export class SppService {
     return solar;
   }
 
-  async deleteSolar({ userNumber, deleteSolarDto }: IDeleteSolarInput): Promise<Solar[]> {
-    await this.solarRepository.delete({ user: { userNumber }, ...deleteSolarDto });
+  async deleteSolar({ userNumber, solarNumber }: IDeleteSolarInput): Promise<Solar[]> {
+    this.checkDeleteReqNumber(userNumber, 'solarNumber');
+    await this.solarRepository.delete({ user: { userNumber }, solarNumber });
     const solar = await this.findByUserNumberFromSolar({ userNumber });
     return solar;
   }
@@ -139,8 +145,9 @@ export class SppService {
     return sRec;
   }
 
-  async deleteSRec({ userNumber, deleteSRecDto }: IDeleteSRecInput): Promise<SRec[]> {
-    await this.sRecRepository.delete({ user: { userNumber }, ...deleteSRecDto });
+  async deleteSRec({ userNumber, sRecNumber }: IDeleteSRecInput): Promise<SRec[]> {
+    this.checkDeleteReqNumber(sRecNumber, 'sRecNumber');
+    await this.sRecRepository.delete({ user: { userNumber }, sRecNumber });
     const sRec = await this.findByUserNumberFromSRec({ userNumber });
     return sRec;
   }
@@ -152,11 +159,9 @@ export class SppService {
     return expense;
   }
 
-  async deleteExpense({
-    userNumber,
-    deleteExpenseDto,
-  }: IDeleteExpenseInput): Promise<Expense[]> {
-    await this.expenseRepository.delete({ user: { userNumber }, ...deleteExpenseDto });
+  async deleteExpense({ userNumber, eNumber }: IDeleteExpenseInput): Promise<Expense[]> {
+    this.checkDeleteReqNumber(eNumber, 'expenseNumber');
+    await this.expenseRepository.delete({ user: { userNumber }, eNumber });
     const expense = await this.findByUserNumberFromExpense({ userNumber });
     return expense;
   }
@@ -178,11 +183,12 @@ export class SppService {
 
   async deleteFixedExpense({
     userNumber,
-    deleteFixedExpenseDto,
+    feNumber,
   }: IDeleteFixedExpenseInput): Promise<FixedExpense[]> {
+    this.checkDeleteReqNumber(feNumber, 'fixedExpenseNumber');
     await this.fixedExpenseRepository.delete({
       user: { userNumber },
-      ...deleteFixedExpenseDto,
+      feNumber,
     });
     const fixedExpense = await this.findByUserNumberFromFixedExpense({ userNumber });
     return fixedExpense;

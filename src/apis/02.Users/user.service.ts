@@ -75,7 +75,6 @@ export class UserService {
     });
     if (user && user.userNumber !== userNumber)
       throw new BadRequestException('사업자 번호 중복');
-
     return this.userReposityory.update(userNumber, updateMyInfoDto);
   }
 }

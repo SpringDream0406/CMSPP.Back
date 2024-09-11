@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IAuthUser } from '../01.Auth/interfaces/auth.interface';
 import {
@@ -6,10 +15,6 @@ import {
   AddFixedExpenseDto,
   AddSRecDto,
   AddSolarDto,
-  DeleteExpenseDto,
-  DeleteFixedExpenseDto,
-  DeleteSRecDto,
-  DeleteSolarDto,
 } from './dto/spp-container.dto';
 import { SppService } from './spp.service';
 import { Solar } from './entities/solar.entity';
@@ -37,13 +42,13 @@ export class SppController {
     return this.sppService.addSolar({ ...req.user, addSolarDto });
   }
 
-  @Delete('solar')
+  @Delete('solar/:solarNumber')
   @UseGuards(AuthGuard('access'))
   deleteSolar(
     @Req() req: Request & IAuthUser,
-    @Body() deleteSolarDto: DeleteSolarDto,
+    @Param('solarNumber') solarNumber: number,
   ): Promise<Solar[]> {
-    return this.sppService.deleteSolar({ ...req.user, deleteSolarDto });
+    return this.sppService.deleteSolar({ ...req.user, solarNumber });
   }
 
   @Put('sRec')
@@ -55,13 +60,13 @@ export class SppController {
     return this.sppService.addSRec({ ...req.user, addSRecDto });
   }
 
-  @Delete('sRec')
+  @Delete('sRec/:sRecNumber')
   @UseGuards(AuthGuard('access'))
   deleteSRec(
     @Req() req: Request & IAuthUser,
-    @Body() deleteSRecDto: DeleteSRecDto,
+    @Param('sRecNumber') sRecNumber: number,
   ): Promise<SRec[]> {
-    return this.sppService.deleteSRec({ ...req.user, deleteSRecDto });
+    return this.sppService.deleteSRec({ ...req.user, sRecNumber });
   }
 
   @Put('expense')
@@ -73,15 +78,13 @@ export class SppController {
     return this.sppService.addExpense({ ...req.user, addExpenseDto });
   }
 
-  @Delete('expense')
+  @Delete('expense/:eNumber')
   @UseGuards(AuthGuard('access'))
   deleteExpense(
     @Req() req: Request & IAuthUser,
-    @Body() deleteExpenseDto: DeleteExpenseDto,
+    @Param('eNumber') eNumber: number,
   ): Promise<Expense[]> {
-    console.log(req.user);
-
-    return this.sppService.deleteExpense({ ...req.user, deleteExpenseDto });
+    return this.sppService.deleteExpense({ ...req.user, eNumber });
   }
 
   @Put('fixedExpense')
@@ -92,12 +95,12 @@ export class SppController {
   ): Promise<FixedExpense[]> {
     return this.sppService.addFixedExpense({ ...req.user, addFixedExpenseDto });
   }
-  @Delete('/fixedExpense')
+  @Delete('/fixedExpense/:feNumber')
   @UseGuards(AuthGuard('access'))
   deleteFixedExpense(
     @Req() req: Request & IAuthUser,
-    @Body() deleteFixedExpenseDto: DeleteFixedExpenseDto,
+    @Param('feNumber') feNumber: number,
   ): Promise<FixedExpense[]> {
-    return this.sppService.deleteFixedExpense({ ...req.user, deleteFixedExpenseDto });
+    return this.sppService.deleteFixedExpense({ ...req.user, feNumber });
   }
 }
