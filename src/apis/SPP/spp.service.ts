@@ -102,9 +102,9 @@ export class SppService {
   }
 
   // date 합쳐진거 분리
-  splitDate(date: string): number[] {
-    return date.split('-').map((part) => parseInt(part, 10));
-  }
+  // splitDate(date: string): number[] {
+  //   return date.split('-').map((part) => parseInt(part, 10));
+  // }
 
   // db에 맞는 date들 추가된 데이터 반환
   makeDate(data: any) {
