@@ -15,14 +15,8 @@ export class Expense {
   @ManyToOne(() => User)
   user: User;
 
-  @Column()
-  year: number;
-
-  @Column()
-  month: number;
-
-  @Column()
-  day: number;
+  @Column({ type: 'date' })
+  date: Date;
 
   @Column()
   eName: string;

@@ -5,34 +5,10 @@ import {
   AddSRecDto,
   AddSolarDto,
 } from '../dto/spp-container.dto';
-import { Solar } from '../entities/solar.entity';
-import { SRec } from '../entities/sRec.entity';
 import { IRfindOneByUserNumberForSpp } from 'src/apis/02.Users/interfaces/user-service.interface';
-import { Expense } from '../entities/expense.entity';
-import { FixedExpense } from '../entities/fixedExpense.entity';
 
-export interface IFindOneByUidYearMonth extends reqUser {
-  year: number;
-  month: number;
-}
-
-interface AddSolar extends Omit<Solar, 'solarNumber' | 'user' | 'createdAt'> {}
-export interface ICreateSolar extends reqUser {
-  addSolar: AddSolar;
-}
-
-interface AddSRec extends Omit<SRec, 'sRecNumber' | 'user' | 'createdAt'> {}
-export interface ICreateSRec extends reqUser {
-  addSRec: AddSRec;
-}
-
-interface AddExpense extends Omit<Expense, 'eNumber' | 'user' | 'createdAt'> {}
-export interface ICreateExpense extends reqUser {
-  addExpense: AddExpense;
-}
-interface AddFixedExpense extends Omit<FixedExpense, 'feNumber' | 'user' | 'createdAt'> {}
-export interface ICreateFixedExpense extends reqUser {
-  addFixedExpense: AddFixedExpense;
+export interface IFindOneByUidDate extends reqUser {
+  date: string;
 }
 
 export interface IRFetchSpp extends Omit<IRfindOneByUserNumberForSpp, 'userNumber'> {}

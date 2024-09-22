@@ -15,17 +15,11 @@ export class FixedExpense {
   @ManyToOne(() => User)
   user: User;
 
-  @Column()
-  startYear: number;
+  @Column({ type: 'varchar', length: 7 })
+  startDate: Date;
 
-  @Column()
-  startMonth: number;
-
-  @Column()
-  endYear: number;
-
-  @Column()
-  endMonth: number;
+  @Column({ type: 'varchar', length: 7 })
+  endDate: Date;
 
   @Column()
   feName: string;

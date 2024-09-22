@@ -8,15 +8,11 @@ import {
   IAddFixedExpenseInput,
   IAddSRecInput,
   IAddSolarInput,
-  ICreateExpense,
-  ICreateFixedExpense,
-  ICreateSRec,
-  ICreateSolar,
   IDeleteExpenseInput,
   IDeleteFixedExpenseInput,
   IDeleteSRecInput,
   IDeleteSolarInput,
-  IFindOneByUidYearMonth,
+  IFindOneByUidDate,
   IRFetchSpp,
 } from './interfaces/spp-service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -45,21 +41,21 @@ export class SppService {
   findByUserNumberFromSolar({ userNumber }: reqUser): Promise<Solar[]> {
     return this.solarRepository.find({
       where: { user: { userNumber } },
-      order: { year: 'ASC', month: 'ASC' },
+      order: { date: 'ASC' },
     });
   }
 
   findByUserNumberFromSRec({ userNumber }: reqUser): Promise<SRec[]> {
     return this.sRecRepository.find({
       where: { user: { userNumber } },
-      order: { year: 'ASC', month: 'ASC', day: 'ASC' },
+      order: { date: 'ASC' },
     });
   }
 
   findByUserNumberFromExpense({ userNumber }: reqUser): Promise<Expense[]> {
     return this.expenseRepository.find({
       where: { user: { userNumber } },
-      order: { year: 'ASC', month: 'ASC', day: 'ASC' },
+      order: { date: 'ASC' },
     });
   }
 
@@ -69,30 +65,32 @@ export class SppService {
     });
   }
 
-  findOneByUserNumberYearMonthFromSolar({
+  findOneByUserNumberDateFromSolar({
     userNumber,
-    year,
-    month,
-  }: IFindOneByUidYearMonth): Promise<Solar> {
+    date,
+  }: IFindOneByUidDate): Promise<Solar> {
     return this.solarRepository.findOne({
-      where: { user: { userNumber }, year, month },
+      where: { user: { userNumber }, date },
     });
   }
 
-  createSolar({ userNumber, addSolar }: ICreateSolar): Promise<Solar> {
-    return this.solarRepository.save({ user: { userNumber }, ...addSolar });
+  createSolar({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar> {
+    return this.solarRepository.save({ user: { userNumber }, ...addSolarDto });
   }
 
-  createSRec({ userNumber, addSRec }: ICreateSRec): Promise<SRec> {
-    return this.sRecRepository.save({ user: { userNumber }, ...addSRec });
+  createSRec({ userNumber, addSRecDto }: IAddSRecInput): Promise<SRec> {
+    return this.sRecRepository.save({ user: { userNumber }, ...addSRecDto });
   }
 
-  createExpense({ userNumber, addExpense }: ICreateExpense) {
-    return this.expenseRepository.save({ user: { userNumber }, ...addExpense });
+  createExpense({ userNumber, addExpenseDto }: IAddExpenseInput) {
+    return this.expenseRepository.save({ user: { userNumber }, ...addExpenseDto });
   }
 
-  createFixedExpense({ userNumber, addFixedExpense }: ICreateFixedExpense) {
-    return this.fixedExpenseRepository.save({ user: { userNumber }, ...addFixedExpense });
+  createFixedExpense({ userNumber, addFixedExpenseDto }: IAddFixedExpenseInput) {
+    return this.fixedExpenseRepository.save({
+      user: { userNumber },
+      ...addFixedExpenseDto,
+    });
   }
 
   async fetchSpp({ userNumber }: reqUser): Promise<IRFetchSpp> {
@@ -101,32 +99,19 @@ export class SppService {
     return user;
   }
 
-  // date 합쳐진거 분리
-  // splitDate(date: string): number[] {
-  //   return date.split('-').map((part) => parseInt(part, 10));
-  // }
-
-  // db에 맞는 date들 추가된 데이터 반환
-  makeDate(data: any) {
-    const { date, ...restData } = data;
-    const [year, month, day] = this.splitDate(date);
-    return { year, month, ...(day && { day }), ...restData };
-  }
-
   // 삭제 요청에 데이터 넘버 있는지 체크
   checkDeleteReqNumber(number: number, name: string) {
     if (!number) throw new BadRequestException(`요청에 ${name} 없음`);
   }
 
   async addSolar({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
-    const addSolar = this.makeDate(addSolarDto); // 년-월 합쳐진거 분리
-    const result = await this.findOneByUserNumberYearMonthFromSolar({
+    const date = addSolarDto.date;
+    const result = await this.findOneByUserNumberDateFromSolar({
       userNumber,
-      year: addSolar.year,
-      month: addSolar.month,
-    }); // year, month 중복 체크
+      date,
+    }); // 중복 체크
     if (result) throw new BadRequestException('중복');
-    await this.createSolar({ userNumber, addSolar });
+    await this.createSolar({ userNumber, addSolarDto });
     const solar = await this.findByUserNumberFromSolar({ userNumber });
     return solar;
   }
@@ -139,8 +124,7 @@ export class SppService {
   }
 
   async addSRec({ userNumber, addSRecDto }: IAddSRecInput): Promise<SRec[]> {
-    const addSRec = this.makeDate(addSRecDto); // 년-월-일 합쳐진거 분리
-    await this.createSRec({ userNumber, addSRec });
+    await this.createSRec({ userNumber, addSRecDto });
     const sRec = await this.findByUserNumberFromSRec({ userNumber });
     return sRec;
   }
@@ -153,8 +137,7 @@ export class SppService {
   }
 
   async addExpense({ userNumber, addExpenseDto }: IAddExpenseInput): Promise<Expense[]> {
-    const addExpense = this.makeDate(addExpenseDto); // 년-월-일 합쳐진거 분리
-    await this.createExpense({ userNumber, addExpense });
+    await this.createExpense({ userNumber, addExpenseDto });
     const expense = await this.findByUserNumberFromExpense({ userNumber });
     return expense;
   }
@@ -171,12 +154,10 @@ export class SppService {
     addFixedExpenseDto,
   }: IAddFixedExpenseInput): Promise<FixedExpense[]> {
     // 시작년월, 종료년월 합쳐진거 분리
-    const { startDate, endDate, ...redData } = addFixedExpenseDto;
-    const [startYear, startMonth] = this.splitDate(startDate);
-    const [endYear, endMonth] = this.splitDate(endDate);
-    if (startYear > endYear) throw new InternalServerErrorException('년도');
-    const addFixedExpense = { startYear, startMonth, endYear, endMonth, ...redData };
-    await this.createFixedExpense({ userNumber, addFixedExpense });
+    const startDate = addFixedExpenseDto.startDate;
+    const endDate = addFixedExpenseDto.endDate;
+    if (startDate > endDate) throw new InternalServerErrorException('년도');
+    await this.createFixedExpense({ userNumber, addFixedExpenseDto });
     const fixedExpense = await this.findByUserNumberFromFixedExpense({ userNumber });
     return fixedExpense;
   }
@@ -194,3 +175,15 @@ export class SppService {
     return fixedExpense;
   }
 }
+
+// date 합쳐진거 분리
+// splitDate(date: string): number[] {
+//   return date.split('-').map((part) => parseInt(part, 10));
+// }
+
+// db에 맞는 date들 추가된 데이터 반환
+// makeDate(data: any) {
+//   const { date, ...restData } = data;
+//   const [year, month, day] = this.splitDate(date);
+//   return { year, month, ...(day && { day }), ...restData };
+// }

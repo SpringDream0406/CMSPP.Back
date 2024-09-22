@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Unique(['year', 'month'])
+@Unique(['date'])
 export class Solar {
   @PrimaryGeneratedColumn('increment')
   solarNumber: number;
@@ -19,11 +19,8 @@ export class Solar {
   @JoinColumn()
   user: User;
 
-  @Column()
-  year: number;
-
-  @Column()
-  month: number;
+  @Column({ type: 'varchar', length: 7 })
+  date: string;
 
   @Column()
   generation: number;
