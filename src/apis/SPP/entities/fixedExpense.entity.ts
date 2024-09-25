@@ -16,10 +16,10 @@ export class FixedExpense {
   user: User;
 
   @Column({ type: 'varchar', length: 7 })
-  startDate: Date;
+  startDate: string;
 
   @Column({ type: 'varchar', length: 7 })
-  endDate: Date;
+  endDate: string;
 
   @Column()
   feName: string;
