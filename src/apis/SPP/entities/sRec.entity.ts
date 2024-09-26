@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 import { User } from 'src/apis/02.Users/entities/user.entity';
 import {
   Column,
@@ -15,13 +16,21 @@ export class SRec {
   @ManyToOne(() => User)
   user: User;
 
-  @Column({ type: 'date' })
-  date: Date;
+  @Column({ type: 'varchar', length: 10 })
+  @IsNotEmpty()
+  @IsString()
+  date: string;
 
   @Column()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
   sVolume: number;
 
   @Column()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
   sPrice: number;
 
   @CreateDateColumn()

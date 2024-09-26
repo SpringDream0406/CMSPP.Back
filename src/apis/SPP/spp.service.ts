@@ -62,6 +62,7 @@ export class SppService {
   findByUserNumberFromFixedExpense({ userNumber }: reqUser): Promise<FixedExpense[]> {
     return this.fixedExpenseRepository.find({
       where: { user: { userNumber } },
+      order: { startDate: 'ASC' },
     });
   }
 

@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Auth } from 'src/apis/01.Auth/entities/auth.entity';
 import { Expense } from 'src/apis/SPP/entities/expense.entity';
 import { FixedExpense } from 'src/apis/SPP/entities/fixedExpense.entity';
@@ -35,15 +36,23 @@ export class User {
   expense: Expense;
 
   @Column({ nullable: true, unique: true })
+  @IsNotEmpty()
+  @IsString()
   businessNumber: string;
 
   @Column({ nullable: true })
+  @IsNotEmpty()
+  @IsString()
   address: string;
 
   @Column({ nullable: true })
+  @IsNotEmpty()
+  @IsNumber()
   kWh: number;
 
   @Column({ nullable: true, type: 'decimal', precision: 3, scale: 1 })
+  @IsNotEmpty()
+  @IsNumber()
   recWeight: number;
 
   @CreateDateColumn()
