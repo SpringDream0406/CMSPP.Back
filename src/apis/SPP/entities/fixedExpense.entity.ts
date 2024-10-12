@@ -1,20 +1,14 @@
 import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
-import { User } from 'src/apis/02.Users/entities/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { SppBasicEntity } from './sppBasic.entity';
 
 @Entity()
-export class FixedExpense {
+export class FixedExpense extends SppBasicEntity {
   @PrimaryGeneratedColumn('increment')
   feNumber: number;
 
-  @ManyToOne(() => User)
-  user: User;
+  // @ManyToOne(() => User)
+  // user: User;
 
   @Column({ type: 'varchar', length: 7 })
   @IsNotEmpty()
@@ -37,6 +31,6 @@ export class FixedExpense {
   @Min(0)
   fePrice: number;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  // @CreateDateColumn()
+  // createdAt: Date;
 }

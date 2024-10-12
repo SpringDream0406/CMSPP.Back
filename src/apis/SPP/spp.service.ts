@@ -154,7 +154,6 @@ export class SppService {
     userNumber,
     addFixedExpenseDto,
   }: IAddFixedExpenseInput): Promise<FixedExpense[]> {
-    // 시작년월, 종료년월 합쳐진거 분리
     const startDate = addFixedExpenseDto.startDate;
     const endDate = addFixedExpenseDto.endDate;
     if (startDate > endDate) throw new InternalServerErrorException('년도');
