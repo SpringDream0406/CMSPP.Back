@@ -1,8 +1,11 @@
+import { User } from 'src/apis/02.Users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -16,6 +19,10 @@ export class Auth {
 
   @Column()
   provider: string;
+
+  @OneToOne(() => User)
+  @JoinColumn()
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;

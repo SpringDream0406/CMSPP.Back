@@ -4,7 +4,6 @@ import { User } from './entities/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import {
   IFindOneByBusinessNumber,
-  IFindOneByUid,
   IRfindOneByUserNumberForSpp,
   IUpdateMyInfoInput,
 } from './interfaces/user-service.interface';
@@ -16,13 +15,6 @@ export class UserService {
     @InjectRepository(User)
     private readonly userReposityory: Repository<User>,
   ) {}
-
-  // auth 로그인/회원가입 에서 사용 중
-  findOneByUid({ uid }: IFindOneByUid): Promise<User> {
-    return this.userReposityory.findOne({
-      where: { auth: { uid } },
-    });
-  }
 
   // auth 회원탈퇴에서 사용 중
   findOneByUserNumber({ userNumber }: reqUser): Promise<User> {
@@ -66,7 +58,7 @@ export class UserService {
     });
   }
 
-  // businessNumber 중복 체크 (businessNumber는 string임)
+  // businessNumber 중복 체크
   findOneByBusinessNumber({ businessNumber }: IFindOneByBusinessNumber): Promise<User> {
     return this.userReposityory.findOne({
       where: { businessNumber },

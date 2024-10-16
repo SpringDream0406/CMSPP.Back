@@ -6,11 +6,9 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 
 @Entity()
-@Unique(['date'])
 export class Solar {
   @PrimaryGeneratedColumn('increment')
   solarNumber: number;
@@ -18,7 +16,7 @@ export class Solar {
   @ManyToOne(() => User, (user) => user.solar)
   user: User;
 
-  @Column({ type: 'varchar', length: 7 })
+  @Column({ type: 'varchar', length: 7, unique: true })
   @IsNotEmpty()
   @IsString()
   date: string;

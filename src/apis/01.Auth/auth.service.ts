@@ -14,7 +14,6 @@ import {
 } from './interfaces/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from '../02.Users/user.service';
 import { User } from '../02.Users/entities/user.entity';
 
 @Injectable()
@@ -24,7 +23,6 @@ export class AuthService {
     private readonly authRepository: Repository<Auth>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService, // env
-    private readonly userService: UserService,
     private readonly dataSource: DataSource, // 쿼리러너
   ) {}
 
@@ -32,6 +30,7 @@ export class AuthService {
   findOneFromAuth({ user }: IOAuthUser): Promise<Auth> {
     return this.authRepository.findOne({
       where: { ...user },
+      relations: ['user'],
     });
   }
 
@@ -41,8 +40,11 @@ export class AuthService {
     await queyRunner.connect();
     await queyRunner.startTransaction();
     try {
-      const auth = await queyRunner.manager.save(Auth, { ...user });
-      await queyRunner.manager.save(User, { auth });
+      const userData = await queyRunner.manager.save(User, { recWeight: 1.0 });
+      const auth = await queyRunner.manager.save(Auth, {
+        ...user,
+        user: { userNumber: userData.userNumber },
+      });
       await queyRunner.commitTransaction();
       return auth;
     } catch (error) {
@@ -58,15 +60,14 @@ export class AuthService {
   async signUp({ user, res }: IAuthServiceSignUp): Promise<number> {
     let auth = await this.findOneFromAuth({ user });
     if (!auth) auth = await this.create({ user });
-    const { userNumber } = await this.userService.findOneByUid({ uid: auth.uid });
+    const userNumber = auth.user.userNumber;
     this.setRefreshToken({ userNumber, res });
     return userNumber;
   }
 
   // 회원탈퇴
   async withdrawal({ userNumber }: reqUser): Promise<DeleteResult> {
-    const user = await this.userService.findOneByUserNumber({ userNumber });
-    const result = await this.authRepository.softDelete(user.auth.uid);
+    const result = await this.authRepository.softDelete({ user: { userNumber } });
     if (result.affected === 0) throw new BadRequestException('탈퇴 실패 DB');
     return result;
   }

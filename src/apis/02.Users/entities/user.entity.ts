@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { Auth } from 'src/apis/01.Auth/entities/auth.entity';
 import { Expense } from 'src/apis/SPP/entities/expense.entity';
 import { FixedExpense } from 'src/apis/SPP/entities/fixedExpense.entity';
 import { SRec } from 'src/apis/SPP/entities/sRec.entity';
@@ -8,9 +7,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -18,10 +15,6 @@ import {
 export class User {
   @PrimaryGeneratedColumn('increment')
   userNumber: number;
-
-  @OneToOne(() => Auth)
-  @JoinColumn()
-  auth: Auth;
 
   @OneToMany(() => Solar, (solar) => solar.user)
   solar: Solar[];
@@ -37,7 +30,7 @@ export class User {
 
   @Column({ nullable: true, unique: true })
   @IsNotEmpty()
-  @IsString()
+  @IsNumber() // front에서 number로 보냄
   businessNumber: string;
 
   @Column({ nullable: true })
