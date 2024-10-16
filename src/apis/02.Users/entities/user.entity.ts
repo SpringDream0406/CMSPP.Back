@@ -24,16 +24,16 @@ export class User {
   auth: Auth;
 
   @OneToMany(() => Solar, (solar) => solar.user)
-  solar: Solar;
+  solar: Solar[];
 
   @OneToMany(() => SRec, (rec) => rec.user)
-  sRec: SRec;
-
-  @OneToMany(() => FixedExpense, (fixedExpense) => fixedExpense.user)
-  fixedExpense: FixedExpense;
+  sRec: SRec[];
 
   @OneToMany(() => Expense, (expense) => expense.user)
-  expense: Expense;
+  expense: Expense[];
+
+  @OneToMany(() => FixedExpense, (fixedExpense) => fixedExpense.user)
+  fixedExpense: FixedExpense[];
 
   @Column({ nullable: true, unique: true })
   @IsNotEmpty()

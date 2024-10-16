@@ -1,12 +1,22 @@
 import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
-import { SppBasicEntity } from './sppBasic.entity';
+import { User } from 'src/apis/02.Users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 
 @Entity()
 @Unique(['date'])
-export class Solar extends SppBasicEntity {
+export class Solar {
   @PrimaryGeneratedColumn('increment')
   solarNumber: number;
+
+  @ManyToOne(() => User, (user) => user.solar)
+  user: User;
 
   @Column({ type: 'varchar', length: 7 })
   @IsNotEmpty()
@@ -30,4 +40,7 @@ export class Solar extends SppBasicEntity {
   @IsNumber()
   @Min(0)
   supplyPrice: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

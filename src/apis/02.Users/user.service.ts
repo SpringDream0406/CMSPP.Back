@@ -38,7 +38,8 @@ export class UserService {
   }: reqUser): Promise<IRfindOneByUserNumberForSpp> {
     return this.userReposityory.findOne({
       where: { userNumber },
-      relations: ['solar', 'sRec', 'fixedExpense', 'expense'],
+      relations: ['solar', 'sRec', 'expense', 'fixedExpense'],
+      // 주소, 비즈니스 넘버 같은 필요없는 데이터 빼기
       select: [
         'userNumber',
         'kWh',
@@ -48,6 +49,20 @@ export class UserService {
         'fixedExpense',
         'expense',
       ],
+      order: {
+        solar: {
+          date: 'ASC',
+        },
+        sRec: {
+          date: 'ASC',
+        },
+        expense: {
+          date: 'ASC',
+        },
+        fixedExpense: {
+          startDate: 'ASC',
+        },
+      },
     });
   }
 
