@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Put,
   Req,
   UseGuards,
@@ -46,7 +47,7 @@ export class SppController {
   @UseGuards(AuthGuard('access'))
   deleteSolar(
     @Req() req: Request & IAuthUser,
-    @Param('solarNumber') solarNumber: number,
+    @Param('solarNumber', ParseIntPipe) solarNumber: number,
   ): Promise<Solar[]> {
     return this.sppService.deleteSolar({ ...req.user, solarNumber });
   }
@@ -64,7 +65,7 @@ export class SppController {
   @UseGuards(AuthGuard('access'))
   deleteSRec(
     @Req() req: Request & IAuthUser,
-    @Param('sRecNumber') sRecNumber: number,
+    @Param('sRecNumber', ParseIntPipe) sRecNumber: number,
   ): Promise<SRec[]> {
     return this.sppService.deleteSRec({ ...req.user, sRecNumber });
   }
@@ -82,7 +83,7 @@ export class SppController {
   @UseGuards(AuthGuard('access'))
   deleteExpense(
     @Req() req: Request & IAuthUser,
-    @Param('eNumber') eNumber: number,
+    @Param('eNumber', ParseIntPipe) eNumber: number,
   ): Promise<Expense[]> {
     return this.sppService.deleteExpense({ ...req.user, eNumber });
   }
@@ -99,7 +100,7 @@ export class SppController {
   @UseGuards(AuthGuard('access'))
   deleteFixedExpense(
     @Req() req: Request & IAuthUser,
-    @Param('feNumber') feNumber: number,
+    @Param('feNumber', ParseIntPipe) feNumber: number,
   ): Promise<FixedExpense[]> {
     return this.sppService.deleteFixedExpense({ ...req.user, feNumber });
   }
