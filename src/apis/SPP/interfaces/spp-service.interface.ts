@@ -7,7 +7,7 @@ import {
 } from '../dto/spp-container.dto';
 import { IRfindOneByUserNumberForSpp } from 'src/apis/02.Users/interfaces/user-service.interface';
 
-export interface IFindOneByUidDate extends reqUser {
+export interface IExistsByUserNumberFromSolar extends reqUser {
   date: string;
 }
 

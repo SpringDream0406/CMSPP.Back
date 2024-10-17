@@ -26,8 +26,8 @@ export class AuthService {
     private readonly dataSource: DataSource, // 쿼리러너
   ) {}
 
-  // 회원 유무조회
-  findOneFromAuth({ user }: IOAuthUser): Promise<Auth> {
+  // 회원 유무조회, 데이터 써야되므로 exists 말고 findOne
+  findOneByUserFromAuth({ user }: IOAuthUser): Promise<Auth> {
     return this.authRepository.findOne({
       where: { ...user },
       relations: ['user'],
@@ -35,7 +35,7 @@ export class AuthService {
   }
 
   // 회원 추가
-  async create({ user }: IOAuthUser): Promise<Auth> {
+  async saveUser({ user }: IOAuthUser): Promise<Auth> {
     const queyRunner = this.dataSource.createQueryRunner();
     await queyRunner.connect();
     await queyRunner.startTransaction();
@@ -58,8 +58,8 @@ export class AuthService {
 
   // 로그인/회원가입
   async signUp({ user, res }: IAuthServiceSignUp): Promise<number> {
-    let auth = await this.findOneFromAuth({ user });
-    if (!auth) auth = await this.create({ user });
+    let auth = await this.findOneByUserFromAuth({ user });
+    if (!auth) auth = await this.saveUser({ user });
     const userNumber = auth.user.userNumber;
     this.setRefreshToken({ userNumber, res });
     return userNumber;

@@ -12,7 +12,7 @@ import {
   IDeleteFixedExpenseInput,
   IDeleteSRecInput,
   IDeleteSolarInput,
-  IFindOneByUidDate,
+  IExistsByUserNumberFromSolar,
   IRFetchSpp,
 } from './interfaces/spp-service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -66,28 +66,28 @@ export class SppService {
     });
   }
 
-  findOneByUserNumberDateFromSolar({
+  existsByUserNumberFromSolar({
     userNumber,
     date,
-  }: IFindOneByUidDate): Promise<Solar> {
-    return this.solarRepository.findOne({
+  }: IExistsByUserNumberFromSolar): Promise<boolean> {
+    return this.solarRepository.exists({
       where: { user: { userNumber }, date },
     });
   }
 
-  createSolar({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar> {
+  saveSolar({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar> {
     return this.solarRepository.save({ user: { userNumber }, ...addSolarDto });
   }
 
-  createSRec({ userNumber, addSRecDto }: IAddSRecInput): Promise<SRec> {
+  saveSRec({ userNumber, addSRecDto }: IAddSRecInput): Promise<SRec> {
     return this.sRecRepository.save({ user: { userNumber }, ...addSRecDto });
   }
 
-  createExpense({ userNumber, addExpenseDto }: IAddExpenseInput) {
+  saveExpense({ userNumber, addExpenseDto }: IAddExpenseInput) {
     return this.expenseRepository.save({ user: { userNumber }, ...addExpenseDto });
   }
 
-  createFixedExpense({ userNumber, addFixedExpenseDto }: IAddFixedExpenseInput) {
+  saveFixedExpense({ userNumber, addFixedExpenseDto }: IAddFixedExpenseInput) {
     return this.fixedExpenseRepository.save({
       user: { userNumber },
       ...addFixedExpenseDto,
@@ -107,12 +107,13 @@ export class SppService {
 
   async addSolar({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
     const date = addSolarDto.date;
-    const result = await this.findOneByUserNumberDateFromSolar({
+    // 중복 체크
+    const result = await this.existsByUserNumberFromSolar({
       userNumber,
       date,
-    }); // 중복 체크
+    });
     if (result) throw new BadRequestException('중복');
-    await this.createSolar({ userNumber, addSolarDto });
+    await this.saveSolar({ userNumber, addSolarDto });
     const solar = await this.findByUserNumberFromSolar({ userNumber });
     return solar;
   }
@@ -125,7 +126,7 @@ export class SppService {
   }
 
   async addSRec({ userNumber, addSRecDto }: IAddSRecInput): Promise<SRec[]> {
-    await this.createSRec({ userNumber, addSRecDto });
+    await this.saveSRec({ userNumber, addSRecDto });
     const sRec = await this.findByUserNumberFromSRec({ userNumber });
     return sRec;
   }
@@ -138,7 +139,7 @@ export class SppService {
   }
 
   async addExpense({ userNumber, addExpenseDto }: IAddExpenseInput): Promise<Expense[]> {
-    await this.createExpense({ userNumber, addExpenseDto });
+    await this.saveExpense({ userNumber, addExpenseDto });
     const expense = await this.findByUserNumberFromExpense({ userNumber });
     return expense;
   }
@@ -157,7 +158,7 @@ export class SppService {
     const startDate = addFixedExpenseDto.startDate;
     const endDate = addFixedExpenseDto.endDate;
     if (startDate > endDate) throw new InternalServerErrorException('년도');
-    await this.createFixedExpense({ userNumber, addFixedExpenseDto });
+    await this.saveFixedExpense({ userNumber, addFixedExpenseDto });
     const fixedExpense = await this.findByUserNumberFromFixedExpense({ userNumber });
     return fixedExpense;
   }

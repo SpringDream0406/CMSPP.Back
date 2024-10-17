@@ -58,7 +58,7 @@ export class UserService {
     });
   }
 
-  // businessNumber 중복 체크
+  // businessNumber 중복 체크, 값이 있어도 본인껀지 확인 위해 데이터 필요하므로 exists 사용 x
   findOneByBusinessNumber({ businessNumber }: IFindOneByBusinessNumber): Promise<User> {
     return this.userReposityory.findOne({
       where: { businessNumber },
