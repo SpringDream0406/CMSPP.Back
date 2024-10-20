@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { User } from 'src/apis/02.Users/entities/user.entity';
 import {
   Column,
@@ -10,6 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity()
+@Exclude()
 export class Auth {
   @PrimaryGeneratedColumn('uuid')
   uid: string;
