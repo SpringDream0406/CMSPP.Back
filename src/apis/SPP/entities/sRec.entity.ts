@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber, Min } from 'class-validator';
 import { User } from 'src/apis/02.Users/entities/user.entity';
 import {
   Column,
@@ -18,7 +18,7 @@ export class SRec {
 
   @Column({ type: 'varchar', length: 10 })
   @IsNotEmpty()
-  @IsString()
+  @IsDateString()
   date: string;
 
   @Column()
