@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { DeleteResult } from 'typeorm';
+import { envKeys } from 'src/common/validation.schema';
 
 @Controller()
 export class AuthController {
@@ -22,7 +23,7 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     await this.authService.signUp({ ...req, res });
-    res.redirect(this.configService.get('REDIRECT_URL'));
+    res.redirect(this.configService.get(envKeys.redirectURL));
   }
 
   // 회원탈퇴

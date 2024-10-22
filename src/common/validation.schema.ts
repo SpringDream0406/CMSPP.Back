@@ -34,3 +34,35 @@ export const validationSchema = Joi.object({
   SOCIAL_NAVER_ID: requiredString,
   SOCIAL_NAVER_SECRET: requiredString,
 });
+
+export enum envKeys {
+  // DB
+  dbType = 'DB_TYPE',
+  dbHost = 'DB_HOST',
+  dbPort = 'DB_PORT',
+  dbUsername = 'DB_USERNAME',
+  dbPassword = 'DB_PASSWORD',
+  dbDatabase = 'DB_DATABASE',
+
+  // Token
+  refreshTokenSecret = 'REFRESHTOKEN_SECRET',
+  accessTokenSecret = 'ACCESSTOKEN_SECRET',
+
+  // 프론트주소
+  redirectURL = 'REDIRECT_URL',
+
+  // 소셜 로그인 콜백
+  socailCallBackURL = 'SOCIAL_CALLBACK_URL',
+
+  // 구글
+  socailGoogleId = 'SOCIAL_GOOGLE_ID',
+  socailGoogleSecet = 'SOCIAL_GOOGLE_SECRET',
+
+  // 카카오
+  socailKakaoId = 'SOCIAL_KAKAO_ID',
+  socailKakaoSecet = 'SOCIAL_KAKAO_SECRET',
+
+  // 네이버
+  socailNaverId = 'SOCIAL_NAVER_ID',
+  socailNaverSecet = 'SOCIAL_NAVER_SECRET',
+}

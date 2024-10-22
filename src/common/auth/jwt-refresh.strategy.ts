@@ -3,6 +3,7 @@ import { Strategy } from 'passport-jwt';
 import { IStrategyPayload } from '../interfaces/strategy.interface';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { envKeys } from '../validation.schema';
 
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
   constructor(private readonly configService: ConfigService) {
@@ -12,7 +13,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
         const refreshToken = cookie.replace('refreshToken=', '');
         return refreshToken;
       },
-      secretOrKey: configService.get<string>('REFRESHTOKEN_SECRET'),
+      secretOrKey: configService.get<string>(envKeys.refreshTokenSecret),
     });
   }
 
