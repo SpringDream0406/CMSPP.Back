@@ -12,7 +12,9 @@ import { JwtNaverStrategy } from 'src/common/auth/jwt-social-naver.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Auth]), //
+    TypeOrmModule.forFeature([
+      Auth, //
+    ]), //
     JwtModule.register({}),
   ],
   providers: [

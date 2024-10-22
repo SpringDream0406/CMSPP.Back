@@ -1,12 +1,13 @@
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-kakao';
 
 export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     super({
-      clientID: process.env.SOCIAL_KAKAO_ID,
-      clientSecret: process.env.SOCIAL_KAKAO_SECRET,
-      callbackURL: `${process.env.SOCIAL_CALLBACK_URL}/kakao`,
+      clientID: configService.get<string>('SOCIAL_KAKAO_ID'),
+      clientSecret: configService.get<string>('SOCIAL_KAKAO_SECRET'),
+      callbackURL: `${configService.get<string>('SOCIAL_CALLBACK_URL')}/kakao`,
       // scope: ['email'],
     });
   }

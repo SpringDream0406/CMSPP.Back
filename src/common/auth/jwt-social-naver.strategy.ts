@@ -1,12 +1,13 @@
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-naver-v2';
 
 export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     super({
-      clientID: process.env.SOCIAL_NAVER_ID,
-      clientSecret: process.env.SOCIAL_NAVER_SECRET,
-      callbackURL: `${process.env.SOCIAL_CALLBACK_URL}/naver`,
+      clientID: configService.get<string>('SOCIAL_NAVER_ID'),
+      clientSecret: configService.get<string>('SOCIAL_NAVER_SECRET'),
+      callbackURL: `${configService.get<string>('SOCIAL_CALLBACK_URL')}/naver`,
       // scope: ['email'],
     });
   }

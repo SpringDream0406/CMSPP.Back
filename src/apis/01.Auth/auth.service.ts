@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource, DeleteResult, Repository } from 'typeorm';
 import { Auth } from './entities/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,7 +10,6 @@ import {
 } from './interfaces/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { User } from '../02.Users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +17,7 @@ export class AuthService {
     @InjectRepository(Auth)
     private readonly authRepository: Repository<Auth>,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService, // env
+    private readonly configService: ConfigService,
     private readonly dataSource: DataSource, // 쿼리러너
   ) {}
 
@@ -35,25 +30,34 @@ export class AuthService {
   }
 
   // 회원 추가
+  // async saveUser({ user }: IOAuthUser): Promise<Auth> {
+  //   const queyRunner = this.dataSource.createQueryRunner();
+  //   await queyRunner.connect();
+  //   await queyRunner.startTransaction();
+  //   try {
+  //     const userData = await queyRunner.manager.save(User, { recWeight: 1.0 });
+  //     const auth = await queyRunner.manager.save(Auth, {
+  //       ...user,
+  //       user: { userNumber: userData.userNumber },
+  //     });
+  //     await queyRunner.commitTransaction();
+  //     return auth;
+  //   } catch (error) {
+  //     //   console.log(error);
+  //     await queyRunner.rollbackTransaction();
+  //     throw new InternalServerErrorException('회원 가입 실패(DB)');
+  //   } finally {
+  //     queyRunner.release();
+  //   }
+  // }
+
+  // 회원 추가
   async saveUser({ user }: IOAuthUser): Promise<Auth> {
-    const queyRunner = this.dataSource.createQueryRunner();
-    await queyRunner.connect();
-    await queyRunner.startTransaction();
-    try {
-      const userData = await queyRunner.manager.save(User, { recWeight: 1.0 });
-      const auth = await queyRunner.manager.save(Auth, {
-        ...user,
-        user: { userNumber: userData.userNumber },
-      });
-      await queyRunner.commitTransaction();
-      return auth;
-    } catch (error) {
-      //   console.log(error);
-      await queyRunner.rollbackTransaction();
-      throw new InternalServerErrorException('회원 가입 실패(DB)');
-    } finally {
-      queyRunner.release();
-    }
+    const auth = await this.authRepository.save({
+      ...user,
+      user: { kWh: 1.0 },
+    });
+    return auth;
   }
 
   // 로그인/회원가입
@@ -77,7 +81,7 @@ export class AuthService {
     return this.jwtService.sign(
       { sub: userNumber },
       {
-        secret: this.configService.get('ACCESSTOKEN_SECRET'),
+        secret: this.configService.get<string>('ACCESSTOKEN_SECRET'),
         expiresIn: '15m',
       },
     );
@@ -88,8 +92,8 @@ export class AuthService {
     const refreshToken = this.jwtService.sign(
       { sub: userNumber },
       {
-        secret: this.configService.get('REFRESHTOKEN_SECRET'),
-        expiresIn: '1w',
+        secret: this.configService.get<string>('REFRESHTOKEN_SECRET'),
+        expiresIn: '24h',
       },
     );
 

@@ -22,7 +22,9 @@ export class Auth {
   @Column()
   provider: string;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, {
+    cascade: true,
+  })
   @JoinColumn()
   user: User;
 
