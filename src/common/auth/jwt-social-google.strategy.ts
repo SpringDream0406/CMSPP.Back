@@ -2,7 +2,9 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
 import { envKeys } from '../validation.schema';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private readonly configService: ConfigService) {
     super({

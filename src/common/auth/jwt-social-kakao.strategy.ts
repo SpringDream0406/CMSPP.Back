@@ -2,7 +2,9 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-kakao';
 import { envKeys } from '../validation.schema';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor(private readonly configService: ConfigService) {
     super({

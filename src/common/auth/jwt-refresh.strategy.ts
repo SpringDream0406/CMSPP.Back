@@ -4,7 +4,9 @@ import { IStrategyPayload } from '../interfaces/strategy.interface';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { envKeys } from '../validation.schema';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
   constructor(private readonly configService: ConfigService) {
     super({

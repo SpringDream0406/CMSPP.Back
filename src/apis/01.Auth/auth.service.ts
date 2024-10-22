@@ -62,12 +62,11 @@ export class AuthService {
   }
 
   // 로그인/회원가입
-  async signUp({ user, res }: IAuthServiceSignUp): Promise<number> {
+  async signUp({ user, res }: IAuthServiceSignUp): Promise<void> {
     let auth = await this.findOneByUserFromAuth({ user });
     if (!auth) auth = await this.saveUser({ user });
     const userNumber = auth.user.userNumber;
     this.setRefreshToken({ userNumber, res });
-    return userNumber;
   }
 
   // 회원탈퇴

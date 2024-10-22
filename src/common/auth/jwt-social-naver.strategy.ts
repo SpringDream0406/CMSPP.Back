@@ -2,7 +2,9 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-naver-v2';
 import { envKeys } from '../validation.schema';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor(private readonly configService: ConfigService) {
     super({
