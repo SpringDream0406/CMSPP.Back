@@ -38,8 +38,7 @@ export class AuthController {
 
   // 엑세스 토큰 발급
   @Get('getAccessToken')
-  @Public()
-  @UseGuards(AuthGuard('refresh'))
+  @Public('refresh')
   getAccessToken(@Req() req: Request & IAuthUser): string {
     if (req.user) {
       return this.authService.getAccessToken({ ...req.user });
