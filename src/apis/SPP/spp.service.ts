@@ -100,11 +100,6 @@ export class SppService {
     return user;
   }
 
-  // 삭제 요청에 데이터 넘버 있는지 체크
-  checkDeleteReqNumber(number: number, name: string) {
-    if (!number) throw new BadRequestException(`요청에 ${name} 없음`);
-  }
-
   async addSolar({ userNumber, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
     const date = addSolarDto.date;
     // 중복 체크
@@ -119,7 +114,6 @@ export class SppService {
   }
 
   async deleteSolar({ userNumber, solarNumber }: IDeleteSolarInput): Promise<Solar[]> {
-    this.checkDeleteReqNumber(userNumber, 'solarNumber');
     await this.solarRepository.delete({ user: { userNumber }, solarNumber });
     const solar = await this.findByUserNumberFromSolar({ userNumber });
     return solar;
@@ -132,7 +126,6 @@ export class SppService {
   }
 
   async deleteSRec({ userNumber, sRecNumber }: IDeleteSRecInput): Promise<SRec[]> {
-    this.checkDeleteReqNumber(sRecNumber, 'sRecNumber');
     await this.sRecRepository.delete({ user: { userNumber }, sRecNumber });
     const sRec = await this.findByUserNumberFromSRec({ userNumber });
     return sRec;
@@ -145,7 +138,8 @@ export class SppService {
   }
 
   async deleteExpense({ userNumber, eNumber }: IDeleteExpenseInput): Promise<Expense[]> {
-    this.checkDeleteReqNumber(eNumber, 'expenseNumber');
+    console.log(eNumber);
+
     await this.expenseRepository.delete({ user: { userNumber }, eNumber });
     const expense = await this.findByUserNumberFromExpense({ userNumber });
     return expense;
@@ -167,7 +161,6 @@ export class SppService {
     userNumber,
     feNumber,
   }: IDeleteFixedExpenseInput): Promise<FixedExpense[]> {
-    this.checkDeleteReqNumber(feNumber, 'fixedExpenseNumber');
     await this.fixedExpenseRepository.delete({
       user: { userNumber },
       feNumber,

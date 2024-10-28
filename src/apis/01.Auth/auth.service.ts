@@ -11,7 +11,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { envKeys } from 'src/common/config/validation.schema';
-import { raceWith } from 'rxjs';
 
 @Injectable()
 export class AuthService {

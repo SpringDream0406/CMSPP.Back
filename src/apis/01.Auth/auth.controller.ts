@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { DynamicAuthGuard } from './guards/dynamic-auth.guard';
 import { IAuthUser, IOAuthUser } from './interfaces/auth.interface';
 import { Request, Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { DeleteResult } from 'typeorm';
 import { envKeys } from 'src/common/config/validation.schema';
