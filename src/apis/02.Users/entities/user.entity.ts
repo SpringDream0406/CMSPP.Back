@@ -31,7 +31,7 @@ export class User {
   @Column({ nullable: true, unique: true })
   @IsNotEmpty()
   @IsNumber() // front에서 number로 보냄
-  businessNumber: string;
+  businessNumber: string; // 숫자로 저장하기에는 큰값이라 string 처리
 
   @Column({ nullable: true })
   @IsNotEmpty()

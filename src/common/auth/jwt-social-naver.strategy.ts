@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-naver-v2';
-import { envKeys } from '../validation.schema';
+import { envKeys } from '../config/validation.schema';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

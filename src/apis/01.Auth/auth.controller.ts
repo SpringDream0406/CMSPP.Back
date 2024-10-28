@@ -6,7 +6,8 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { DeleteResult } from 'typeorm';
-import { envKeys } from 'src/common/validation.schema';
+import { envKeys } from 'src/common/config/validation.schema';
+import { Public } from 'src/common/decorator/public.decorator';
 
 @Controller()
 export class AuthController {
@@ -17,6 +18,7 @@ export class AuthController {
 
   // 소셜 회원가입/로그인
   @Get('signup/:social')
+  @Public()
   @UseGuards(DynamicAuthGuard)
   async SignUp(
     @Req() req: Request & IOAuthUser, //
@@ -28,7 +30,6 @@ export class AuthController {
 
   // 회원탈퇴
   @Delete('withdrawal')
-  @UseGuards(AuthGuard('access'))
   withdrawal(@Req() req: Request & IAuthUser): Promise<DeleteResult> {
     if (req.user) {
       return this.authService.withdrawal({ ...req.user });
@@ -37,6 +38,7 @@ export class AuthController {
 
   // 엑세스 토큰 발급
   @Get('getAccessToken')
+  @Public()
   @UseGuards(AuthGuard('refresh'))
   getAccessToken(@Req() req: Request & IAuthUser): string {
     if (req.user) {

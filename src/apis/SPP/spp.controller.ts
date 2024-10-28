@@ -7,9 +7,7 @@ import {
   ParseIntPipe,
   Put,
   Req,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { IAuthUser } from '../01.Auth/interfaces/auth.interface';
 import {
   AddExpenseDto,
@@ -29,13 +27,11 @@ export class SppController {
   constructor(private readonly sppService: SppService) {}
 
   @Get()
-  @UseGuards(AuthGuard('access'))
   fetchSpp(@Req() req: Request & IAuthUser): Promise<IRFetchSpp> {
     return this.sppService.fetchSpp({ ...req.user });
   }
 
   @Put('solar')
-  @UseGuards(AuthGuard('access'))
   addSolar(
     @Req() req: Request & IAuthUser,
     @Body() addSolarDto: AddSolarDto,
@@ -44,7 +40,6 @@ export class SppController {
   }
 
   @Delete('solar/:solarNumber')
-  @UseGuards(AuthGuard('access'))
   deleteSolar(
     @Req() req: Request & IAuthUser,
     @Param('solarNumber', ParseIntPipe) solarNumber: number,
@@ -53,7 +48,6 @@ export class SppController {
   }
 
   @Put('sRec')
-  @UseGuards(AuthGuard('access'))
   addSRec(
     @Req() req: Request & IAuthUser,
     @Body() addSRecDto: AddSRecDto,
@@ -62,7 +56,6 @@ export class SppController {
   }
 
   @Delete('sRec/:sRecNumber')
-  @UseGuards(AuthGuard('access'))
   deleteSRec(
     @Req() req: Request & IAuthUser,
     @Param('sRecNumber', ParseIntPipe) sRecNumber: number,
@@ -71,7 +64,6 @@ export class SppController {
   }
 
   @Put('expense')
-  @UseGuards(AuthGuard('access'))
   addExpense(
     @Req() req: Request & IAuthUser,
     @Body() addExpenseDto: AddExpenseDto,
@@ -80,7 +72,6 @@ export class SppController {
   }
 
   @Delete('expense/:eNumber')
-  @UseGuards(AuthGuard('access'))
   deleteExpense(
     @Req() req: Request & IAuthUser,
     @Param('eNumber', ParseIntPipe) eNumber: number,
@@ -89,7 +80,6 @@ export class SppController {
   }
 
   @Put('fixedExpense')
-  @UseGuards(AuthGuard('access'))
   addFixedExpense(
     @Req() req: Request & IAuthUser,
     @Body() addFixedExpenseDto: AddFixedExpenseDto,
@@ -97,7 +87,6 @@ export class SppController {
     return this.sppService.addFixedExpense({ ...req.user, addFixedExpenseDto });
   }
   @Delete('/fixedExpense/:feNumber')
-  @UseGuards(AuthGuard('access'))
   deleteFixedExpense(
     @Req() req: Request & IAuthUser,
     @Param('feNumber', ParseIntPipe) feNumber: number,

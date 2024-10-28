@@ -3,7 +3,7 @@ import { Strategy } from 'passport-jwt';
 import { IStrategyPayload } from '../interfaces/strategy.interface';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { envKeys } from '../validation.schema';
+import { envKeys } from '../config/validation.schema';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

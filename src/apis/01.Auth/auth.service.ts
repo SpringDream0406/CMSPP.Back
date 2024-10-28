@@ -10,7 +10,8 @@ import {
 } from './interfaces/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { envKeys } from 'src/common/validation.schema';
+import { envKeys } from 'src/common/config/validation.schema';
+import { raceWith } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -56,7 +57,7 @@ export class AuthService {
   async saveUser({ user }: IOAuthUser): Promise<Auth> {
     const auth = await this.authRepository.save({
       ...user,
-      user: { kWh: 1.0 },
+      user: { recWeight: 1.0 },
     });
     return auth;
   }
