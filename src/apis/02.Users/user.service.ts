@@ -7,7 +7,7 @@ import {
   IRfindOneByUserNumberForSpp,
   IUpdateMyInfoInput,
 } from './interfaces/user-service.interface';
-import { reqUser } from '../01.Auth/interfaces/auth.interface';
+import { userId } from '../01.Auth/interfaces/auth.interface';
 
 @Injectable()
 export class UserService {
@@ -17,30 +17,20 @@ export class UserService {
   ) {}
 
   // auth 회원탈퇴에서 사용 중
-  findOneByUserNumber({ userNumber }: reqUser): Promise<User> {
+  findOneByUserNumber({ userId }: userId): Promise<User> {
     return this.userReposityory.findOne({
-      where: { userNumber },
+      where: { id: userId },
       relations: ['auth'],
     });
   }
 
   // spp에서 사용 중
-  findOneByUserNumberForSpp({
-    userNumber,
-  }: reqUser): Promise<IRfindOneByUserNumberForSpp> {
+  findOneByUserNumberForSpp({ userId }: userId): Promise<IRfindOneByUserNumberForSpp> {
     return this.userReposityory.findOne({
-      where: { userNumber },
+      where: { id: userId },
       relations: ['solar', 'sRec', 'expense', 'fixedExpense'],
       // 주소, 비즈니스 넘버 같은 필요없는 데이터 빼기
-      select: [
-        'userNumber',
-        'kWh',
-        'recWeight',
-        'solar',
-        'sRec',
-        'fixedExpense',
-        'expense',
-      ],
+      select: ['id', 'kWh', 'recWeight', 'solar', 'sRec', 'fixedExpense', 'expense'],
       order: {
         solar: {
           date: 'ASC',
@@ -66,22 +56,21 @@ export class UserService {
   }
 
   // User(myInfo) 데이터 가져오기
-  findOneByUserNumberForMyInfo({ userNumber }: reqUser): Promise<User> {
+  findOneByUserNumberForMyInfo({ userId }: userId): Promise<User> {
     return this.userReposityory.findOne({
-      where: { userNumber },
+      where: { id: userId },
     });
   }
 
   // myInfo 업데이트
   async updateMyInfo({
-    userNumber,
+    userId,
     updateMyInfoDto,
   }: IUpdateMyInfoInput): Promise<UpdateResult> {
     const user = await this.findOneByBusinessNumber({
       businessNumber: updateMyInfoDto.businessNumber,
     });
-    if (user && user.userNumber !== userNumber)
-      throw new BadRequestException('사업자 번호 중복');
-    return this.userReposityory.update(userNumber, updateMyInfoDto);
+    if (user && user.id !== userId) throw new BadRequestException('사업자 번호 중복');
+    return this.userReposityory.update({ id: userId }, updateMyInfoDto);
   }
 }

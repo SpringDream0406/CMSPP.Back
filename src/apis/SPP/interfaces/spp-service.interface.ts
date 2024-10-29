@@ -1,4 +1,4 @@
-import { reqUser } from 'src/apis/01.Auth/interfaces/auth.interface';
+import { userId } from 'src/apis/01.Auth/interfaces/auth.interface';
 import {
   AddExpenseDto,
   AddFixedExpenseDto,
@@ -7,36 +7,25 @@ import {
 } from '../dto/spp-container.dto';
 import { IRfindOneByUserNumberForSpp } from 'src/apis/02.Users/interfaces/user-service.interface';
 
-export interface IExistsByUserNumberFromSolar extends reqUser {
+export interface IExistsByUserNumberFromSolar extends userId {
   date: string;
 }
 
 export interface IRFetchSpp extends Omit<IRfindOneByUserNumberForSpp, 'userNumber'> {}
 
-export interface IAddSolarInput extends reqUser {
+export interface IAddSolarInput extends userId {
   addSolarDto: AddSolarDto;
 }
-export interface IDeleteSolarInput extends reqUser {
-  solarNumber: number;
-}
-
-export interface IAddSRecInput extends reqUser {
+export interface IAddSRecInput extends userId {
   addSRecDto: AddSRecDto;
 }
-export interface IDeleteSRecInput extends reqUser {
-  sRecNumber: number;
-}
-
-export interface IAddExpenseInput extends reqUser {
+export interface IAddExpenseInput extends userId {
   addExpenseDto: AddExpenseDto;
 }
-export interface IDeleteExpenseInput extends reqUser {
-  eNumber: number;
-}
-
-export interface IAddFixedExpenseInput extends reqUser {
+export interface IAddFixedExpenseInput extends userId {
   addFixedExpenseDto: AddFixedExpenseDto;
 }
-export interface IDeleteFixedExpenseInput extends reqUser {
-  feNumber: number;
+
+export interface IDeleteSppInput extends userId {
+  delId: number;
 }

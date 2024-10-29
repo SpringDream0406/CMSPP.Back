@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Put, Req } from '@nestjs/common';
-import { IAuthUser } from '../01.Auth/interfaces/auth.interface';
+import { Body, Controller, Get, Put } from '@nestjs/common';
 import { UpdateMyInfoDto } from './dto/user-container.dto';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { UpdateResult } from 'typeorm';
+import { UserId } from 'src/common/decorator/userId.decorator';
 
 @Controller('user')
 export class UserController {
@@ -11,18 +11,18 @@ export class UserController {
 
   // myInfo 데이터 가져오기
   @Get()
-  fetchMyInfo(@Req() req: Request & IAuthUser): Promise<User> {
-    return this.userService.findOneByUserNumberForMyInfo({ ...req.user });
+  fetchMyInfo(@UserId() userId: number): Promise<User> {
+    return this.userService.findOneByUserNumberForMyInfo({ userId });
   }
 
   // myInfo 업데이트
   @Put()
   updateMyInfo(
-    @Req() req: Request & IAuthUser,
+    @UserId() userId: number,
     @Body() updateMyInfoDto: UpdateMyInfoDto,
   ): Promise<UpdateResult> {
     return this.userService.updateMyInfo({
-      ...req.user,
+      userId,
       updateMyInfoDto,
     });
   }

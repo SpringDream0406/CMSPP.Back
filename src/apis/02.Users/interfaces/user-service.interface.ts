@@ -1,4 +1,4 @@
-import { reqUser } from 'src/apis/01.Auth/interfaces/auth.interface';
+import { userId } from 'src/apis/01.Auth/interfaces/auth.interface';
 import { UpdateMyInfoDto } from '../dto/user-container.dto';
 import { User } from '../entities/user.entity';
 
@@ -13,6 +13,6 @@ export interface IFindOneByBusinessNumber {
 export interface IRfindOneByUserNumberForSpp
   extends Omit<User, 'auth' | 'businessNumber' | 'address' | 'createdAt'> {}
 
-export interface IUpdateMyInfoInput extends reqUser {
+export interface IUpdateMyInfoInput extends userId {
   updateMyInfoDto: UpdateMyInfoDto;
 }

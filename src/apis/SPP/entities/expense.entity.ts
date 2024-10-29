@@ -1,18 +1,10 @@
 import { IsDateString, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 import { User } from 'src/apis/02.Users/entities/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseTable } from 'src/common/entities/base.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
-export class Expense {
-  @PrimaryGeneratedColumn('increment')
-  eNumber: number;
-
+export class Expense extends BaseTable {
   @ManyToOne(() => User, (user) => user.expense)
   user: User;
 
@@ -31,7 +23,4 @@ export class Expense {
   @IsNumber()
   @Min(0)
   ePrice: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
 }

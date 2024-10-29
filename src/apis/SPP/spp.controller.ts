@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Put,
-  Req,
-} from '@nestjs/common';
-import { IAuthUser } from '../01.Auth/interfaces/auth.interface';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Put } from '@nestjs/common';
 import {
   AddExpenseDto,
   AddFixedExpenseDto,
@@ -21,76 +11,77 @@ import { SRec } from './entities/sRec.entity';
 import { IRFetchSpp } from './interfaces/spp-service.interface';
 import { Expense } from './entities/expense.entity';
 import { FixedExpense } from './entities/fixedExpense.entity';
+import { UserId } from 'src/common/decorator/userId.decorator';
 
 @Controller('spp')
 export class SppController {
   constructor(private readonly sppService: SppService) {}
 
   @Get()
-  fetchSpp(@Req() req: Request & IAuthUser): Promise<IRFetchSpp> {
-    return this.sppService.fetchSpp({ ...req.user });
+  fetchSpp(@UserId() userId: number): Promise<IRFetchSpp> {
+    return this.sppService.fetchSpp({ userId });
   }
 
   @Put('solar')
   addSolar(
-    @Req() req: Request & IAuthUser,
+    @UserId() userId: number, //
     @Body() addSolarDto: AddSolarDto,
   ): Promise<Solar[]> {
-    return this.sppService.addSolar({ ...req.user, addSolarDto });
+    return this.sppService.addSolar({ userId, addSolarDto });
   }
 
-  @Delete('solar/:solarNumber')
+  @Delete('solar/:delId')
   deleteSolar(
-    @Req() req: Request & IAuthUser,
-    @Param('solarNumber', ParseIntPipe) solarNumber: number,
+    @UserId() userId: number, //
+    @Param('delId', ParseIntPipe) delId: number,
   ): Promise<Solar[]> {
-    return this.sppService.deleteSolar({ ...req.user, solarNumber });
+    return this.sppService.deleteSolar({ userId, delId });
   }
 
   @Put('sRec')
   addSRec(
-    @Req() req: Request & IAuthUser,
+    @UserId() userId: number, //
     @Body() addSRecDto: AddSRecDto,
   ): Promise<SRec[]> {
-    return this.sppService.addSRec({ ...req.user, addSRecDto });
+    return this.sppService.addSRec({ userId, addSRecDto });
   }
 
-  @Delete('sRec/:sRecNumber')
+  @Delete('sRec/:delId')
   deleteSRec(
-    @Req() req: Request & IAuthUser,
-    @Param('sRecNumber', ParseIntPipe) sRecNumber: number,
+    @UserId() userId: number, //
+    @Param('delId', ParseIntPipe) delId: number,
   ): Promise<SRec[]> {
-    return this.sppService.deleteSRec({ ...req.user, sRecNumber });
+    return this.sppService.deleteSRec({ userId, delId });
   }
 
   @Put('expense')
   addExpense(
-    @Req() req: Request & IAuthUser,
+    @UserId() userId: number, //
     @Body() addExpenseDto: AddExpenseDto,
   ): Promise<Expense[]> {
-    return this.sppService.addExpense({ ...req.user, addExpenseDto });
+    return this.sppService.addExpense({ userId, addExpenseDto });
   }
 
-  @Delete('expense/:eNumber')
+  @Delete('expense/:delId')
   deleteExpense(
-    @Req() req: Request & IAuthUser,
-    @Param('eNumber', ParseIntPipe) eNumber: number,
+    @UserId() userId: number, //
+    @Param('delId', ParseIntPipe) delId: number,
   ): Promise<Expense[]> {
-    return this.sppService.deleteExpense({ ...req.user, eNumber });
+    return this.sppService.deleteExpense({ userId, delId });
   }
 
   @Put('fixedExpense')
   addFixedExpense(
-    @Req() req: Request & IAuthUser,
+    @UserId() userId: number, //
     @Body() addFixedExpenseDto: AddFixedExpenseDto,
   ): Promise<FixedExpense[]> {
-    return this.sppService.addFixedExpense({ ...req.user, addFixedExpenseDto });
+    return this.sppService.addFixedExpense({ userId, addFixedExpenseDto });
   }
-  @Delete('/fixedExpense/:feNumber')
+  @Delete('/fixedExpense/:delId')
   deleteFixedExpense(
-    @Req() req: Request & IAuthUser,
-    @Param('feNumber', ParseIntPipe) feNumber: number,
+    @UserId() userId: number, //
+    @Param('delId', ParseIntPipe) delId: number,
   ): Promise<FixedExpense[]> {
-    return this.sppService.deleteFixedExpense({ ...req.user, feNumber });
+    return this.sppService.deleteFixedExpense({ userId, delId });
   }
 }

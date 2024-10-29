@@ -5,7 +5,7 @@ import { envKeys } from './validation.schema';
 export const databaseConfig = {
   useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
     return {
-      type: configService.get<string>(envKeys.dbType) as 'mysql',
+      type: configService.get<string>(envKeys.dbType) as 'postgres',
       host: configService.get<string>(envKeys.dbHost),
       port: configService.get<number>(envKeys.dbPort),
       username: configService.get<string>(envKeys.dbUsername),

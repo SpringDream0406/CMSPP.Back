@@ -3,19 +3,16 @@ import { Expense } from 'src/apis/SPP/entities/expense.entity';
 import { FixedExpense } from 'src/apis/SPP/entities/fixedExpense.entity';
 import { SRec } from 'src/apis/SPP/entities/sRec.entity';
 import { Solar } from 'src/apis/SPP/entities/solar.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseTable } from 'src/common/entities/base.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
+
+export enum Role {
+  admin,
+  user,
+}
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn('increment')
-  userNumber: number;
-
+export class User extends BaseTable {
   @OneToMany(() => Solar, (solar) => solar.user)
   solar: Solar[];
 
@@ -48,6 +45,8 @@ export class User {
   @IsNumber()
   recWeight: number;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column({
+    enum: Role,
+  })
+  role: Role;
 }

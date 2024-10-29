@@ -45,7 +45,7 @@ export class CustomAuthGuard implements CanActivate {
       const playload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>(secretKey),
       });
-      req.user = { userNumber: playload.sub };
+      req.user = { userId: playload.sub };
       return true;
     } catch (error) {
       //   if (error.name === 'TokenExpiredError')

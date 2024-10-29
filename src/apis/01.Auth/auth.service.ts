@@ -6,11 +6,12 @@ import {
   IAuthServiceSetRefreshToken,
   IAuthServiceSignUp,
   IOAuthUser,
-  reqUser,
+  userId,
 } from './interfaces/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { envKeys } from 'src/common/config/validation.schema';
+import { Role } from '../02.Users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -39,7 +40,7 @@ export class AuthService {
   //     const userData = await queyRunner.manager.save(User, { recWeight: 1.0 });
   //     const auth = await queyRunner.manager.save(Auth, {
   //       ...user,
-  //       user: { userNumber: userData.userNumber },
+  //       user: { id: userData.id },
   //     });
   //     await queyRunner.commitTransaction();
   //     return auth;
@@ -56,7 +57,7 @@ export class AuthService {
   async saveUser({ user }: IOAuthUser): Promise<Auth> {
     const auth = await this.authRepository.save({
       ...user,
-      user: { recWeight: 1.0 },
+      user: { role: Role.user },
     });
     return auth;
   }
@@ -65,21 +66,21 @@ export class AuthService {
   async signUp({ user, res }: IAuthServiceSignUp): Promise<void> {
     let auth = await this.findOneByUserFromAuth({ user });
     if (!auth) auth = await this.saveUser({ user });
-    const userNumber = auth.user.userNumber;
-    this.setRefreshToken({ userNumber, res });
+    const userId = auth.user.id;
+    this.setRefreshToken({ userId, res });
   }
 
   // 회원탈퇴
-  async withdrawal({ userNumber }: reqUser): Promise<DeleteResult> {
-    const result = await this.authRepository.softDelete({ user: { userNumber } });
+  async withdrawal({ userId }: userId): Promise<DeleteResult> {
+    const result = await this.authRepository.softDelete({ user: { id: userId } });
     if (result.affected === 0) throw new BadRequestException('탈퇴 실패 DB');
     return result;
   }
 
   // 엑세스토큰 발급
-  getAccessToken({ userNumber }: reqUser): string {
+  getAccessToken({ userId }: userId): string {
     return this.jwtService.sign(
-      { sub: userNumber },
+      { sub: userId },
       {
         secret: this.configService.get<string>(envKeys.accessTokenSecret),
         expiresIn: '15m',
@@ -88,9 +89,9 @@ export class AuthService {
   }
 
   // 리프래시토큰 발급
-  setRefreshToken({ userNumber, res }: IAuthServiceSetRefreshToken): void {
+  setRefreshToken({ userId, res }: IAuthServiceSetRefreshToken): void {
     const refreshToken = this.jwtService.sign(
-      { sub: userNumber },
+      { sub: userId },
       {
         secret: this.configService.get<string>(envKeys.refreshTokenSecret),
         expiresIn: '24h',

@@ -1,18 +1,10 @@
 import { IsDateString, IsNotEmpty, IsNumber, Min } from 'class-validator';
 import { User } from 'src/apis/02.Users/entities/user.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseTable } from 'src/common/entities/base.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
-export class Solar {
-  @PrimaryGeneratedColumn('increment')
-  solarNumber: number;
-
+export class Solar extends BaseTable {
   @ManyToOne(() => User, (user) => user.solar)
   user: User;
 
@@ -38,7 +30,4 @@ export class Solar {
   @IsNumber()
   @Min(0)
   supplyPrice: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
 }

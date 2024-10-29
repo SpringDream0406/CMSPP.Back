@@ -1,6 +1,7 @@
 import { IsDateString, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 import { User } from 'src/apis/02.Users/entities/user.entity';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -9,9 +10,9 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class FixedExpense {
+export class FixedExpense extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
-  feNumber: number;
+  id: number;
 
   @ManyToOne(() => User, (user) => user.fixedExpense)
   user: User;
