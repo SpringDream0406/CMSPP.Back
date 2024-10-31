@@ -29,7 +29,7 @@ export class UserService {
     return this.userReposityory.findOne({
       where: { id: userId },
       relations: ['solar', 'sRec', 'expense', 'fixedExpense'],
-      // 주소, 비즈니스 넘버 같은 필요없는 데이터 빼기
+      // 주소 같은 필요없는 데이터 빼기
       select: ['id', 'kWh', 'recWeight', 'solar', 'sRec', 'fixedExpense', 'expense'],
       order: {
         solar: {

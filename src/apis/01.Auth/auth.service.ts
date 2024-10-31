@@ -23,7 +23,7 @@ export class AuthService {
     private readonly dataSource: DataSource, // 쿼리러너
   ) {}
 
-  // 회원 유무조회, 데이터 써야되므로 exists 말고 findOne
+  /** 회원 유무조회__ 데이터 써야되므로 exists 말고 findOne */
   findOneByUserFromAuth({ user }: IOAuthUser): Promise<Auth> {
     return this.authRepository.findOne({
       where: { ...user },
@@ -53,16 +53,16 @@ export class AuthService {
   //   }
   // }
 
-  // 회원 추가
+  /** 회원 추가__ User에 role 넣어주면서 Auth와 관계설정 */
   async saveUser({ user }: IOAuthUser): Promise<Auth> {
     const auth = await this.authRepository.save({
       ...user,
-      user: { role: Role.user },
+      user: { role: Role.USER },
     });
     return auth;
   }
 
-  // 로그인/회원가입
+  /** 로그인/회원가입__ Auth에서 검색해보고 없으면 회원가입 후 userId 쿠키에 넣기 */
   async signUp({ user, res }: IAuthServiceSignUp): Promise<void> {
     let auth = await this.findOneByUserFromAuth({ user });
     if (!auth) auth = await this.saveUser({ user });
@@ -70,14 +70,14 @@ export class AuthService {
     this.setRefreshToken({ userId, res });
   }
 
-  // 회원탈퇴
+  /** 회원탈퇴__ softDelete, 삭제 결과 없으면 에러 */
   async withdrawal({ userId }: userId): Promise<DeleteResult> {
     const result = await this.authRepository.softDelete({ user: { id: userId } });
     if (result.affected === 0) throw new BadRequestException('탈퇴 실패 DB');
     return result;
   }
 
-  // 엑세스토큰 발급
+  /** 엑세스토큰 발급__  */
   getAccessToken({ userId }: userId): string {
     return this.jwtService.sign(
       { sub: userId },
@@ -88,7 +88,7 @@ export class AuthService {
     );
   }
 
-  // 리프래시토큰 발급
+  /** 리프래시토큰 발급__ */
   setRefreshToken({ userId, res }: IAuthServiceSetRefreshToken): void {
     const refreshToken = this.jwtService.sign(
       { sub: userId },
