@@ -25,14 +25,18 @@ export class CommonService {
 
   /** 쿠키에서 refreshToken 가져오기 문제 있으면 false 반환 */
   parseRefreshToken(req: Request): string | boolean {
-    const [auth, refreshToken] = req.headers.cookie?.split('=');
+    const cookie = req.headers.cookie;
+    if (!cookie) return false;
+    const [auth, refreshToken] = cookie.split('=');
     if (!auth || auth != 'refreshToken' || !refreshToken) return false;
     return refreshToken;
   }
 
   /** Bearer에서 token 가져오는데, 해당 서비스는 accessToken만 담기때문에 accessToken 가져오기, 문제있으면 false 반환 */
   parseAccessToken(req: Request): string | boolean {
-    const [auth, accessToken] = req.headers.authorization?.split(' ');
+    const authorization = req.headers.authorization;
+    if (!authorization) return false;
+    const [auth, accessToken] = authorization.split(' ');
     if (!auth || auth != 'Bearer' || !accessToken) return false;
     return accessToken;
   }
