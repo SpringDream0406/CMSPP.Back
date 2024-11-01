@@ -65,7 +65,9 @@ export class AuthService {
   /** 로그인/회원가입__ Auth에서 검색해보고 없으면 회원가입 후 userId 쿠키에 넣기 */
   async signUp({ user, res }: IAuthServiceSignUp): Promise<void> {
     let auth = await this.findOneByUserFromAuth({ user });
-    if (!auth) auth = await this.saveUser({ user });
+    if (!auth) {
+      auth = await this.saveUser({ user });
+    }
     const userId = auth.user.id;
     this.setRefreshToken({ userId, res });
   }
@@ -73,7 +75,9 @@ export class AuthService {
   /** 회원탈퇴__ softDelete, 삭제 결과 없으면 에러 */
   async withdrawal({ userId }: userId): Promise<DeleteResult> {
     const result = await this.authRepository.softDelete({ user: { id: userId } });
-    if (result.affected === 0) throw new BadRequestException('탈퇴 실패 DB');
+    if (result.affected === 0) {
+      throw new BadRequestException('탈퇴 실패 DB');
+    }
     return result;
   }
 

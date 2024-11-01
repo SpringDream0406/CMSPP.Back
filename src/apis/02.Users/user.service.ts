@@ -70,7 +70,9 @@ export class UserService {
     const user = await this.findOneByBusinessNumber({
       businessNumber: updateMyInfoDto.businessNumber,
     });
-    if (user && user.id !== userId) throw new BadRequestException('사업자 번호 중복');
+    if (user && user.id !== userId) {
+      throw new BadRequestException('사업자 번호 중복');
+    }
     return this.userReposityory.update({ id: userId }, updateMyInfoDto);
   }
 }

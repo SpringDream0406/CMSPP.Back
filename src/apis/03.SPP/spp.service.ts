@@ -104,7 +104,9 @@ export class SppService {
       userId,
       date,
     });
-    if (result) throw new BadRequestException('중복');
+    if (result) {
+      throw new BadRequestException('중복');
+    }
     await this.saveSolar({ userId, addSolarDto });
     const solar = await this.findByUserNumberFromSolar({ userId });
     return solar;
@@ -146,7 +148,9 @@ export class SppService {
   }: IAddFixedExpenseInput): Promise<FixedExpense[]> {
     const startDate = addFixedExpenseDto.startDate;
     const endDate = addFixedExpenseDto.endDate;
-    if (startDate > endDate) throw new InternalServerErrorException('년도');
+    if (startDate > endDate) {
+      throw new InternalServerErrorException('년도');
+    }
     await this.saveFixedExpense({ userId, addFixedExpenseDto });
     const fixedExpense = await this.findByUserNumberFromFixedExpense({ userId });
     return fixedExpense;

@@ -26,24 +26,34 @@ export class CommonService {
   /** 쿠키에서 refreshToken 가져오기 문제 있으면 false 반환 */
   parseRefreshToken(req: Request): string | boolean {
     const cookie = req.headers.cookie;
-    if (!cookie) return false;
+    if (!cookie) {
+      return false;
+    }
     const [auth, refreshToken] = cookie.split('=');
-    if (!auth || auth != 'refreshToken' || !refreshToken) return false;
+    if (!auth || auth != 'refreshToken' || !refreshToken) {
+      return false;
+    }
     return refreshToken;
   }
 
   /** Bearer에서 token 가져오는데, 해당 서비스는 accessToken만 담기때문에 accessToken 가져오기, 문제있으면 false 반환 */
   parseAccessToken(req: Request): string | boolean {
     const authorization = req.headers.authorization;
-    if (!authorization) return false;
+    if (!authorization) {
+      return false;
+    }
     const [auth, accessToken] = authorization.split(' ');
-    if (!auth || auth != 'Bearer' || !accessToken) return false;
+    if (!auth || auth != 'Bearer' || !accessToken) {
+      return false;
+    }
     return accessToken;
   }
 
   /** refreshToken인지 boolean으로 넣음에 따라 refresh | access Token 반환해줌. 문제 있는 경우 false 반환 */
   getToken({ isRefresh, req }: IGetToken): string | boolean {
-    if (isRefresh) return this.parseRefreshToken(req);
+    if (isRefresh) {
+      return this.parseRefreshToken(req);
+    }
     return this.parseAccessToken(req);
   }
 
@@ -58,12 +68,15 @@ export class CommonService {
       req.user = { userId: payload.sub };
       return true;
     } catch (error) {
-      //   if (error.name === 'TokenExpiredError')
-      //     throw new UnauthorizedException('토큰이 만료되었습니다');
+      // if (error.name === 'TokenExpiredError') {
+      //   throw new UnauthorizedException('토큰이 만료되었습니다');
+      // }
 
-      // 이게 토큰 다를경우
-      //   if (error.name === 'JsonWebTokenError') throw new UnauthorizedException();
-      // 토큰 만료 아니면 잘못된 token 이기때문에 벤넣는거 추가할 생각이라면 여기 넣어야 할듯.
+      // // 이게 토큰 틀릴경우
+      // if (error.name === 'JsonWebTokenError') {
+      //   throw new UnauthorizedException();
+      // }
+      // // 토큰 만료 아니면 잘못된 token 이기때문에 벤넣는거 추가할 생각이라면 여기 넣어야 할듯.
 
       throw new UnauthorizedException();
     }
