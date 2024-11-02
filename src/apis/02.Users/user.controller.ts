@@ -12,7 +12,7 @@ export class UserController {
   // myInfo 데이터 가져오기
   @Get()
   fetchMyInfo(@UserId() userId: number): Promise<User> {
-    return this.userService.findOneByUserNumberForMyInfo({ userId });
+    return this.userService.findOneByUserIdForMyInfo({ userId });
   }
 
   // myInfo 업데이트
