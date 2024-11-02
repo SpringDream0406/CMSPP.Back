@@ -14,11 +14,11 @@ export interface IAuthServiceSignUp {
 }
 
 // 일반 access
-export interface IAuthUser {
-  user?: {
-    userNumber: number;
-  };
-}
+// export interface IAuthUser {
+//   user?: {
+//     userNumber: number;
+//   };
+// }
 
 export interface userId {
   userId: number;

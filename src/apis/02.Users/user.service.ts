@@ -4,7 +4,7 @@ import { User } from './entities/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import {
   IFindOneByBusinessNumber,
-  IRfindOneByUserNumberForSpp,
+  IRfindOneByUserIdForSpp,
   IUpdateMyInfoInput,
 } from './interfaces/user-service.interface';
 import { userId } from '../01.Auth/interfaces/auth.interface';
@@ -17,7 +17,7 @@ export class UserService {
   ) {}
 
   // auth 회원탈퇴에서 사용 중
-  findOneByUserNumber({ userId }: userId): Promise<User> {
+  findOneByUserId({ userId }: userId): Promise<User> {
     return this.userReposityory.findOne({
       where: { id: userId },
       relations: ['auth'],
@@ -25,7 +25,7 @@ export class UserService {
   }
 
   // spp에서 사용 중
-  findOneByUserNumberForSpp({ userId }: userId): Promise<IRfindOneByUserNumberForSpp> {
+  findOneByUserIdForSpp({ userId }: userId): Promise<IRfindOneByUserIdForSpp> {
     return this.userReposityory.findOne({
       where: { id: userId },
       relations: ['solar', 'sRec', 'expense', 'fixedExpense'],
@@ -56,7 +56,7 @@ export class UserService {
   }
 
   // User(myInfo) 데이터 가져오기
-  findOneByUserNumberForMyInfo({ userId }: userId): Promise<User> {
+  findOneByUserIdForMyInfo({ userId }: userId): Promise<User> {
     return this.userReposityory.findOne({
       where: { id: userId },
     });

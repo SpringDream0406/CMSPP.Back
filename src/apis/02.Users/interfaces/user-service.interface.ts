@@ -10,7 +10,7 @@ export interface IFindOneByBusinessNumber {
   businessNumber: string;
 }
 
-export interface IRfindOneByUserNumberForSpp
+export interface IRfindOneByUserIdForSpp
   extends Omit<User, 'auth' | 'businessNumber' | 'address' | 'createdAt'> {}
 
 export interface IUpdateMyInfoInput extends userId {

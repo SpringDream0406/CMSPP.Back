@@ -9,7 +9,7 @@ import {
   IAddSRecInput,
   IAddSolarInput,
   IDeleteSppInput,
-  IExistsByUserNumberFromSolar,
+  IExistsByUserIdFromSolar,
   IRFetchSpp,
 } from './interfaces/spp-service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -35,38 +35,35 @@ export class SppService {
     private readonly fixedExpenseRepository: Repository<FixedExpense>,
   ) {}
 
-  findByUserNumberFromSolar({ userId }: userId): Promise<Solar[]> {
+  findByUserIdFromSolar({ userId }: userId): Promise<Solar[]> {
     return this.solarRepository.find({
       where: { user: { id: userId } },
       order: { date: 'ASC' },
     });
   }
 
-  findByUserNumberFromSRec({ userId }: userId): Promise<SRec[]> {
+  findByUserIdFromSRec({ userId }: userId): Promise<SRec[]> {
     return this.sRecRepository.find({
       where: { user: { id: userId } },
       order: { date: 'ASC' },
     });
   }
 
-  findByUserNumberFromExpense({ userId }: userId): Promise<Expense[]> {
+  findByUserIdFromExpense({ userId }: userId): Promise<Expense[]> {
     return this.expenseRepository.find({
       where: { user: { id: userId } },
       order: { date: 'ASC' },
     });
   }
 
-  findByUserNumberFromFixedExpense({ userId }: userId): Promise<FixedExpense[]> {
+  findByUserIdFromFixedExpense({ userId }: userId): Promise<FixedExpense[]> {
     return this.fixedExpenseRepository.find({
       where: { user: { id: userId } },
       order: { startDate: 'ASC' },
     });
   }
 
-  existsByUserNumberFromSolar({
-    userId,
-    date,
-  }: IExistsByUserNumberFromSolar): Promise<boolean> {
+  existsByUserIdFromSolar({ userId, date }: IExistsByUserIdFromSolar): Promise<boolean> {
     return this.solarRepository.exists({
       where: { user: { id: userId }, date },
     });
@@ -92,7 +89,7 @@ export class SppService {
   }
 
   async fetchSpp({ userId }: userId): Promise<IRFetchSpp> {
-    const user = await this.userService.findOneByUserNumberForSpp({ userId });
+    const user = await this.userService.findOneByUserIdForSpp({ userId });
     delete user.id; // 유저번호 삭제해서 보내기
     return user;
   }
@@ -100,7 +97,7 @@ export class SppService {
   async addSolar({ userId, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
     const date = addSolarDto.date;
     // 중복 체크
-    const result = await this.existsByUserNumberFromSolar({
+    const result = await this.existsByUserIdFromSolar({
       userId,
       date,
     });
@@ -108,37 +105,37 @@ export class SppService {
       throw new BadRequestException('중복');
     }
     await this.saveSolar({ userId, addSolarDto });
-    const solar = await this.findByUserNumberFromSolar({ userId });
+    const solar = await this.findByUserIdFromSolar({ userId });
     return solar;
   }
 
   async deleteSolar({ userId, delId }: IDeleteSppInput): Promise<Solar[]> {
     await this.solarRepository.delete({ user: { id: userId }, id: delId });
-    const solar = await this.findByUserNumberFromSolar({ userId });
+    const solar = await this.findByUserIdFromSolar({ userId });
     return solar;
   }
 
   async addSRec({ userId, addSRecDto }: IAddSRecInput): Promise<SRec[]> {
     await this.saveSRec({ userId, addSRecDto });
-    const sRec = await this.findByUserNumberFromSRec({ userId });
+    const sRec = await this.findByUserIdFromSRec({ userId });
     return sRec;
   }
 
   async deleteSRec({ userId, delId }: IDeleteSppInput): Promise<SRec[]> {
     await this.sRecRepository.delete({ user: { id: userId }, id: delId });
-    const sRec = await this.findByUserNumberFromSRec({ userId });
+    const sRec = await this.findByUserIdFromSRec({ userId });
     return sRec;
   }
 
   async addExpense({ userId, addExpenseDto }: IAddExpenseInput): Promise<Expense[]> {
     await this.saveExpense({ userId, addExpenseDto });
-    const expense = await this.findByUserNumberFromExpense({ userId });
+    const expense = await this.findByUserIdFromExpense({ userId });
     return expense;
   }
 
   async deleteExpense({ userId, delId }: IDeleteSppInput): Promise<Expense[]> {
     await this.expenseRepository.delete({ user: { id: userId }, id: delId });
-    const expense = await this.findByUserNumberFromExpense({ userId });
+    const expense = await this.findByUserIdFromExpense({ userId });
     return expense;
   }
 
@@ -152,7 +149,7 @@ export class SppService {
       throw new InternalServerErrorException('년도');
     }
     await this.saveFixedExpense({ userId, addFixedExpenseDto });
-    const fixedExpense = await this.findByUserNumberFromFixedExpense({ userId });
+    const fixedExpense = await this.findByUserIdFromFixedExpense({ userId });
     return fixedExpense;
   }
 
@@ -161,7 +158,7 @@ export class SppService {
       user: { id: userId },
       id: delId,
     });
-    const fixedExpense = await this.findByUserNumberFromFixedExpense({ userId });
+    const fixedExpense = await this.findByUserIdFromFixedExpense({ userId });
     return fixedExpense;
   }
 }
