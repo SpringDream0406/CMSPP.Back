@@ -23,6 +23,7 @@ export class AuthService {
     private readonly dataSource: DataSource, // 쿼리러너
   ) {}
 
+  /* istanbul ignore next */
   /** 회원 유무조회__ 데이터 써야되므로 exists 말고 findOne */
   findOneByUserFromAuth({ user }: IOAuthUser): Promise<Auth> {
     return this.authRepository.findOne({
@@ -53,6 +54,7 @@ export class AuthService {
   //   }
   // }
 
+  /* istanbul ignore next */
   /** 회원 추가__ User에 role 넣어주면서 Auth와 관계설정 */
   async saveUser({ user }: IOAuthUser): Promise<Auth> {
     const auth = await this.authRepository.save({

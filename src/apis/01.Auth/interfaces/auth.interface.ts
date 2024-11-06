@@ -1,7 +1,7 @@
 import { Response } from 'express';
 
 // 회원가입 & 로그인
-interface IOAuthUserData {
+export interface IOAuthUserData {
   id: string;
   provider: string;
 }
