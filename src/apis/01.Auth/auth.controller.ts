@@ -20,7 +20,7 @@ export class AuthController {
   @Get('signup/:social')
   @Public()
   @UseGuards(DynamicAuthGuard)
-  async SignUp(
+  async signUp(
     @Req() req: Request & IOAuthUser, //
     @Res() res: Response,
   ): Promise<void> {
