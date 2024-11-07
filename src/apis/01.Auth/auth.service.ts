@@ -11,7 +11,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { envKeys } from 'src/common/config/validation.schema';
-import { Role } from '../02.Users/entities/user.entity';
+import { Role } from '../02.User/entities/user.entity';
 
 @Injectable()
 export class AuthService {

@@ -16,20 +16,13 @@ export class UserService {
     private readonly userReposityory: Repository<User>,
   ) {}
 
-  // auth 회원탈퇴에서 사용 중
-  findOneByUserId({ userId }: userId): Promise<User> {
-    return this.userReposityory.findOne({
-      where: { id: userId },
-      relations: ['auth'],
-    });
-  }
-
-  // spp에서 사용 중
+  /* istanbul ignore next */
+  /** spp 조회하기__ user로 묶인거 한번에 조회, spp에서 사용 중 */
   findOneByUserIdForSpp({ userId }: userId): Promise<IRfindOneByUserIdForSpp> {
     return this.userReposityory.findOne({
       where: { id: userId },
       relations: ['solar', 'sRec', 'expense', 'fixedExpense'],
-      // 주소 같은 필요없는 데이터 빼기
+      // 주소 같은 필요없는 데이터 빼고 조회
       select: ['id', 'kWh', 'recWeight', 'solar', 'sRec', 'fixedExpense', 'expense'],
       order: {
         solar: {
@@ -48,21 +41,23 @@ export class UserService {
     });
   }
 
-  // businessNumber 중복 체크, 값이 있어도 본인껀지 확인 위해 데이터 필요하므로 exists 사용 x
+  /* istanbul ignore next */
+  /** businessNumber 중복 체크__ 값이 있어도 본인껀지 확인 위해 데이터 필요하므로 exists 사용 x */
   findOneByBusinessNumber({ businessNumber }: IFindOneByBusinessNumber): Promise<User> {
     return this.userReposityory.findOne({
       where: { businessNumber },
     });
   }
 
-  // User(myInfo) 데이터 가져오기
+  /* istanbul ignore next */
+  /** myInfo(User) 데이터 가져오기__ */
   findOneByUserIdForMyInfo({ userId }: userId): Promise<User> {
     return this.userReposityory.findOne({
       where: { id: userId },
     });
   }
 
-  // myInfo 업데이트
+  /** myInfo 업데이트__ 들어오는 데이터들이 전부 필요하기떄문에 dto가 optional이 아님 */
   async updateMyInfo({
     userId,
     updateMyInfoDto,

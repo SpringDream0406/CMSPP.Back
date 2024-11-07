@@ -1,19 +1,10 @@
 import { IsDateString, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
-import { User } from 'src/apis/02.Users/entities/user.entity';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { User } from 'src/apis/02.User/entities/user.entity';
+import { BaseTable } from 'src/common/entities/base.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
-export class FixedExpense extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-
+export class FixedExpense extends BaseTable {
   @ManyToOne(() => User, (user) => user.fixedExpense)
   user: User;
 
@@ -37,7 +28,4 @@ export class FixedExpense extends BaseEntity {
   @IsNumber()
   @Min(0)
   fePrice: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
 }

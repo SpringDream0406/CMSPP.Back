@@ -1,5 +1,5 @@
 import { IsDateString, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
-import { User } from 'src/apis/02.Users/entities/user.entity';
+import { User } from 'src/apis/02.User/entities/user.entity';
 import { BaseTable } from 'src/common/entities/base.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 

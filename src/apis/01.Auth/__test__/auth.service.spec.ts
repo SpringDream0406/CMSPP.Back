@@ -1,4 +1,4 @@
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { AuthService } from '../auth.service';
 import { TestBed } from '@automock/jest';
 import { Auth } from '../entities/auth.entity';
@@ -8,6 +8,11 @@ import { Response } from 'express';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import {
+  mockDeleteResultAffected_0,
+  mockDeleteResultAffected_1,
+  mockUserId,
+} from 'src/common/__test__/mockDatas';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -15,7 +20,7 @@ describe('AuthService', () => {
   let jwtService: jest.Mocked<JwtService>;
   let configService: jest.Mocked<ConfigService>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     const { unit, unitRef } = TestBed.create(AuthService).compile();
 
     authService = unit;
@@ -40,16 +45,14 @@ describe('AuthService', () => {
       user: {
         id: 1,
       },
-    };
+    } as Auth;
 
     beforeEach(() => {
       jest.spyOn(authService, 'setRefreshToken').mockImplementation(() => {});
     });
 
     it('로그인: auth(DB)에 데이터가 있을 때, 데이터 그대로 씀', async () => {
-      jest
-        .spyOn(authService, 'findOneByUserFromAuth')
-        .mockResolvedValue(mockAuth as Auth);
+      jest.spyOn(authService, 'findOneByUserFromAuth').mockResolvedValue(mockAuth);
 
       await authService.signUp({ user: mockUser, res: mockRes });
 
@@ -62,7 +65,7 @@ describe('AuthService', () => {
 
     it('회원가입: auth(DB)에 데이터가 없을 때, 회원가입 후 반환된 데이터 씀', async () => {
       jest.spyOn(authService, 'findOneByUserFromAuth').mockResolvedValue(null);
-      jest.spyOn(authService, 'saveUser').mockResolvedValue(mockAuth as Auth);
+      jest.spyOn(authService, 'saveUser').mockResolvedValue(mockAuth);
 
       await authService.signUp({ user: mockUser, res: mockRes });
 
@@ -72,47 +75,45 @@ describe('AuthService', () => {
   });
 
   describe('withdrawal', () => {
-    const userId = 1;
-
     it('회원탈퇴: 성공', async () => {
-      const mockDeleteResult: DeleteResult = { raw: [], affected: 1 };
-
       jest
         .spyOn(authRepository, 'softDelete')
-        .mockResolvedValue(mockDeleteResult as UpdateResult);
+        .mockResolvedValue(mockDeleteResultAffected_1 as UpdateResult);
 
-      const result = await authService.withdrawal({ userId });
+      const result = await authService.withdrawal({ userId: mockUserId });
 
-      expect(result).toBe(mockDeleteResult);
-      expect(authRepository.softDelete).toHaveBeenCalledWith({ user: { id: userId } });
+      expect(result).toBe(mockDeleteResultAffected_1);
+      expect(authRepository.softDelete).toHaveBeenCalledWith({
+        user: { id: mockUserId },
+      });
     });
 
-    it('회원탈퇴: 결과 없는경우 404 에러', async () => {
-      const mockDeleteResult: DeleteResult = { raw: [], affected: 0 };
-
+    it('회원탈퇴: 결과 없는경우 404 에러', () => {
       jest
         .spyOn(authRepository, 'softDelete')
-        .mockResolvedValue(mockDeleteResult as UpdateResult);
+        .mockResolvedValue(mockDeleteResultAffected_0 as UpdateResult);
 
-      await expect(authService.withdrawal({ userId })).rejects.toThrow(
+      expect(authService.withdrawal({ userId: mockUserId })).rejects.toThrow(
         BadRequestException,
       );
+      expect(authRepository.softDelete).toHaveBeenCalledWith({
+        user: { id: mockUserId },
+      });
     });
   });
 
   describe('getAccessToken', () => {
     it('엑세스토큰 발급', () => {
-      const userId = 1;
       const mockToken = 'mockedToken';
 
       jest.spyOn(configService, 'get').mockReturnValue('mockSecret');
       jest.spyOn(jwtService, 'sign').mockReturnValue(mockToken);
 
-      const result = authService.getAccessToken({ userId });
+      const result = authService.getAccessToken({ userId: mockUserId });
 
       expect(result).toBe(mockToken);
       expect(jwtService.sign).toHaveBeenCalledWith(
-        { sub: userId },
+        { sub: mockUserId },
         { secret: 'mockSecret', expiresIn: '15m' },
       );
     });

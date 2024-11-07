@@ -16,9 +16,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
+    "test:watch:cov": "jest --watch --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:auth:watch": "jest --watch --testPathPattern=src/apis/01.Auth --coverage --collectCoverageFrom=src/apis/01.Auth/**"
+    "test:auth:watch": "jest --watch --testPathPattern=src/apis/01.Auth --coverage --collectCoverageFrom=src/apis/01.Auth/**",
+    "test:user:watch": "jest --watch --testPathPattern=src/apis/02.User --coverage --collectCoverageFrom=src/apis/02.User/**",
+    "test:spp:watch": "jest --watch --testPathPattern=src/apis/03.SPP --coverage --collectCoverageFrom=src/apis/03.SPP/**"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
@@ -96,9 +99,12 @@
       "src/(.*)": "<rootDir>/src/$1"
     },
     "coveragePathIgnorePatterns": [
+      "main.ts",
       "module.ts",
+      "entity.ts",
       "dto.ts",
-      "entity.ts"
+      "mockDatas.ts",
+      "eslintrc.js"
     ]
   }
 }

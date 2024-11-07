@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   IAddExpenseInput,
   IAddFixedExpenseInput,
@@ -15,7 +11,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Solar } from './entities/solar.entity';
 import { Repository } from 'typeorm';
-import { UserService } from '../02.Users/user.service';
+import { UserService } from '../02.User/user.service';
 import { SRec } from './entities/sRec.entity';
 import { Expense } from './entities/expense.entity';
 import { FixedExpense } from './entities/fixedExpense.entity';
@@ -35,6 +31,8 @@ export class SppService {
     private readonly fixedExpenseRepository: Repository<FixedExpense>,
   ) {}
 
+  /* istanbul ignore next */
+  /** 데이터 조회__ ASC */
   findByUserIdFromSolar({ userId }: userId): Promise<Solar[]> {
     return this.solarRepository.find({
       where: { user: { id: userId } },
@@ -42,6 +40,8 @@ export class SppService {
     });
   }
 
+  /* istanbul ignore next */
+  /** 데이터 조회__ ASC */
   findByUserIdFromSRec({ userId }: userId): Promise<SRec[]> {
     return this.sRecRepository.find({
       where: { user: { id: userId } },
@@ -49,6 +49,8 @@ export class SppService {
     });
   }
 
+  /* istanbul ignore next */
+  /** 데이터 조회__ ASC */
   findByUserIdFromExpense({ userId }: userId): Promise<Expense[]> {
     return this.expenseRepository.find({
       where: { user: { id: userId } },
@@ -56,6 +58,8 @@ export class SppService {
     });
   }
 
+  /* istanbul ignore next */
+  /** 데이터 조회__ ASC */
   findByUserIdFromFixedExpense({ userId }: userId): Promise<FixedExpense[]> {
     return this.fixedExpenseRepository.find({
       where: { user: { id: userId } },
@@ -63,24 +67,30 @@ export class SppService {
     });
   }
 
+  /* istanbul ignore next */
+  /** 중복 조회__ solar의 같은 월 데이터 있는지 중복 조회*/
   existsByUserIdFromSolar({ userId, date }: IExistsByUserIdFromSolar): Promise<boolean> {
     return this.solarRepository.exists({
       where: { user: { id: userId }, date },
     });
   }
 
+  /* istanbul ignore next */
   saveSolar({ userId, addSolarDto }: IAddSolarInput): Promise<Solar> {
     return this.solarRepository.save({ user: { id: userId }, ...addSolarDto });
   }
 
+  /* istanbul ignore next */
   saveSRec({ userId, addSRecDto }: IAddSRecInput): Promise<SRec> {
     return this.sRecRepository.save({ user: { id: userId }, ...addSRecDto });
   }
 
+  /* istanbul ignore next */
   saveExpense({ userId, addExpenseDto }: IAddExpenseInput) {
     return this.expenseRepository.save({ user: { id: userId }, ...addExpenseDto });
   }
 
+  /* istanbul ignore next */
   saveFixedExpense({ userId, addFixedExpenseDto }: IAddFixedExpenseInput) {
     return this.fixedExpenseRepository.save({
       user: { id: userId },
@@ -88,18 +98,19 @@ export class SppService {
     });
   }
 
+  /** Spp 조회하기__ */
   async fetchSpp({ userId }: userId): Promise<IRFetchSpp> {
     const user = await this.userService.findOneByUserIdForSpp({ userId });
     delete user.id; // 유저번호 삭제해서 보내기
     return user;
   }
 
+  /** 태양광 데이터 추가__ 월 데이터 중복 체크 */
   async addSolar({ userId, addSolarDto }: IAddSolarInput): Promise<Solar[]> {
-    const date = addSolarDto.date;
     // 중복 체크
     const result = await this.existsByUserIdFromSolar({
       userId,
-      date,
+      date: addSolarDto.date,
     });
     if (result) {
       throw new BadRequestException('중복');
@@ -139,6 +150,7 @@ export class SppService {
     return expense;
   }
 
+  /** 고정지출 데이터 추가__ 시작날짜 > 종료날짜 오류 체크 */
   async addFixedExpense({
     userId,
     addFixedExpenseDto,
@@ -146,7 +158,7 @@ export class SppService {
     const startDate = addFixedExpenseDto.startDate;
     const endDate = addFixedExpenseDto.endDate;
     if (startDate > endDate) {
-      throw new InternalServerErrorException('년도');
+      throw new BadRequestException('년도');
     }
     await this.saveFixedExpense({ userId, addFixedExpenseDto });
     const fixedExpense = await this.findByUserIdFromFixedExpense({ userId });

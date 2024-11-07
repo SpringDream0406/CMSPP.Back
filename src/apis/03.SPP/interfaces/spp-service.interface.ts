@@ -5,7 +5,7 @@ import {
   AddSRecDto,
   AddSolarDto,
 } from '../dto/spp-container.dto';
-import { IRfindOneByUserIdForSpp } from 'src/apis/02.Users/interfaces/user-service.interface';
+import { IRfindOneByUserIdForSpp } from 'src/apis/02.User/interfaces/user-service.interface';
 
 export interface IExistsByUserIdFromSolar extends userId {
   date: string;
