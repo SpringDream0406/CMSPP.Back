@@ -7,10 +7,12 @@ import { IOAuthUserData } from '../interfaces/auth.interface';
 import { Response } from 'express';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let authRepository: jest.Mocked<Repository<Auth>>;
+  let jwtService: jest.Mocked<JwtService>;
   let configService: jest.Mocked<ConfigService>;
 
   beforeEach(async () => {
@@ -18,6 +20,7 @@ describe('AuthService', () => {
 
     authService = unit;
     authRepository = unitRef.get(getRepositoryToken(Auth) as string);
+    jwtService = unitRef.get(JwtService);
     configService = unitRef.get(ConfigService);
   });
 
@@ -80,7 +83,7 @@ describe('AuthService', () => {
 
       const result = await authService.withdrawal({ userId });
 
-      expect(result).toEqual(mockDeleteResult);
+      expect(result).toBe(mockDeleteResult);
       expect(authRepository.softDelete).toHaveBeenCalledWith({ user: { id: userId } });
     });
 
@@ -93,6 +96,24 @@ describe('AuthService', () => {
 
       await expect(authService.withdrawal({ userId })).rejects.toThrow(
         BadRequestException,
+      );
+    });
+  });
+
+  describe('getAccessToken', () => {
+    it('엑세스토큰 발급', () => {
+      const userId = 1;
+      const mockToken = 'mockedToken';
+
+      jest.spyOn(configService, 'get').mockReturnValue('mockSecret');
+      jest.spyOn(jwtService, 'sign').mockReturnValue(mockToken);
+
+      const result = authService.getAccessToken({ userId });
+
+      expect(result).toBe(mockToken);
+      expect(jwtService.sign).toHaveBeenCalledWith(
+        { sub: userId },
+        { secret: 'mockSecret', expiresIn: '15m' },
       );
     });
   });
