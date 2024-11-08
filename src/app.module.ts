@@ -6,7 +6,7 @@ import { UserModule } from './apis/02.User/user.module';
 import { SppModule } from './apis/03.SPP/spp.module';
 import { databaseConfig } from './common/config/database.config';
 import { APP_GUARD } from '@nestjs/core';
-import { CustomAuthGuard } from './common/guard/CustomAuth.guard';
+import { CustomAuthGuard } from './common/guard/customAuth.guard';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseTimeInterceptor } from './common/interceptor/response-time.interceptor';

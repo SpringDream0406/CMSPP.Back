@@ -18,6 +18,7 @@ export class CommonService {
     private readonly configService: ConfigService,
   ) {}
 
+  /* istanbul ignore next */
   /** 데코이용 메타데이터 가져옴 */
   getMetaData<T>({ decorator, context }: IGetMetaData): T | undefined {
     return this.reflector.get<T>(decorator, context.getHandler());

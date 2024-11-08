@@ -1,3 +1,4 @@
+import { ExecutionContext } from '@nestjs/common';
 import { UpdateMyInfoDto } from 'src/apis/02.User/dto/user-container.dto';
 import { Role, User } from 'src/apis/02.User/entities/user.entity';
 import {
@@ -94,3 +95,8 @@ export const mockUser: User = {
   role: Role.USER,
   createdAt: new Date('2024-11-07T00:00:00Z'),
 };
+
+export const createMockExecutionContext = (mockReq: any) =>
+  ({
+    switchToHttp: () => ({ getRequest: () => mockReq }),
+  }) as ExecutionContext;

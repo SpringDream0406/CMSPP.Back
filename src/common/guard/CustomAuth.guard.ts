@@ -9,13 +9,13 @@ export class CustomAuthGuard implements CanActivate {
     private readonly commonService: CommonService, //
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Public 데코 pass
+    // Public() 데코는 가드 pass, Public('refresh')는 아래 로직 수행해서 req에 user 넣기
     const isPublic = this.commonService.getMetaData({ decorator: Public, context });
     if (isPublic && isPublic !== 'refresh') {
       return true;
     }
 
-    // 토큰과 타입 가져오기
+    // 토큰과 타입 가져오기, 토큰로직 통과 못하면 false로 가드에서 막힘
     const req: Request = context.switchToHttp().getRequest();
     const isRefresh = isPublic === 'refresh';
     const token = this.commonService.getToken({ isRefresh, req });
@@ -24,6 +24,6 @@ export class CustomAuthGuard implements CanActivate {
     }
 
     // 토큰 검증, req에 user 넣기
-    return this.commonService.validateToken({ isRefresh, token, req });
+    return await this.commonService.validateToken({ isRefresh, token, req });
   }
 }

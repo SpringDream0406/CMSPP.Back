@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { DynamicAuthGuard, DYNAMISC_AUTH_GUARD } from '../guards/dynamic-auth.guard';
+import { createMockExecutionContext } from 'src/common/__test__/mockDatas';
 
 describe('DynamicAuthGuard', () => {
   let dynamicAuthGuard: DynamicAuthGuard;
@@ -10,13 +11,12 @@ describe('DynamicAuthGuard', () => {
 
   describe('소셜 인증 가드', () => {
     it.each(['google', 'kakao', 'naver'])('소셜 인증 통과 - %s', (social) => {
-      const context = {
-        switchToHttp: () => ({ getRequest: () => ({ params: { social } }) }),
-      } as any;
+      const mockReq = { params: { social } };
+      const mockExecutionContext = createMockExecutionContext(mockReq);
       const providerGuard = DYNAMISC_AUTH_GUARD[social];
       const spy = jest.spyOn(providerGuard, 'canActivate').mockReturnValue(true);
 
-      const result = dynamicAuthGuard.canActivate(context);
+      const result = dynamicAuthGuard.canActivate(mockExecutionContext);
       expect(spy).toHaveBeenCalled();
       expect(result).toBe(true);
     });
