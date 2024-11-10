@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { DynamicAuthGuard, DYNAMISC_AUTH_GUARD } from '../guards/dynamic-auth.guard';
-import { createMockExecutionContext } from 'src/common/__test__/mockDatas';
+import { createMockExecutionContext } from 'src/common/__test__/unit.mockdata';
 
 describe('DynamicAuthGuard', () => {
   let dynamicAuthGuard: DynamicAuthGuard;
@@ -20,13 +20,13 @@ describe('DynamicAuthGuard', () => {
       expect(spy).toHaveBeenCalled();
       expect(result).toBe(true);
     });
-  });
 
-  it('쇼셜 인증 실패: 지정한 소셜 로그인이 아닌 경우', () => {
-    const context = {
-      switchToHttp: () => ({ getRequest: () => ({ params: 'test' }) }),
-    } as any;
+    it('쇼셜 인증 실패: 지정한 소셜 로그인이 아닌 경우', () => {
+      const context = {
+        switchToHttp: () => ({ getRequest: () => ({ params: 'test' }) }),
+      } as any;
 
-    expect(() => dynamicAuthGuard.canActivate(context)).toThrow(BadRequestException);
+      expect(() => dynamicAuthGuard.canActivate(context)).toThrow(BadRequestException);
+    });
   });
 });

@@ -37,6 +37,8 @@ export const validationSchema = Joi.object({
 });
 
 export enum envKeys {
+  env = 'ENV',
+
   // DB
   dbType = 'DB_TYPE',
   dbHost = 'DB_HOST',

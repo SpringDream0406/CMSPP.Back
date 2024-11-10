@@ -9,7 +9,7 @@ import {
   mockUpdateResultAffected_1,
   mockUser,
   mockUserId,
-} from 'src/common/__test__/mockDatas';
+} from 'src/common/__test__/unit.mockdata';
 
 describe('UserService', () => {
   let userService: UserService;

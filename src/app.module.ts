@@ -8,8 +8,8 @@ import { databaseConfig } from './common/config/database.config';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomAuthGuard } from './common/guard/customAuth.guard';
 import { CommonModule } from './common/common.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ResponseTimeInterceptor } from './common/interceptor/response-time.interceptor';
+// import { APP_INTERCEPTOR } from '@nestjs/core';
+// import { ResponseTimeInterceptor } from './common/interceptor/response-time.interceptor';
 import { validationSchema } from './common/config/validation.schema';
 
 // console.log(`.env${process.env.NODE_ENV ?? ''}`);

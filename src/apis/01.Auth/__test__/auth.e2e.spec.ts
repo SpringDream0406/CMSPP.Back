@@ -8,9 +8,10 @@ import {
 import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
 import { AuthService } from '../auth.service';
-import { mockUserId } from 'src/common/__test__/mockDatas';
+import { mockUserId } from 'src/common/__test__/unit.mockdata';
 import { DynamicAuthGuard, SOCIAL_PROVIDERS } from '../guards/dynamic-auth.guard';
 import { DataSource } from 'typeorm';
+import { E2eError, E2eUpdate } from 'src/common/__test__/e2e.interface';
 
 const mockDynamicAuthGuard = {
   canActivate: (context: ExecutionContext) => {
@@ -26,7 +27,6 @@ const mockDynamicAuthGuard = {
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
-
   let dataSource: DataSource;
 
   let refreshToken: string;
@@ -63,7 +63,8 @@ describe('AuthController (e2e)', () => {
   });
 
   afterAll(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await dataSource.synchronize(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await dataSource.destroy();
     await app.close();
   });
@@ -92,7 +93,9 @@ describe('AuthController (e2e)', () => {
     });
 
     it('회원가입/로그인 실패: 잘못된 소셜 요청', async () => {
-      const { statusCode, body } = await request(app.getHttpServer()).get('/signup/test');
+      const { statusCode, body }: E2eError = await request(app.getHttpServer()).get(
+        '/signup/test',
+      );
 
       expect(statusCode).toBe(400);
       expect(body.message).toBe('잘못된 소셜 요청');
@@ -101,7 +104,7 @@ describe('AuthController (e2e)', () => {
 
   describe('[DELETE /withdrawal]', () => {
     it('회원탈퇴 성공', async () => {
-      const { statusCode, body } = await request(app.getHttpServer())
+      const { statusCode, body }: E2eUpdate = await request(app.getHttpServer())
         .delete('/withdrawal')
         .set('authorization', `Bearer ${accessToken}`);
 
@@ -110,7 +113,7 @@ describe('AuthController (e2e)', () => {
     });
 
     it('회원탈퇴 실패: 탈퇴 실패 DB', async () => {
-      const { statusCode, body } = await request(app.getHttpServer())
+      const { statusCode, body }: E2eError = await request(app.getHttpServer())
         .delete('/withdrawal')
         .set('authorization', `Bearer ${outAccessToken}`);
 
@@ -119,7 +122,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('[GET /getAccessToken', () => {
+  describe('[GET /getAccessToken - refreshToken 검증', () => {
     it('엑세스토큰 발급 성공', async () => {
       const { statusCode, text } = await request(app.getHttpServer())
         .get('/getAccessToken')
@@ -127,7 +130,7 @@ describe('AuthController (e2e)', () => {
 
       expect(statusCode).toBe(200);
       expect(text).toBeDefined();
-      expect(text).not.toBe(''); // text 비었는지 확인
+      expect(text).not.toBe(''); // accessToken 있는지 확인
     });
 
     it('엑세스토큰 발급 실패: refreshToken 만료', async () => {

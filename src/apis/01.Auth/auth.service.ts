@@ -132,15 +132,18 @@ export class AuthService {
   /** 리프래시토큰 세팅__ */
   setRefreshToken({ userId, res }: IAuthServiceSetRefreshToken): void {
     const refreshToken = this.getRefreshToken({ userId });
+    const env = this.configService.get(envKeys.env);
 
-    // 개발환경
-    res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
-
-    // 배포환경
-    // res.setHeader(
-    //   'set-Cookie',
-    //   `refreshToken=${refreshToken}; path=/; domain=.도메인주소; SameSite=None; Secure; httpOnly`,
-    // );
-    // res.setHeader('Access-Control-Allow-Origin', 'https://프론트주소');
+    // 개발/테스트
+    if (env === 'dev' || env === 'test') {
+      res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+    } else {
+      // 배포
+      // res.setHeader(
+      //   'set-Cookie',
+      //   `refreshToken=${refreshToken}; path=/; domain=.도메인주소; SameSite=None; Secure; httpOnly`,
+      // );
+      // res.setHeader('Access-Control-Allow-Origin', 'https://프론트주소');
+    }
   }
 }

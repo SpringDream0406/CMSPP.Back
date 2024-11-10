@@ -2,7 +2,13 @@ import { TestBed } from '@automock/jest';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { ConfigService } from '@nestjs/config';
-import { mockDeleteResultAffected_1, mockUserId } from 'src/common/__test__/mockDatas';
+import {
+  mockDeleteResultAffected_1,
+  mockRes,
+  mockSecret,
+  mockUserId,
+} from 'src/common/__test__/unit.mockdata';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -19,16 +25,24 @@ describe('AuthController', () => {
 
   describe('signUp', () => {
     it('소셜 회원가입/로그인', async () => {
-      const mockReq = { user: { id: 'mockId', provider: 'mockProvider' } };
-      const mockRes = { redirect: jest.fn() } as any;
+      const mockReq = { user: { id: 'mockId', provider: 'mockProvider' } } as any;
 
       jest.spyOn(authService, 'signUp').mockResolvedValue(null);
-      jest.spyOn(configService, 'get').mockReturnValue('mockSecret');
+      jest.spyOn(configService, 'get').mockReturnValue(mockSecret);
 
-      await authController.signUp(mockReq as any, mockRes);
+      await authController.signUp(mockReq, mockRes);
 
       expect(authService.signUp).toHaveBeenCalledWith({ ...mockReq, res: mockRes });
-      expect(mockRes.redirect).toHaveBeenCalledWith('mockSecret');
+      expect(mockRes.redirect).toHaveBeenCalledWith(mockSecret);
+    });
+
+    it('소셜 회원가입/로그인 실패: req.user 없음', () => {
+      const mockReq = {} as any;
+
+      expect(authController.signUp(mockReq, mockRes)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      expect(authService.signUp).not.toHaveBeenCalled();
     });
   });
 

@@ -1,7 +1,7 @@
 import { TestBed } from '@automock/jest';
 import { CustomAuthGuard } from '../guard/customAuth.guard';
 import { CommonService } from '../common.service';
-import { createMockExecutionContext, mockUserId } from './mockDatas';
+import { createMockExecutionContext, mockToken, mockUserId } from './unit.mockdata';
 import { Public } from '../decorator/public.decorator';
 
 describe('CustomAuthGuard', () => {
@@ -29,7 +29,7 @@ describe('CustomAuthGuard', () => {
         const isRefresh = mockReturnValue === 'refresh';
 
         jest.spyOn(commonService, 'getMetaData').mockReturnValue(mockReturnValue);
-        jest.spyOn(commonService, 'getToken').mockReturnValue('mockToken');
+        jest.spyOn(commonService, 'getToken').mockReturnValue(mockToken);
         jest.spyOn(commonService, 'validateToken').mockImplementation(({ req }) => {
           req.user = { userId: mockUserId };
           return Promise.resolve(true);
@@ -48,7 +48,7 @@ describe('CustomAuthGuard', () => {
         });
         expect(commonService.validateToken).toHaveBeenCalledWith({
           isRefresh,
-          token: 'mockToken',
+          token: mockToken,
           req: mockReq,
         });
         expect(mockReq.user).toEqual({ userId: mockUserId });

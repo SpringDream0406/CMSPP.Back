@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DynamicAuthGuard } from './guards/dynamic-auth.guard';
 import { IOAuthUser } from './interfaces/auth.interface';
@@ -24,10 +32,11 @@ export class AuthController {
     @Req() req: Request & IOAuthUser, //
     @Res() res: Response,
   ): Promise<void> {
-    if (req.user) {
-      await this.authService.signUp({ ...req, res });
-      res.redirect(this.configService.get(envKeys.redirectURL));
+    if (!req.user) {
+      throw new UnauthorizedException();
     }
+    await this.authService.signUp({ ...req, res });
+    res.redirect(this.configService.get(envKeys.redirectURL));
   }
 
   // 회원탈퇴

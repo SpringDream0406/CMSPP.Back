@@ -1,4 +1,5 @@
 import { ExecutionContext } from '@nestjs/common';
+import { Response } from 'express';
 import { UpdateMyInfoDto } from 'src/apis/02.User/dto/user-container.dto';
 import { Role, User } from 'src/apis/02.User/entities/user.entity';
 import {
@@ -22,6 +23,14 @@ export const mockUpdateResultAffected_1: UpdateResult = {
 export const mockDeleteResultAffected_1: DeleteResult = { raw: [], affected: 1 };
 export const mockDeleteResultAffected_0: DeleteResult = { raw: [], affected: 0 };
 
+export const mockRes = {
+  redirect: jest.fn(),
+  setHeader: jest.fn(),
+} as undefined as Response;
+
+export const mockToken = 'mockToken';
+export const mockSecret = 'mockSecret';
+
 export const mockUserId = 1;
 export const mockDelId = 1;
 
@@ -35,7 +44,7 @@ const baseData = {
 export const mockUpdateMyInfoDto: UpdateMyInfoDto = {
   kWh: 100,
   recWeight: 1,
-  businessNumber: '123456789',
+  businessNumber: 123456789 as unknown as string,
   address: 'mockAddress',
 };
 

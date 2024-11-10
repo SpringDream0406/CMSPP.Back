@@ -4,15 +4,17 @@ import { TestBed } from '@automock/jest';
 import { Auth } from '../entities/auth.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { IOAuthUserData } from '../interfaces/auth.interface';
-import { Response } from 'express';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
   mockDeleteResultAffected_0,
   mockDeleteResultAffected_1,
+  mockRes,
+  mockSecret,
+  mockToken,
   mockUserId,
-} from 'src/common/__test__/mockDatas';
+} from 'src/common/__test__/unit.mockdata';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -39,7 +41,6 @@ describe('AuthService', () => {
 
   describe('signUp', () => {
     const mockUser: IOAuthUserData = { id: 'testId', provider: 'google' };
-    const mockRes = {} as Response;
     const mockAuth = {
       ...mockUser,
       user: {
@@ -102,29 +103,48 @@ describe('AuthService', () => {
     });
   });
 
-  describe('getAccessToken', () => {
-    it('엑세스토큰 발급', () => {
-      const mockToken = 'mockedToken';
-
-      jest.spyOn(configService, 'get').mockReturnValue('mockSecret');
+  describe('getAccessToken / getRefreshToken', () => {
+    beforeEach(() => {
+      jest.spyOn(configService, 'get').mockReturnValue(mockSecret);
       jest.spyOn(jwtService, 'sign').mockReturnValue(mockToken);
+    });
 
+    it('accessToken 발급', () => {
       const result = authService.getAccessToken({ userId: mockUserId });
 
       expect(result).toBe(mockToken);
       expect(jwtService.sign).toHaveBeenCalledWith(
         { sub: mockUserId },
-        { secret: 'mockSecret', expiresIn: '15m' },
+        { secret: mockSecret, expiresIn: '15m' },
+      );
+    });
+
+    it('refreshToken 발급', () => {
+      const result = authService.getRefreshToken({ userId: mockUserId });
+
+      expect(result).toBe(mockToken);
+      expect(jwtService.sign).toHaveBeenCalledWith(
+        {
+          sub: mockUserId,
+        },
+        { secret: mockSecret, expiresIn: '24h' },
       );
     });
   });
 
-  //   describe('setRefreshToken', () => {
-  //     const userId = 1;
-  //     const mockRes = {} as Response;
+  describe('setRefreshToken', () => {
+    it.each(['test', 'dev'])('리프래시토큰 발급 - %s', (env) => {
+      jest.spyOn(authService, 'getRefreshToken').mockReturnValue(mockToken);
+      jest.spyOn(configService, 'get').mockReturnValue(env);
 
-  //     it('리프래시토큰 발급(개발환경)', () => {
-  //       jest.spyOn(configService, 'get').mockReturnValue('refreshSecret');
-  //     });
-  //   });
+      authService.setRefreshToken({ userId: mockUserId, res: mockRes });
+
+      expect(mockRes.setHeader).toHaveBeenCalledWith(
+        'set-Cookie',
+        `refreshToken=${mockToken}; path=/;`,
+      );
+    });
+
+    it('prod', () => {});
+  });
 });

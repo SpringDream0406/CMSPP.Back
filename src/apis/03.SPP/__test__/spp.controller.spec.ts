@@ -13,7 +13,7 @@ import {
   mockSRec,
   mockUser,
   mockUserId,
-} from 'src/common/__test__/mockDatas';
+} from 'src/common/__test__/unit.mockdata';
 
 describe('SppController', () => {
   let sppController: SppController;
