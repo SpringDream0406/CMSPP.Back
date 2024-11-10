@@ -10,10 +10,17 @@ import { CustomAuthGuard } from './common/guard/customAuth.guard';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseTimeInterceptor } from './common/interceptor/response-time.interceptor';
+import { validationSchema } from './common/config/validation.schema';
+
+// console.log(`.env${process.env.NODE_ENV ?? ''}`);
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }), //
+    ConfigModule.forRoot({
+      isGlobal: true, //
+      validationSchema: validationSchema,
+      envFilePath: `.env${process.env.NODE_ENV ?? ''}`,
+    }), //
     AuthModule,
     UserModule,
     SppModule,
@@ -21,7 +28,7 @@ import { ResponseTimeInterceptor } from './common/interceptor/response-time.inte
     TypeOrmModule.forRootAsync(databaseConfig),
   ],
   providers: [
-    { provide: APP_INTERCEPTOR, useClass: ResponseTimeInterceptor },
+    // { provide: APP_INTERCEPTOR, useClass: ResponseTimeInterceptor },
     { provide: APP_GUARD, useClass: CustomAuthGuard },
   ],
 })

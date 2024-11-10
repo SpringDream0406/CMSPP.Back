@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:watch:cov": "jest --watch --coverage --testPathPattern=src/",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "cross-env NODE_ENV=.test jest --config ./jest-e2e.json",
     "test:auth:watch": "jest --watch --testPathPattern=src/apis/01.Auth --coverage --collectCoverageFrom=src/apis/01.Auth/**",
     "test:user:watch": "jest --watch --testPathPattern=src/apis/02.User --coverage --collectCoverageFrom=src/apis/02.User/**",
     "test:spp:watch": "jest --watch --testPathPattern=src/apis/03.SPP --coverage --collectCoverageFrom=src/apis/03.SPP/**",
@@ -38,6 +38,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "cross-env": "^7.0.3",
     "joi": "^17.13.3",
     "mysql2": "^3.10.1",
     "passport": "^0.7.0",
@@ -84,7 +85,7 @@
       "json",
       "ts"
     ],
-    "root": [
+    "roots": [
       "src"
     ],
     "testRegex": ".*\\.spec\\.ts$",
@@ -107,10 +108,11 @@
       "module.ts",
       "entity.ts",
       "dto.ts",
-      "mockDatas.ts",
-      "config.ts",
       "strategy.ts",
       "decorator.ts",
+      "mockDatas.ts",
+      "database.config.ts",
+      "validation.schema.ts",
       "response-time.interceptor.ts"
     ]
   }

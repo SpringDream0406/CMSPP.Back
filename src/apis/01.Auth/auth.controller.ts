@@ -24,8 +24,10 @@ export class AuthController {
     @Req() req: Request & IOAuthUser, //
     @Res() res: Response,
   ): Promise<void> {
-    await this.authService.signUp({ ...req, res });
-    res.redirect(this.configService.get(envKeys.redirectURL));
+    if (req.user) {
+      await this.authService.signUp({ ...req, res });
+      res.redirect(this.configService.get(envKeys.redirectURL));
+    }
   }
 
   // 회원탈퇴

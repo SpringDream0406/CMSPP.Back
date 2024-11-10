@@ -83,6 +83,18 @@ export class AuthService {
     return result;
   }
 
+  /* istanbul ignore next */
+  /** 만료된 엑세스토큰 발급__  */
+  getExpiredAccessToken({ userId }: userId): string {
+    return this.jwtService.sign(
+      { sub: userId },
+      {
+        secret: this.configService.get<string>(envKeys.accessTokenSecret),
+        expiresIn: -1,
+      },
+    );
+  }
+
   /** 엑세스토큰 발급__  */
   getAccessToken({ userId }: userId): string {
     return this.jwtService.sign(
@@ -94,15 +106,32 @@ export class AuthService {
     );
   }
 
+  /* istanbul ignore next */
+  /** 만료된 리프래시토큰 발급__ e2e 테스트용 */
+  getExpiredRefreshToken({ userId }: userId): string {
+    return this.jwtService.sign(
+      { sub: userId },
+      {
+        secret: this.configService.get<string>(envKeys.refreshTokenSecret),
+        expiresIn: -1,
+      },
+    );
+  }
+
   /** 리프래시토큰 발급__ */
-  setRefreshToken({ userId, res }: IAuthServiceSetRefreshToken): void {
-    const refreshToken = this.jwtService.sign(
+  getRefreshToken({ userId }: userId): string {
+    return this.jwtService.sign(
       { sub: userId },
       {
         secret: this.configService.get<string>(envKeys.refreshTokenSecret),
         expiresIn: '24h',
       },
     );
+  }
+
+  /** 리프래시토큰 세팅__ */
+  setRefreshToken({ userId, res }: IAuthServiceSetRefreshToken): void {
+    const refreshToken = this.getRefreshToken({ userId });
 
     // 개발환경
     res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
