@@ -5,7 +5,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Solar extends BaseTable {
-  @ManyToOne(() => User, (user) => user.solar)
+  @ManyToOne(() => User, (user) => user.solar, { onDelete: 'CASCADE' })
   user: User;
 
   @Column({ type: 'varchar', length: 7, unique: true })

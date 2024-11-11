@@ -65,11 +65,17 @@ export class AuthService {
     return auth;
   }
 
+  /* istanbul ignore next */
+  /** 회원 재가입__ 탈퇴시 softDelete 상태를 null 처라 */
+  restoreUser(auth: Auth) {
+    return this.authRepository.restore(auth.id);
+  }
+
   /** 로그인/회원가입__ Auth에서 검색해보고 없으면 회원가입 후 userId 쿠키에 넣기 */
   async signUp({ user, res }: IAuthServiceSignUp): Promise<void> {
     let auth = await this.findOneByUserFromAuth({ user });
     if (auth && auth.deletedAt) {
-      auth.deletedAt = null;
+      this.restoreUser(auth);
     }
     if (!auth) {
       auth = await this.saveUser({ user });
