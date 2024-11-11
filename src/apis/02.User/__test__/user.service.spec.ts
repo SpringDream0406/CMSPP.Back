@@ -1,7 +1,7 @@
 import { TestBed } from '@automock/jest';
 import { UserService } from '../user.service';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
+import { User } from '../entity/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BadRequestException } from '@nestjs/common';
 import {

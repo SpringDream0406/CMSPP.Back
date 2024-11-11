@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { Expense } from 'src/apis/03.SPP/entities/expense.entity';
-import { FixedExpense } from 'src/apis/03.SPP/entities/fixedExpense.entity';
-import { SRec } from 'src/apis/03.SPP/entities/sRec.entity';
-import { Solar } from 'src/apis/03.SPP/entities/solar.entity';
-import { BaseTable } from 'src/common/entities/base.entity';
+import { Expense } from 'src/apis/03.SPP/entity/expense.entity';
+import { FixedExpense } from 'src/apis/03.SPP/entity/fixedExpense.entity';
+import { SRec } from 'src/apis/03.SPP/entity/sRec.entity';
+import { Solar } from 'src/apis/03.SPP/entity/solar.entity';
+import { BaseTable } from 'src/common/entity/base.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 export enum Role {

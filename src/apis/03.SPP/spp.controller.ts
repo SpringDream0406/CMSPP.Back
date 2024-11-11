@@ -6,11 +6,11 @@ import {
   AddSolarDto,
 } from './dto/spp-container.dto';
 import { SppService } from './spp.service';
-import { Solar } from './entities/solar.entity';
-import { SRec } from './entities/sRec.entity';
-import { IRFetchSpp } from './interfaces/spp-service.interface';
-import { Expense } from './entities/expense.entity';
-import { FixedExpense } from './entities/fixedExpense.entity';
+import { Solar } from './entity/solar.entity';
+import { SRec } from './entity/sRec.entity';
+import { IRFetchSpp } from './interface/spp-service.interface';
+import { Expense } from './entity/expense.entity';
+import { FixedExpense } from './entity/fixedExpense.entity';
 import { UserId } from 'src/common/decorator/userId.decorator';
 
 @Controller('spp')

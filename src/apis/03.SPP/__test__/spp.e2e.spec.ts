@@ -2,8 +2,8 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AuthService } from 'src/apis/01.Auth/auth.service';
-import { Auth } from 'src/apis/01.Auth/entities/auth.entity';
-import { User } from 'src/apis/02.User/entities/user.entity';
+import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
+import { User } from 'src/apis/02.User/entity/user.entity';
 import { AppModule } from 'src/app.module';
 import { mockingAuths, mockingUsers } from 'src/common/__test__/e2e.mockdata';
 import {
@@ -23,10 +23,10 @@ import {
   E2eSolar,
   E2eSRec,
 } from 'src/common/__test__/e2e.interface';
-import { Solar } from '../entities/solar.entity';
-import { SRec } from '../entities/sRec.entity';
-import { Expense } from '../entities/expense.entity';
-import { FixedExpense } from '../entities/fixedExpense.entity';
+import { Solar } from '../entity/solar.entity';
+import { SRec } from '../entity/sRec.entity';
+import { Expense } from '../entity/expense.entity';
+import { FixedExpense } from '../entity/fixedExpense.entity';
 
 describe('SppController (e2e)', () => {
   let app: INestApplication;

@@ -1,8 +1,8 @@
 import { PickType } from '@nestjs/swagger';
-import { Solar } from '../entities/solar.entity';
-import { SRec } from '../entities/sRec.entity';
-import { Expense } from '../entities/expense.entity';
-import { FixedExpense } from '../entities/fixedExpense.entity';
+import { Solar } from '../entity/solar.entity';
+import { SRec } from '../entity/sRec.entity';
+import { Expense } from '../entity/expense.entity';
+import { FixedExpense } from '../entity/fixedExpense.entity';
 
 export class AddSolarDto extends PickType(Solar, [
   'date',

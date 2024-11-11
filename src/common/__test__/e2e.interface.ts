@@ -1,9 +1,9 @@
-import { User } from 'src/apis/02.User/entities/user.entity';
-import { Expense } from 'src/apis/03.SPP/entities/expense.entity';
-import { FixedExpense } from 'src/apis/03.SPP/entities/fixedExpense.entity';
-import { Solar } from 'src/apis/03.SPP/entities/solar.entity';
-import { SRec } from 'src/apis/03.SPP/entities/sRec.entity';
-import { IRFetchSpp } from 'src/apis/03.SPP/interfaces/spp-service.interface';
+import { User } from 'src/apis/02.User/entity/user.entity';
+import { Expense } from 'src/apis/03.SPP/entity/expense.entity';
+import { FixedExpense } from 'src/apis/03.SPP/entity/fixedExpense.entity';
+import { Solar } from 'src/apis/03.SPP/entity/solar.entity';
+import { SRec } from 'src/apis/03.SPP/entity/sRec.entity';
+import { IRFetchSpp } from 'src/apis/03.SPP/interface/spp-service.interface';
 
 interface E2eBase {
   statusCode: number;

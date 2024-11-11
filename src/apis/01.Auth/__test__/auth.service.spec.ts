@@ -1,9 +1,9 @@
 import { Repository, UpdateResult } from 'typeorm';
 import { AuthService } from '../auth.service';
 import { TestBed } from '@automock/jest';
-import { Auth } from '../entities/auth.entity';
+import { Auth } from '../entity/auth.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { IOAuthUserData } from '../interfaces/auth.interface';
+import { IOAuthUserData } from '../interface/auth.interface';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';

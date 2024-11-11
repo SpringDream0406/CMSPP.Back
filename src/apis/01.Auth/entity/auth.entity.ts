@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { User } from 'src/apis/02.User/entities/user.entity';
+import { User } from 'src/apis/02.User/entity/user.entity';
 import {
   Column,
   CreateDateColumn,

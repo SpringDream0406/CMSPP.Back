@@ -1,11 +1,11 @@
-import { userId } from 'src/apis/01.Auth/interfaces/auth.interface';
+import { userId } from 'src/apis/01.Auth/interface/auth.interface';
 import {
   AddExpenseDto,
   AddFixedExpenseDto,
   AddSRecDto,
   AddSolarDto,
 } from '../dto/spp-container.dto';
-import { IRfindOneByUserIdForSpp } from 'src/apis/02.User/interfaces/user-service.interface';
+import { IRfindOneByUserIdForSpp } from 'src/apis/02.User/interface/user-service.interface';
 
 export interface IExistsByUserIdFromSolar extends userId {
   date: string;

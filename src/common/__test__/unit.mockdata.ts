@@ -1,17 +1,17 @@
 import { ExecutionContext } from '@nestjs/common';
 import { Response } from 'express';
 import { UpdateMyInfoDto } from 'src/apis/02.User/dto/user-container.dto';
-import { Role, User } from 'src/apis/02.User/entities/user.entity';
+import { Role, User } from 'src/apis/02.User/entity/user.entity';
 import {
   AddExpenseDto,
   AddFixedExpenseDto,
   AddSolarDto,
   AddSRecDto,
 } from 'src/apis/03.SPP/dto/spp-container.dto';
-import { Expense } from 'src/apis/03.SPP/entities/expense.entity';
-import { FixedExpense } from 'src/apis/03.SPP/entities/fixedExpense.entity';
-import { Solar } from 'src/apis/03.SPP/entities/solar.entity';
-import { SRec } from 'src/apis/03.SPP/entities/sRec.entity';
+import { Expense } from 'src/apis/03.SPP/entity/expense.entity';
+import { FixedExpense } from 'src/apis/03.SPP/entity/fixedExpense.entity';
+import { Solar } from 'src/apis/03.SPP/entity/solar.entity';
+import { SRec } from 'src/apis/03.SPP/entity/sRec.entity';
 import { UpdateResult, DeleteResult } from 'typeorm';
 
 export const mockUpdateResultAffected_1: UpdateResult = {

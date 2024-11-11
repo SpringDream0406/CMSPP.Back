@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { User } from './entity/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import {
   IFindOneByBusinessNumber,
   IRfindOneByUserIdForSpp,
   IUpdateMyInfoInput,
-} from './interfaces/user-service.interface';
-import { userId } from '../01.Auth/interfaces/auth.interface';
+} from './interface/user-service.interface';
+import { userId } from '../01.Auth/interface/auth.interface';
 
 @Injectable()
 export class UserService {

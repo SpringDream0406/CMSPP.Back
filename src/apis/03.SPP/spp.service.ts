@@ -7,15 +7,15 @@ import {
   IDeleteSppInput,
   IExistsByUserIdFromSolar,
   IRFetchSpp,
-} from './interfaces/spp-service.interface';
+} from './interface/spp-service.interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Solar } from './entities/solar.entity';
+import { Solar } from './entity/solar.entity';
 import { Repository } from 'typeorm';
 import { UserService } from '../02.User/user.service';
-import { SRec } from './entities/sRec.entity';
-import { Expense } from './entities/expense.entity';
-import { FixedExpense } from './entities/fixedExpense.entity';
-import { userId } from '../01.Auth/interfaces/auth.interface';
+import { SRec } from './entity/sRec.entity';
+import { Expense } from './entity/expense.entity';
+import { FixedExpense } from './entity/fixedExpense.entity';
+import { userId } from '../01.Auth/interface/auth.interface';
 
 @Injectable()
 export class SppService {

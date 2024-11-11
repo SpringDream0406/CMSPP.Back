@@ -1,5 +1,5 @@
-import { Auth } from 'src/apis/01.Auth/entities/auth.entity';
-import { Role, User } from 'src/apis/02.User/entities/user.entity';
+import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
+import { Role, User } from 'src/apis/02.User/entity/user.entity';
 import { Repository } from 'typeorm';
 
 export const mockingUsers = (userReposityory: Repository<User>) =>

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DynamicAuthGuard } from './guards/dynamic-auth.guard';
-import { IOAuthUser } from './interfaces/auth.interface';
+import { IOAuthUser } from './interface/auth.interface';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { DeleteResult } from 'typeorm';

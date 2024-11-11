@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Put } from '@nestjs/common';
 import { UpdateMyInfoDto } from './dto/user-container.dto';
 import { UserService } from './user.service';
-import { User } from './entities/user.entity';
+import { User } from './entity/user.entity';
 import { UpdateResult } from 'typeorm';
 import { UserId } from 'src/common/decorator/userId.decorator';
 

@@ -1,17 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DataSource, DeleteResult, Repository } from 'typeorm';
-import { Auth } from './entities/auth.entity';
+import { Auth } from './entity/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IAuthServiceSetRefreshToken,
   IAuthServiceSignUp,
   IOAuthUser,
   userId,
-} from './interfaces/auth.interface';
+} from './interface/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { envKeys } from 'src/common/config/validation.schema';
-import { Role } from '../02.User/entities/user.entity';
+import { Role } from '../02.User/entity/user.entity';
 
 @Injectable()
 export class AuthService {
