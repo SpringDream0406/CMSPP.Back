@@ -24,7 +24,7 @@ describe('CustomAuthGuard', () => {
     const mockExecutionContext = createMockExecutionContext(mockReq);
 
     it.each(['refresh', undefined])(
-      `Public 데코 'refresh' | undefined, 토큰과 타입 가져와서 검증, req에 user 넣기, return true`,
+      `Public 데코값이 %s, 토큰과 타입 가져와서 검증, req에 user 넣기, return true`,
       async (mockReturnValue) => {
         const isRefresh = mockReturnValue === 'refresh';
 

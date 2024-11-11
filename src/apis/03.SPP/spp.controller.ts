@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import {
   AddExpenseDto,
   AddFixedExpenseDto,
@@ -22,7 +22,7 @@ export class SppController {
     return this.sppService.fetchSpp({ userId });
   }
 
-  @Put('solar')
+  @Post('solar')
   addSolar(
     @UserId() userId: number, //
     @Body() addSolarDto: AddSolarDto,
@@ -38,7 +38,7 @@ export class SppController {
     return this.sppService.deleteSolar({ userId, delId });
   }
 
-  @Put('sRec')
+  @Post('sRec')
   addSRec(
     @UserId() userId: number, //
     @Body() addSRecDto: AddSRecDto,
@@ -54,7 +54,7 @@ export class SppController {
     return this.sppService.deleteSRec({ userId, delId });
   }
 
-  @Put('expense')
+  @Post('expense')
   addExpense(
     @UserId() userId: number, //
     @Body() addExpenseDto: AddExpenseDto,
@@ -70,7 +70,7 @@ export class SppController {
     return this.sppService.deleteExpense({ userId, delId });
   }
 
-  @Put('fixedExpense')
+  @Post('fixedExpense')
   addFixedExpense(
     @UserId() userId: number, //
     @Body() addFixedExpenseDto: AddFixedExpenseDto,

@@ -34,7 +34,7 @@ export const mockSecret = 'mockSecret';
 export const mockUserId = 1;
 export const mockDelId = 1;
 
-const date = 'mockDate';
+const date = '2024-11-11';
 const baseData = {
   id: 1,
   user: {} as User,
@@ -49,7 +49,7 @@ export const mockUpdateMyInfoDto: UpdateMyInfoDto = {
 };
 
 export const mockAddSolarDto: AddSolarDto = {
-  date,
+  date: '2024-11',
   generation: 1,
   smp: 1,
   supplyPrice: 1,

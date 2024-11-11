@@ -1,5 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
-import { DynamicAuthGuard, DYNAMISC_AUTH_GUARD } from '../guards/dynamic-auth.guard';
+import {
+  DynamicAuthGuard,
+  DYNAMISC_AUTH_GUARD,
+  SOCIAL_PROVIDERS,
+} from '../guards/dynamic-auth.guard';
 import { createMockExecutionContext } from 'src/common/__test__/unit.mockdata';
 
 describe('DynamicAuthGuard', () => {
@@ -10,7 +14,7 @@ describe('DynamicAuthGuard', () => {
   });
 
   describe('소셜 인증 가드', () => {
-    it.each(['google', 'kakao', 'naver'])('소셜 인증 통과 - %s', (social) => {
+    it.each(SOCIAL_PROVIDERS)('소셜 인증 통과 - %s', (social) => {
       const mockReq = { params: { social } };
       const mockExecutionContext = createMockExecutionContext(mockReq);
       const providerGuard = DYNAMISC_AUTH_GUARD[social];

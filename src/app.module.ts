@@ -11,6 +11,7 @@ import { CommonModule } from './common/common.module';
 // import { APP_INTERCEPTOR } from '@nestjs/core';
 // import { ResponseTimeInterceptor } from './common/interceptor/response-time.interceptor';
 import { validationSchema } from './common/config/validation.schema';
+import { ScheduleModule } from '@nestjs/schedule';
 
 // console.log(`.env${process.env.NODE_ENV ?? ''}`);
 
@@ -26,6 +27,7 @@ import { validationSchema } from './common/config/validation.schema';
     SppModule,
     CommonModule,
     TypeOrmModule.forRootAsync(databaseConfig),
+    ScheduleModule.forRoot(),
   ],
   providers: [
     // { provide: APP_INTERCEPTOR, useClass: ResponseTimeInterceptor },

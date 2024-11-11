@@ -29,6 +29,7 @@ export class AuthService {
     return this.authRepository.findOne({
       where: { ...user },
       relations: ['user'],
+      withDeleted: true,
     });
   }
 
@@ -67,6 +68,9 @@ export class AuthService {
   /** 로그인/회원가입__ Auth에서 검색해보고 없으면 회원가입 후 userId 쿠키에 넣기 */
   async signUp({ user, res }: IAuthServiceSignUp): Promise<void> {
     let auth = await this.findOneByUserFromAuth({ user });
+    if (auth && auth.deletedAt) {
+      auth.deletedAt = null;
+    }
     if (!auth) {
       auth = await this.saveUser({ user });
     }
