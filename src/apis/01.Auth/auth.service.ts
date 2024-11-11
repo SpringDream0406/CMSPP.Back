@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { DataSource, DeleteResult, Repository } from 'typeorm';
+import { DataSource, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { Auth } from './entity/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -67,7 +67,7 @@ export class AuthService {
 
   /* istanbul ignore next */
   /** 회원 재가입__ 탈퇴시 softDelete 상태를 null 처라 */
-  restoreUser(auth: Auth) {
+  restoreUser(auth: Auth): Promise<UpdateResult> {
     return this.authRepository.restore(auth.id);
   }
 

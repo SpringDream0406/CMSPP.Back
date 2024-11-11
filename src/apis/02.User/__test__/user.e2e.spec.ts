@@ -3,10 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { AuthService } from 'src/apis/01.Auth/auth.service';
-import { mockUpdateMyInfoDto, mockUserId } from 'src/common/__test__/unit.mockdata';
+import { mockUpdateMyInfoDto, mockUserId } from 'src/common/__test__/test.mockdata';
 import { User } from '../entity/user.entity';
 import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
-import { mockingAuths, mockingUsers } from 'src/common/__test__/e2e.mockdata';
+import { mockingAuths, mockingUsers } from 'src/common/__test__/db.mockdata';
 import { AppModule } from 'src/app.module';
 import { E2eError, E2eUpdate, E2eUser } from 'src/common/__test__/e2e.interface';
 
@@ -42,8 +42,8 @@ describe('UserController (e2e)', () => {
     const authRepository = dataSource.getRepository(Auth);
     const userReposityory = dataSource.getRepository(User);
 
-    users = mockingUsers(userReposityory);
-    auths = mockingAuths(authRepository, users);
+    users = mockingUsers([1, 2], userReposityory);
+    auths = mockingAuths([1, 2], authRepository, users);
 
     await userReposityory.save(users);
     await authRepository.save(auths);

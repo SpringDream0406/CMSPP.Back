@@ -4,7 +4,7 @@ import {
   DYNAMISC_AUTH_GUARD,
   SOCIAL_PROVIDERS,
 } from '../guards/dynamic-auth.guard';
-import { createMockExecutionContext } from 'src/common/__test__/unit.mockdata';
+import { createMockExecutionContext } from 'src/common/__test__/test.mockdata';
 
 describe('DynamicAuthGuard', () => {
   let dynamicAuthGuard: DynamicAuthGuard;

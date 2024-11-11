@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
-import { mockToken } from './unit.mockdata';
+import { mockToken } from './test.mockdata';
 
 describe('CommonService', () => {
   let commonService: CommonService;

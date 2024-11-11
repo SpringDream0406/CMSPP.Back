@@ -19,7 +19,7 @@ import {
   mockSRec,
   mockUser,
   mockUserId,
-} from 'src/common/__test__/unit.mockdata';
+} from 'src/common/__test__/test.mockdata';
 import { BadRequestException } from '@nestjs/common';
 
 describe('SppService', () => {

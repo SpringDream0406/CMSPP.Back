@@ -13,8 +13,9 @@ import {
   mockRes,
   mockSecret,
   mockToken,
+  mockUpdateResultAffected_1,
   mockUserId,
-} from 'src/common/__test__/unit.mockdata';
+} from 'src/common/__test__/test.mockdata';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -40,12 +41,10 @@ describe('AuthService', () => {
   });
 
   describe('signUp', () => {
-    const mockUser: IOAuthUserData = { id: 'testId', provider: 'google' };
+    const mockReqUser: IOAuthUserData = { id: 'testId', provider: 'google' };
     const mockAuth = {
-      ...mockUser,
-      user: {
-        id: 1,
-      },
+      ...mockReqUser,
+      user: { id: 1 },
     } as Auth;
 
     beforeEach(() => {
@@ -55,9 +54,37 @@ describe('AuthService', () => {
     it('로그인: auth(DB)에 데이터가 있을 때, 데이터 그대로 씀', async () => {
       jest.spyOn(authService, 'findOneByUserFromAuth').mockResolvedValue(mockAuth);
 
-      await authService.signUp({ user: mockUser, res: mockRes });
+      await authService.signUp({ user: mockReqUser, res: mockRes });
 
-      expect(authService.findOneByUserFromAuth).toHaveBeenCalledWith({ user: mockUser });
+      expect(authService.findOneByUserFromAuth).toHaveBeenCalledWith({
+        user: mockReqUser,
+      });
+      expect(authService.setRefreshToken).toHaveBeenCalledWith({
+        userId: mockAuth.user.id,
+        res: mockRes,
+      });
+    });
+
+    it('재가입: auth(DB)에 softDelete된 데이터가 있을 때, 기존 데이터를 restore 하고 사용함.', async () => {
+      const softDeletedMockAuth = {
+        ...mockAuth,
+        deletedAt: new Date('2024-01-01'),
+      } as Auth;
+
+      jest
+        .spyOn(authService, 'findOneByUserFromAuth')
+        .mockResolvedValue(softDeletedMockAuth);
+
+      jest
+        .spyOn(authService, 'restoreUser')
+        .mockResolvedValue(mockUpdateResultAffected_1);
+
+      await authService.signUp({ user: mockReqUser, res: mockRes });
+
+      expect(authService.findOneByUserFromAuth).toHaveBeenCalledWith({
+        user: mockReqUser,
+      });
+      expect(authService.restoreUser).toHaveBeenCalledWith(softDeletedMockAuth);
       expect(authService.setRefreshToken).toHaveBeenCalledWith({
         userId: mockAuth.user.id,
         res: mockRes,
@@ -68,10 +95,12 @@ describe('AuthService', () => {
       jest.spyOn(authService, 'findOneByUserFromAuth').mockResolvedValue(null);
       jest.spyOn(authService, 'saveUser').mockResolvedValue(mockAuth);
 
-      await authService.signUp({ user: mockUser, res: mockRes });
+      await authService.signUp({ user: mockReqUser, res: mockRes });
 
-      expect(authService.findOneByUserFromAuth).toHaveBeenCalledWith({ user: mockUser });
-      expect(authService.saveUser).toHaveBeenCalledWith({ user: mockUser });
+      expect(authService.findOneByUserFromAuth).toHaveBeenCalledWith({
+        user: mockReqUser,
+      });
+      expect(authService.saveUser).toHaveBeenCalledWith({ user: mockReqUser });
     });
   });
 

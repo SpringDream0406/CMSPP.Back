@@ -1,7 +1,7 @@
 import { TestBed } from '@automock/jest';
 import { CustomAuthGuard } from '../guard/customAuth.guard';
 import { CommonService } from '../common.service';
-import { createMockExecutionContext, mockToken, mockUserId } from './unit.mockdata';
+import { createMockExecutionContext, mockToken, mockUserId } from './test.mockdata';
 import { Public } from '../decorator/public.decorator';
 
 describe('CustomAuthGuard', () => {

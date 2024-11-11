@@ -5,7 +5,7 @@ import { AuthService } from 'src/apis/01.Auth/auth.service';
 import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
 import { User } from 'src/apis/02.User/entity/user.entity';
 import { AppModule } from 'src/app.module';
-import { mockingAuths, mockingUsers } from 'src/common/__test__/e2e.mockdata';
+import { mockingAuths, mockingUsers } from 'src/common/__test__/db.mockdata';
 import {
   mockAddExpenseDto,
   mockAddFixedExpenseDto,
@@ -13,7 +13,7 @@ import {
   mockAddSRecDto,
   mockDelId,
   mockUserId,
-} from 'src/common/__test__/unit.mockdata';
+} from 'src/common/__test__/test.mockdata';
 import { DataSource } from 'typeorm';
 import {
   E2eError,
@@ -58,8 +58,8 @@ describe('SppController (e2e)', () => {
     const authRepository = dataSource.getRepository(Auth);
     const userReposityory = dataSource.getRepository(User);
 
-    users = mockingUsers(userReposityory);
-    auths = mockingAuths(authRepository, users);
+    users = mockingUsers([1, 2], userReposityory);
+    auths = mockingAuths([1, 2], authRepository, users);
 
     await userReposityory.save(users);
     await authRepository.save(auths);

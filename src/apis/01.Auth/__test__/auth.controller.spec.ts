@@ -7,7 +7,7 @@ import {
   mockRes,
   mockSecret,
   mockUserId,
-} from 'src/common/__test__/unit.mockdata';
+} from 'src/common/__test__/test.mockdata';
 import { UnauthorizedException } from '@nestjs/common';
 
 describe('AuthController', () => {

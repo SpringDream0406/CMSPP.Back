@@ -8,7 +8,7 @@ import {
 import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
 import { AuthService } from '../auth.service';
-import { mockUserId } from 'src/common/__test__/unit.mockdata';
+import { mockUserId } from 'src/common/__test__/test.mockdata';
 import { DynamicAuthGuard, SOCIAL_PROVIDERS } from '../guards/dynamic-auth.guard';
 import { DataSource } from 'typeorm';
 import { E2eError, E2eUpdate } from 'src/common/__test__/e2e.interface';

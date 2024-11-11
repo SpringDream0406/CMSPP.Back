@@ -25,7 +25,8 @@
     "test:auth:watch": "jest --watch --testPathPattern=src/apis/01.Auth --coverage --collectCoverageFrom=src/apis/01.Auth/**",
     "test:user:watch": "jest --watch --testPathPattern=src/apis/02.User --coverage --collectCoverageFrom=src/apis/02.User/**",
     "test:spp:watch": "jest --watch --testPathPattern=src/apis/03.SPP --coverage --collectCoverageFrom=src/apis/03.SPP/**",
-    "test:common:watch": "jest --watch --testPathPattern=src/common --coverage --collectCoverageFrom=src/common/**"
+    "test:common:watch": "jest --watch --testPathPattern=src/common --coverage --collectCoverageFrom=src/common/**",
+    "test:int": "jest --testRegex='.*\\integration.spec\\.ts$'"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
@@ -76,6 +77,7 @@
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
     "source-map-support": "^0.5.21",
+    "sqlite3": "^5.1.7",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
