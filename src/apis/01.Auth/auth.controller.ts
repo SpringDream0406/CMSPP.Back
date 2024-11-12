@@ -1,6 +1,5 @@
 import {
   Controller,
-  Delete,
   Get,
   Req,
   Res,
@@ -12,7 +11,6 @@ import { DynamicAuthGuard } from './guards/dynamic-auth.guard';
 import { IOAuthUser } from './interface/auth.interface';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { DeleteResult } from 'typeorm';
 import { envKeys } from 'src/common/config/validation.schema';
 import { Public } from 'src/common/decorator/public.decorator';
 import { UserId } from 'src/common/decorator/userId.decorator';
@@ -37,12 +35,6 @@ export class AuthController {
     }
     await this.authService.signUp({ ...req, res });
     res.redirect(this.configService.get(envKeys.redirectURL));
-  }
-
-  // 회원탈퇴
-  @Delete('withdrawal')
-  withdrawal(@UserId() userId: number): Promise<DeleteResult> {
-    return this.authService.withdrawal({ userId });
   }
 
   // 엑세스 토큰 발급

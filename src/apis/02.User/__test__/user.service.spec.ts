@@ -1,10 +1,12 @@
 import { TestBed } from '@automock/jest';
 import { UserService } from '../user.service';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BadRequestException } from '@nestjs/common';
 import {
+  mockDeleteResultAffected_0,
+  mockDeleteResultAffected_1,
   mockUpdateMyInfoDto,
   mockUpdateResultAffected_1,
   mockUser,
@@ -66,6 +68,34 @@ describe('UserService', () => {
       ).rejects.toThrow(BadRequestException);
       expect(userService.findOneByBusinessNumber).toHaveBeenCalledWith({
         businessNumber: mockUpdateMyInfoDto.businessNumber,
+      });
+    });
+  });
+
+  describe('withdrawal', () => {
+    it('회원탈퇴: 성공', async () => {
+      jest
+        .spyOn(userReposityory, 'softDelete')
+        .mockResolvedValue(mockDeleteResultAffected_1 as UpdateResult);
+
+      const result = await userService.withdrawal({ userId: mockUserId });
+
+      expect(result).toBe(mockDeleteResultAffected_1);
+      expect(userReposityory.softDelete).toHaveBeenCalledWith({
+        id: mockUserId,
+      });
+    });
+
+    it('회원탈퇴: 결과 없는경우 404 에러', () => {
+      jest
+        .spyOn(userReposityory, 'softDelete')
+        .mockResolvedValue(mockDeleteResultAffected_0 as UpdateResult);
+
+      expect(userService.withdrawal({ userId: mockUserId })).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(userReposityory.softDelete).toHaveBeenCalledWith({
+        id: mockUserId,
       });
     });
   });

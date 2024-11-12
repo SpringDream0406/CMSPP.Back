@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Put } from '@nestjs/common';
 import { UpdateMyInfoDto } from './dto/user-container.dto';
 import { UserService } from './user.service';
 import { User } from './entity/user.entity';
-import { UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { UserId } from 'src/common/decorator/userId.decorator';
 
 @Controller('user')
@@ -25,5 +25,11 @@ export class UserController {
       userId,
       updateMyInfoDto,
     });
+  }
+
+  // 회원탈퇴
+  @Delete()
+  withdrawal(@UserId() userId: number): Promise<DeleteResult> {
+    return this.userService.withdrawal({ userId });
   }
 }

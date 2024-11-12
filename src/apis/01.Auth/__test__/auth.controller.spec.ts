@@ -2,12 +2,7 @@ import { TestBed } from '@automock/jest';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { ConfigService } from '@nestjs/config';
-import {
-  mockDeleteResultAffected_1,
-  mockRes,
-  mockSecret,
-  mockUserId,
-} from 'src/common/__test__/test.mockdata';
+import { mockRes, mockSecret, mockUserId } from 'src/common/__test__/test.mockdata';
 import { UnauthorizedException } from '@nestjs/common';
 
 describe('AuthController', () => {
@@ -43,17 +38,6 @@ describe('AuthController', () => {
         UnauthorizedException,
       );
       expect(authService.signUp).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('withdrawal', () => {
-    it('회원탈퇴', async () => {
-      jest.spyOn(authService, 'withdrawal').mockResolvedValue(mockDeleteResultAffected_1);
-
-      const result = await authController.withdrawal(mockUserId);
-
-      expect(result).toBe(mockDeleteResultAffected_1);
-      expect(authService.withdrawal).toHaveBeenCalledWith({ userId: mockUserId });
     });
   });
 

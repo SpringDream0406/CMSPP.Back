@@ -16,6 +16,8 @@ import {
   mockAddSRecDto,
 } from './test.mockdata';
 
+console.log(`.env${process.env.NODE_ENV ?? ''}`);
+
 describe('TasksService - Integration Test', () => {
   let tasksService: TasksService;
   let dataSource: DataSource;
@@ -59,16 +61,16 @@ describe('TasksService - Integration Test', () => {
 
     tasksService = module.get<TasksService>(TasksService);
     dataSource = module.get<DataSource>(DataSource);
-  });
 
-  beforeEach(async () => {
     userRepository = dataSource.getRepository(User);
     authRepository = dataSource.getRepository(Auth);
     solarRepository = dataSource.getRepository(Solar);
     sRecRepository = dataSource.getRepository(SRec);
     expenseRepository = dataSource.getRepository(Expense);
     fixedExpenseRepository = dataSource.getRepository(FixedExpense);
+  });
 
+  beforeEach(async () => {
     users = mockingUsers([1, 2], userRepository);
     auths = mockingAuths([1, 2], authRepository, users);
     solars = mockingSpp<Solar>([1, 2], solarRepository, users, mockAddSolarDto);
@@ -108,8 +110,8 @@ describe('TasksService - Integration Test', () => {
       const fixedExpenseBefore = await fixedExpenseRepository.find();
 
       // 1명의 탈퇴일을 7일 이상의 날짜로 변경
-      const updateResult = await authRepository.update(
-        { uid: '123e4567-e89b-12d3-a456-426614174001' },
+      const updateResult = await userRepository.update(
+        { id: 1 },
         { deletedAt: new Date(`2024-01-01`) },
       );
 

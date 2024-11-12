@@ -1,15 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
 import { User } from 'src/apis/02.User/entity/user.entity';
 import { LessThan, Repository } from 'typeorm';
 
 @Injectable()
 export class TasksService {
   constructor(
-    @InjectRepository(Auth)
-    private readonly authRepository: Repository<Auth>, //
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
@@ -20,13 +17,10 @@ export class TasksService {
     const before7days = new Date();
     before7days.setDate(before7days.getDate() - 7);
 
-    const softDeletedUsers = await this.authRepository.find({
-      where: { deletedAt: LessThan(before7days) },
-      select: ['user'],
-      relations: ['user'],
-      withDeleted: true,
+    await this.userRepository.delete({
+      deletedAt: LessThan(before7days),
     });
 
-    await this.userRepository.remove(softDeletedUsers.map((auth) => auth.user));
+    // await this.userRepository.remove(softDeletedUsers.map((auth) => auth.user));
   }
 }

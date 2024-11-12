@@ -4,7 +4,7 @@ import { FixedExpense } from 'src/apis/03.SPP/entity/fixedExpense.entity';
 import { SRec } from 'src/apis/03.SPP/entity/sRec.entity';
 import { Solar } from 'src/apis/03.SPP/entity/solar.entity';
 import { BaseTable } from 'src/common/entity/base.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, OneToMany } from 'typeorm';
 
 export enum Role {
   CM,
@@ -49,4 +49,7 @@ export class User extends BaseTable {
     enum: Role,
   })
   role: Role;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

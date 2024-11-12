@@ -2,6 +2,7 @@ import { TestBed } from '@automock/jest';
 import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
 import {
+  mockDeleteResultAffected_1,
   mockUpdateMyInfoDto,
   mockUpdateResultAffected_1,
   mockUser,
@@ -49,6 +50,17 @@ describe('UserController', () => {
         userId: mockUserId,
         updateMyInfoDto: mockUpdateMyInfoDto,
       });
+    });
+  });
+
+  describe('withdrawal', () => {
+    it('회원탈퇴', async () => {
+      jest.spyOn(userService, 'withdrawal').mockResolvedValue(mockDeleteResultAffected_1);
+
+      const result = await userController.withdrawal(mockUserId);
+
+      expect(result).toBe(mockDeleteResultAffected_1);
+      expect(userService.withdrawal).toHaveBeenCalledWith({ userId: mockUserId });
     });
   });
 });

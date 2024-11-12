@@ -1,5 +1,6 @@
 import { ExecutionContext } from '@nestjs/common';
 import { Response } from 'express';
+import { IOAuthUserData } from 'src/apis/01.Auth/interface/auth.interface';
 import { UpdateMyInfoDto } from 'src/apis/02.User/dto/user-container.dto';
 import { Role, User } from 'src/apis/02.User/entity/user.entity';
 import {
@@ -22,6 +23,8 @@ export const mockUpdateResultAffected_1: UpdateResult = {
 
 export const mockDeleteResultAffected_1: DeleteResult = { raw: [], affected: 1 };
 export const mockDeleteResultAffected_0: DeleteResult = { raw: [], affected: 0 };
+
+export const mockReqUser: IOAuthUserData = { id: 'testId', provider: 'google' };
 
 export const mockRes = {
   redirect: jest.fn(),
@@ -103,6 +106,7 @@ export const mockUser: User = {
   fixedExpense: [mockFixedExpense],
   role: Role.USER,
   createdAt: new Date('2024-11-07T00:00:00Z'),
+  deletedAt: null,
 };
 
 export const createMockExecutionContext = (mockReq: any) =>

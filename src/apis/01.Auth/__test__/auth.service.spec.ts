@@ -1,25 +1,23 @@
-import { Repository, UpdateResult } from 'typeorm';
 import { AuthService } from '../auth.service';
 import { TestBed } from '@automock/jest';
 import { Auth } from '../entity/auth.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { IOAuthUserData } from '../interface/auth.interface';
-import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
-  mockDeleteResultAffected_0,
-  mockDeleteResultAffected_1,
+  mockReqUser,
   mockRes,
   mockSecret,
   mockToken,
   mockUpdateResultAffected_1,
   mockUserId,
 } from 'src/common/__test__/test.mockdata';
+import { UserService } from 'src/apis/02.User/user.service';
+
+console.log(`.env${process.env.NODE_ENV ?? ''}`);
 
 describe('AuthService', () => {
   let authService: AuthService;
-  let authRepository: jest.Mocked<Repository<Auth>>;
+  let userService: UserService;
   let jwtService: jest.Mocked<JwtService>;
   let configService: jest.Mocked<ConfigService>;
 
@@ -27,7 +25,7 @@ describe('AuthService', () => {
     const { unit, unitRef } = TestBed.create(AuthService).compile();
 
     authService = unit;
-    authRepository = unitRef.get(getRepositoryToken(Auth) as string);
+    userService = unitRef.get(UserService);
     jwtService = unitRef.get(JwtService);
     configService = unitRef.get(ConfigService);
   });
@@ -41,7 +39,6 @@ describe('AuthService', () => {
   });
 
   describe('signUp', () => {
-    const mockReqUser: IOAuthUserData = { id: 'testId', provider: 'google' };
     const mockAuth = {
       ...mockReqUser,
       user: { id: 1 },
@@ -65,10 +62,13 @@ describe('AuthService', () => {
       });
     });
 
-    it('재가입: auth(DB)에 softDelete된 데이터가 있을 때, 기존 데이터를 restore 하고 사용함.', async () => {
+    it('재가입: user(DB)에 softDelete된 데이터가 있을 때, 기존 데이터를 restore 하고 사용함.', async () => {
       const softDeletedMockAuth = {
-        ...mockAuth,
-        deletedAt: new Date('2024-01-01'),
+        ...mockReqUser,
+        user: {
+          id: 1,
+          deletedAt: new Date('2024-01-01'),
+        },
       } as Auth;
 
       jest
@@ -76,7 +76,7 @@ describe('AuthService', () => {
         .mockResolvedValue(softDeletedMockAuth);
 
       jest
-        .spyOn(authService, 'restoreUser')
+        .spyOn(userService, 'restoreUser')
         .mockResolvedValue(mockUpdateResultAffected_1);
 
       await authService.signUp({ user: mockReqUser, res: mockRes });
@@ -84,7 +84,7 @@ describe('AuthService', () => {
       expect(authService.findOneByUserFromAuth).toHaveBeenCalledWith({
         user: mockReqUser,
       });
-      expect(authService.restoreUser).toHaveBeenCalledWith(softDeletedMockAuth);
+      expect(userService.restoreUser).toHaveBeenCalledWith(softDeletedMockAuth);
       expect(authService.setRefreshToken).toHaveBeenCalledWith({
         userId: mockAuth.user.id,
         res: mockRes,
@@ -101,34 +101,6 @@ describe('AuthService', () => {
         user: mockReqUser,
       });
       expect(authService.saveUser).toHaveBeenCalledWith({ user: mockReqUser });
-    });
-  });
-
-  describe('withdrawal', () => {
-    it('회원탈퇴: 성공', async () => {
-      jest
-        .spyOn(authRepository, 'softDelete')
-        .mockResolvedValue(mockDeleteResultAffected_1 as UpdateResult);
-
-      const result = await authService.withdrawal({ userId: mockUserId });
-
-      expect(result).toBe(mockDeleteResultAffected_1);
-      expect(authRepository.softDelete).toHaveBeenCalledWith({
-        user: { id: mockUserId },
-      });
-    });
-
-    it('회원탈퇴: 결과 없는경우 404 에러', () => {
-      jest
-        .spyOn(authRepository, 'softDelete')
-        .mockResolvedValue(mockDeleteResultAffected_0 as UpdateResult);
-
-      expect(authService.withdrawal({ userId: mockUserId })).rejects.toThrow(
-        BadRequestException,
-      );
-      expect(authRepository.softDelete).toHaveBeenCalledWith({
-        user: { id: mockUserId },
-      });
     });
   });
 

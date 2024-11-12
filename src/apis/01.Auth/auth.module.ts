@@ -4,11 +4,10 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Auth } from './entity/auth.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtAccessStrategy } from 'src/common/auth/jwt-access.strategy';
-import { JwtRefreshStrategy } from 'src/common/auth/jwt-refresh.strategy';
 import { JwtGoogleStrategy } from 'src/common/auth/jwt-social-google.strategy';
 import { JwtKakaoStrategy } from 'src/common/auth/jwt-social-kakao.strategy';
 import { JwtNaverStrategy } from 'src/common/auth/jwt-social-naver.strategy';
+import { UserModule } from '../02.User/user.module';
 
 @Module({
   imports: [
@@ -16,11 +15,10 @@ import { JwtNaverStrategy } from 'src/common/auth/jwt-social-naver.strategy';
       Auth, //
     ]), //
     JwtModule.register({}),
+    UserModule,
   ],
   providers: [
     AuthService, //
-    JwtAccessStrategy,
-    JwtRefreshStrategy,
     JwtGoogleStrategy,
     JwtKakaoStrategy,
     JwtNaverStrategy,
@@ -29,7 +27,7 @@ import { JwtNaverStrategy } from 'src/common/auth/jwt-social-naver.strategy';
     AuthController, //
   ],
   exports: [
-    // AuthService, //
+    AuthService, //
   ],
 })
 export class AuthModule {}

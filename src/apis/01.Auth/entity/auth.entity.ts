@@ -3,7 +3,6 @@ import { User } from 'src/apis/02.User/entity/user.entity';
 import {
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
@@ -31,7 +30,4 @@ export class Auth {
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
 }

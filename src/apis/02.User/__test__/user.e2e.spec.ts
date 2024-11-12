@@ -10,12 +10,16 @@ import { mockingAuths, mockingUsers } from 'src/common/__test__/db.mockdata';
 import { AppModule } from 'src/app.module';
 import { E2eError, E2eUpdate, E2eUser } from 'src/common/__test__/e2e.interface';
 
+console.log(`.env${process.env.NODE_ENV ?? ''}`);
+
 describe('UserController (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
 
   let accessToken: string;
   let accessToken2: string;
+  let outAccessToken: string;
+  let expiredAccessToken: string;
 
   let users: User[];
   let auths: Auth[];
@@ -38,6 +42,8 @@ describe('UserController (e2e)', () => {
     const authService = moduleFixture.get<AuthService>(AuthService);
     accessToken = authService.getAccessToken({ userId: mockUserId });
     accessToken2 = authService.getAccessToken({ userId: 2 });
+    outAccessToken = authService.getAccessToken({ userId: 99999 });
+    expiredAccessToken = authService.getExpiredAccessToken({ userId: mockUserId });
 
     const authRepository = dataSource.getRepository(Auth);
     const userReposityory = dataSource.getRepository(User);
@@ -92,6 +98,50 @@ describe('UserController (e2e)', () => {
 
       expect(statusCode).toBe(400);
       expect(body.message).toBe('사업자 번호 중복');
+    });
+  });
+
+  describe('[DELETE /user]', () => {
+    it('회원탈퇴 성공', async () => {
+      const { statusCode, body }: E2eUpdate = await request(app.getHttpServer())
+        .delete('/user')
+        .set('authorization', `Bearer ${accessToken}`);
+
+      expect(statusCode).toBe(200);
+      expect(body.affected).toBe(1);
+    });
+
+    it('회원탈퇴 실패: 탈퇴 실패 DB', async () => {
+      const { statusCode, body }: E2eError = await request(app.getHttpServer())
+        .delete('/user')
+        .set('authorization', `Bearer ${outAccessToken}`);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toBe('탈퇴 실패 DB');
+    });
+  });
+
+  describe('[DELETE /user - accessToken검증 통합테스트]', () => {
+    it('엑세스 토큰 검증 실패: accessToken 만료', async () => {
+      const { statusCode } = await request(app.getHttpServer())
+        .delete('/user')
+        .set('authorization', `Bearer ${expiredAccessToken}`);
+
+      expect(statusCode).toBe(401);
+    });
+
+    it.each([
+      ['authorization가 비어있는 경우', ''],
+      ['Bearer 글자가 없는 경우', ` ${accessToken}`],
+      ['Bearer 대신 다른 글자가 있는 경우', `mock ${accessToken}`],
+      ['accessToken이 없는 경우', `Bearer `],
+      ['잘못된 토큰 형식', 'test'],
+    ])('엑세스 토큰 검증 실패: %s', async (_, token) => {
+      const { statusCode } = await request(app.getHttpServer())
+        .delete('/user')
+        .set('authorization', token);
+
+      expect(statusCode).toBe(403);
     });
   });
 });

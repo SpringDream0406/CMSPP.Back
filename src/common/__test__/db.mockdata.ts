@@ -23,7 +23,6 @@ export const mockingAuths = (
       provider: `social${x}`,
       user: users[x - 1],
       createdAt: new Date(`2024-11-${x}`),
-      deletedAt: null,
     }),
   );
 

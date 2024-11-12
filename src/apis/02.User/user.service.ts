@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import {
   IFindOneByBusinessNumber,
   IRfindOneByUserIdForSpp,
   IUpdateMyInfoInput,
 } from './interface/user-service.interface';
 import { userId } from '../01.Auth/interface/auth.interface';
+import { Auth } from '../01.Auth/entity/auth.entity';
 
 @Injectable()
 export class UserService {
@@ -69,5 +70,20 @@ export class UserService {
       throw new BadRequestException('사업자 번호 중복');
     }
     return this.userReposityory.update({ id: userId }, updateMyInfoDto);
+  }
+
+  /** 회원탈퇴__ softDelete, 삭제 결과 없으면 에러 */
+  async withdrawal({ userId }: userId): Promise<DeleteResult> {
+    const result = await this.userReposityory.softDelete({ id: userId });
+    if (result.affected === 0) {
+      throw new BadRequestException('탈퇴 실패 DB');
+    }
+    return result;
+  }
+
+  /* istanbul ignore next */
+  /** 회원 재가입__ 탈퇴시 softDelete 상태를 null 처리 */
+  restoreUser(auth: Auth): Promise<UpdateResult> {
+    return this.userReposityory.restore(auth.user.id);
   }
 }

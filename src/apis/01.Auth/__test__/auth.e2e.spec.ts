@@ -11,7 +11,9 @@ import { AuthService } from '../auth.service';
 import { mockUserId } from 'src/common/__test__/test.mockdata';
 import { DynamicAuthGuard, SOCIAL_PROVIDERS } from '../guards/dynamic-auth.guard';
 import { DataSource } from 'typeorm';
-import { E2eError, E2eUpdate } from 'src/common/__test__/e2e.interface';
+import { E2eError } from 'src/common/__test__/e2e.interface';
+
+console.log(`.env${process.env.NODE_ENV ?? ''}`);
 
 const mockDynamicAuthGuard = {
   canActivate: (context: ExecutionContext) => {
@@ -31,9 +33,8 @@ describe('AuthController (e2e)', () => {
 
   let refreshToken: string;
   let expiredRefreshToken: string;
+
   let accessToken: string;
-  let outAccessToken: string;
-  let expiredAccessToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -58,8 +59,6 @@ describe('AuthController (e2e)', () => {
     refreshToken = authService.getRefreshToken({ userId: mockUserId });
     expiredRefreshToken = authService.getExpiredRefreshToken({ userId: mockUserId });
     accessToken = authService.getAccessToken({ userId: mockUserId });
-    outAccessToken = authService.getAccessToken({ userId: 99999 });
-    expiredAccessToken = authService.getExpiredAccessToken({ userId: mockUserId });
   });
 
   afterAll(async () => {
@@ -100,25 +99,22 @@ describe('AuthController (e2e)', () => {
       expect(statusCode).toBe(400);
       expect(body.message).toBe('잘못된 소셜 요청');
     });
-  });
 
-  describe('[DELETE /withdrawal]', () => {
-    it('회원탈퇴 성공', async () => {
-      const { statusCode, body }: E2eUpdate = await request(app.getHttpServer())
-        .delete('/withdrawal')
-        .set('authorization', `Bearer ${accessToken}`);
+    it('회원 재가입(탈퇴 회원으로 7일 이내 재 로그인)', async () => {
+      // 회원 탈퇴
+      await request(app.getHttpServer())
+        .delete('/user')
+        .set('authorization', `Bearer ${accessToken}`)
+        .expect(200);
 
-      expect(statusCode).toBe(200);
-      expect(body.affected).toBe(1);
-    });
+      const { statusCode, headers } = await request(app.getHttpServer()).get(
+        `/signup/google`,
+      );
 
-    it('회원탈퇴 실패: 탈퇴 실패 DB', async () => {
-      const { statusCode, body }: E2eError = await request(app.getHttpServer())
-        .delete('/withdrawal')
-        .set('authorization', `Bearer ${outAccessToken}`);
-
-      expect(statusCode).toBe(400);
-      expect(body.message).toBe('탈퇴 실패 DB');
+      expect(statusCode).toBe(302);
+      expect(headers['set-cookie']).toBeDefined();
+      const hashRefreshToken = headers['set-cookie'][0].includes('refreshToken=');
+      expect(hashRefreshToken).toBe(true);
     });
   });
 
@@ -151,30 +147,6 @@ describe('AuthController (e2e)', () => {
       const { statusCode } = await request(app.getHttpServer())
         .get('/getAccessToken')
         .set('cookie', token);
-
-      expect(statusCode).toBe(403);
-    });
-  });
-
-  describe('[DELETE /withdrawal - accessToken검증 통합테스트]', () => {
-    it('엑세스 토큰 검증 실패: accessToken 만료', async () => {
-      const { statusCode } = await request(app.getHttpServer())
-        .delete('/withdrawal')
-        .set('authorization', `Bearer ${expiredAccessToken}`);
-
-      expect(statusCode).toBe(401);
-    });
-
-    it.each([
-      ['authorization가 비어있는 경우', ''],
-      ['Bearer 글자가 없는 경우', ` ${accessToken}`],
-      ['Bearer 대신 다른 글자가 있는 경우', `mock ${accessToken}`],
-      ['accessToken이 없는 경우', `Bearer `],
-      ['잘못된 토큰 형식', 'test'],
-    ])('엑세스 토큰 검증 실패: %s', async (_, token) => {
-      const { statusCode } = await request(app.getHttpServer())
-        .delete('/withdrawal')
-        .set('authorization', token);
 
       expect(statusCode).toBe(403);
     });
