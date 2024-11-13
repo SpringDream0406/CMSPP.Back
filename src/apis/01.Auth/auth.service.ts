@@ -3,9 +3,9 @@ import { DataSource, Repository } from 'typeorm';
 import { Auth } from './entity/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  IAuthServiceSetRefreshToken,
-  IAuthServiceSignUp,
   IOAuthUser,
+  ISetRefreshToken,
+  ISignUp,
   userId,
 } from './interface/auth.interface';
 import { JwtService } from '@nestjs/jwt';
@@ -68,7 +68,7 @@ export class AuthService {
   }
 
   /** 로그인/회원가입__ Auth에서 검색해보고 없으면 회원가입 후 userId 쿠키에 넣기 */
-  async signUp({ user, res }: IAuthServiceSignUp): Promise<void> {
+  async signUp({ user, res }: ISignUp): Promise<void> {
     let auth = await this.findOneByUserFromAuth({ user });
 
     if (auth && auth.user.deletedAt) {
@@ -128,7 +128,7 @@ export class AuthService {
   }
 
   /** 리프래시토큰 세팅__ */
-  setRefreshToken({ userId, res }: IAuthServiceSetRefreshToken): void {
+  setRefreshToken({ userId, res }: ISetRefreshToken): void {
     const refreshToken = this.getRefreshToken({ userId });
     const env = this.configService.get(envKeys.env);
 

@@ -20,7 +20,5 @@ export class TasksService {
     await this.userRepository.delete({
       deletedAt: LessThan(before7days),
     });
-
-    // await this.userRepository.remove(softDeletedUsers.map((auth) => auth.user));
   }
 }

@@ -8,7 +8,7 @@ export interface IOAuthUserData {
 export interface IOAuthUser {
   user: IOAuthUserData;
 }
-export interface IAuthServiceSignUp {
+export interface ISignUp {
   user: IOAuthUserData;
   res: Response;
 }
@@ -24,6 +24,6 @@ export interface userId {
   userId: number;
 }
 
-export interface IAuthServiceSetRefreshToken extends userId {
+export interface ISetRefreshToken extends userId {
   res: Response;
 }

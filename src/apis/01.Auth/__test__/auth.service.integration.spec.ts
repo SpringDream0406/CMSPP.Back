@@ -30,7 +30,7 @@ describe('AuthService - Integration Test', () => {
         ConfigModule.forRoot({
           validationSchema: validationSchema,
           envFilePath: `.env${process.env.NODE_ENV ?? ''}`,
-        }), //
+        }),
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: ':memory:',
