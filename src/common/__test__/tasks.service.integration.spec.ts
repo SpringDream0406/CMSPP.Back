@@ -8,13 +8,7 @@ import { Solar } from 'src/apis/03.SPP/entity/solar.entity';
 import { SRec } from 'src/apis/03.SPP/entity/sRec.entity';
 import { Expense } from 'src/apis/03.SPP/entity/expense.entity';
 import { FixedExpense } from 'src/apis/03.SPP/entity/fixedExpense.entity';
-import { mockingAuths, mockingSpp, mockingUsers } from './db.mockdata';
-import {
-  mockAddExpenseDto,
-  mockAddFixedExpenseDto,
-  mockAddSolarDto,
-  mockAddSRecDto,
-} from './test.mockdata';
+import { DBMockData } from '../data/db.mockdata';
 
 console.log(`.env${process.env.NODE_ENV ?? ''}`);
 
@@ -71,17 +65,13 @@ describe('TasksService - Integration Test', () => {
   });
 
   beforeEach(async () => {
-    users = mockingUsers([1, 2], userRepository);
-    auths = mockingAuths([1, 2], authRepository, users);
-    solars = mockingSpp<Solar>([1, 2], solarRepository, users, mockAddSolarDto);
-    sRecs = mockingSpp<SRec>([1, 2], sRecRepository, users, mockAddSRecDto);
-    expenses = mockingSpp<Expense>([1, 2], expenseRepository, users, mockAddExpenseDto);
-    fixedExpenses = mockingSpp<FixedExpense>(
-      [1, 2],
-      fixedExpenseRepository,
-      users,
-      mockAddFixedExpenseDto,
-    );
+    users = DBMockData.users([1, 2], userRepository);
+    auths = DBMockData.auths([1, 2], authRepository, users);
+    solars = DBMockData.spp<Solar>([1, 2], solarRepository, users);
+
+    sRecs = DBMockData.spp<SRec>([1, 2], sRecRepository, users);
+    expenses = DBMockData.spp<Expense>([1, 2], expenseRepository, users);
+    fixedExpenses = DBMockData.spp<FixedExpense>([1, 2], fixedExpenseRepository, users);
 
     await userRepository.save(users);
     await authRepository.save(auths);
@@ -99,7 +89,9 @@ describe('TasksService - Integration Test', () => {
     expect(tasksService).toBeDefined();
   });
 
+  // --
   describe('removeSoftDeletedUsers', () => {
+    // --
     it('회원탈퇴 7일 이상인 사용자 정보 전체 삭제', async () => {
       // 2명의 데이터 삽입 제대로 되어있나 확인
       const authBefore = await authRepository.find();
@@ -109,31 +101,38 @@ describe('TasksService - Integration Test', () => {
       const expenseBefore = await expenseRepository.find();
       const fixedExpenseBefore = await fixedExpenseRepository.find();
 
-      // 1명의 탈퇴일을 7일 이상의 날짜로 변경
-      const updateResult = await userRepository.update(
-        { id: 1 },
-        { deletedAt: new Date(`2024-01-01`) },
-      );
-
-      // 삭제 실행
-      await tasksService.removeSoftDeletedUsers();
-
-      // 1명의 데이터 삭제 되어 전부 남은 1명의 데이터만 있나 확인
-      const authAfter = await authRepository.find();
-      const userAfter = await userRepository.find();
-      const solarAfter = await solarRepository.find();
-      const sRecAfter = await solarRepository.find();
-      const expenseAfter = await solarRepository.find();
-      const fixedExpenseAfter = await solarRepository.find();
-
       expect(authBefore).toHaveLength(2);
       expect(userBefore).toHaveLength(2);
       expect(solarBefore).toHaveLength(2);
       expect(sRecBefore).toHaveLength(2);
       expect(expenseBefore).toHaveLength(2);
       expect(fixedExpenseBefore).toHaveLength(2);
+
+      // 1명의 탈퇴일을 7일 이상의 날짜로 변경
+      const deletedUserId = 1;
+
+      const updateResult = await userRepository.update(
+        { id: deletedUserId },
+        { deletedAt: new Date(`2024-01-01`) },
+      );
+
       expect(updateResult.affected).toBe(1);
+
+      // 삭제 실행
+      await tasksService.removeSoftDeletedUsers();
+
+      // 1명의 데이터 삭제 되어 전부 남은 1명의 데이터만 있나 확인
+      const authAfter = await authRepository.find({
+        relations: { user: true },
+      });
+      const userAfter = await userRepository.find();
+      const solarAfter = await solarRepository.find();
+      const sRecAfter = await solarRepository.find();
+      const expenseAfter = await solarRepository.find();
+      const fixedExpenseAfter = await solarRepository.find();
+
       expect(authAfter).toHaveLength(1);
+      expect(authAfter[0].user.id).not.toBe(deletedUserId);
       expect(userAfter).toHaveLength(1);
       expect(solarAfter).toHaveLength(1);
       expect(sRecAfter).toHaveLength(1);

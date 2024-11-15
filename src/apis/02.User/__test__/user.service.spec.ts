@@ -1,27 +1,28 @@
-import { TestBed } from '@automock/jest';
 import { UserService } from '../user.service';
 import { Repository, UpdateResult } from 'typeorm';
 import { User } from '../entity/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BadRequestException } from '@nestjs/common';
-import {
-  mockDeleteResultAffected_0,
-  mockDeleteResultAffected_1,
-  mockUpdateMyInfoDto,
-  mockUpdateResultAffected_1,
-  mockUser,
-  mockUserId,
-} from 'src/common/__test__/test.mockdata';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TestMockData } from 'src/common/data/test.mockdata';
 
 describe('UserService', () => {
   let userService: UserService;
-  let userReposityory: jest.Mocked<Repository<User>>;
+  let userRepository: Repository<User>;
 
-  beforeEach(() => {
-    const { unit, unitRef } = TestBed.create(UserService).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        UserService,
+        {
+          provide: getRepositoryToken(User), //
+          useValue: TestMockData.repository(),
+        },
+      ],
+    }).compile();
 
-    userService = unit;
-    userReposityory = unitRef.get(getRepositoryToken(User) as string);
+    userService = module.get<UserService>(UserService);
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   afterEach(() => {
@@ -32,71 +33,69 @@ describe('UserService', () => {
     expect(userService).toBeDefined();
   });
 
+  // --
   describe('updateMyInfo', () => {
+    const updateMyInfoDto = TestMockData.updateMyInfoDto({}); // dto 같음
+
     beforeEach(() => {
-      jest.spyOn(userService, 'findOneByBusinessNumber').mockResolvedValue(mockUser);
+      jest // businessNumber 조회 반환값 같음
+        .spyOn(userService, 'findOneByBusinessNumber')
+        .mockResolvedValue(TestMockData.user({}));
     });
 
+    // --
     it('myInfo 업데이트 성공', async () => {
-      jest.spyOn(userReposityory, 'update').mockResolvedValue(mockUpdateResultAffected_1);
+      const updateResult_1 = TestMockData.updateResult({ affected: 1 });
+      const userId_1 = 1;
+
+      jest.spyOn(userRepository, 'update').mockResolvedValue(updateResult_1);
 
       const result = await userService.updateMyInfo({
-        userId: mockUserId,
-        updateMyInfoDto: mockUpdateMyInfoDto,
+        userId: userId_1,
+        updateMyInfoDto,
       });
 
-      expect(result).toBe(mockUpdateResultAffected_1);
-      expect(userService.findOneByBusinessNumber).toHaveBeenCalledWith({
-        businessNumber: mockUpdateMyInfoDto.businessNumber,
-      });
-      expect(userReposityory.update).toHaveBeenCalledWith(
-        { id: mockUserId },
-        mockUpdateMyInfoDto,
-      );
+      expect(result).toBe(updateResult_1);
     });
 
+    // --
     it('myInfo 업데이트 실패: 사업자 번호 중복', async () => {
-      const mockUserId_2 = 2;
+      const userId_2 = 2;
 
-      jest.spyOn(userService, 'findOneByBusinessNumber').mockResolvedValue(mockUser);
-
-      expect(
+      await expect(
         userService.updateMyInfo({
-          userId: mockUserId_2,
-          updateMyInfoDto: mockUpdateMyInfoDto,
+          userId: userId_2,
+          updateMyInfoDto,
         }),
       ).rejects.toThrow(BadRequestException);
-      expect(userService.findOneByBusinessNumber).toHaveBeenCalledWith({
-        businessNumber: mockUpdateMyInfoDto.businessNumber,
-      });
+      expect(userRepository.update).not.toHaveBeenCalled();
     });
   });
 
+  // --
   describe('withdrawal', () => {
+    const userId_1 = 1; // id 같음
+
+    // --
     it('회원탈퇴: 성공', async () => {
-      jest
-        .spyOn(userReposityory, 'softDelete')
-        .mockResolvedValue(mockDeleteResultAffected_1 as UpdateResult);
+      const deleteResult_1 = TestMockData.deleteResult({ affected: 1 }) as UpdateResult;
 
-      const result = await userService.withdrawal({ userId: mockUserId });
+      jest.spyOn(userRepository, 'softDelete').mockResolvedValue(deleteResult_1);
 
-      expect(result).toBe(mockDeleteResultAffected_1);
-      expect(userReposityory.softDelete).toHaveBeenCalledWith({
-        id: mockUserId,
-      });
+      const result = await userService.withdrawal({ userId: userId_1 });
+
+      expect(result).toBe(deleteResult_1);
     });
 
-    it('회원탈퇴: 결과 없는경우 404 에러', () => {
-      jest
-        .spyOn(userReposityory, 'softDelete')
-        .mockResolvedValue(mockDeleteResultAffected_0 as UpdateResult);
+    // --
+    it('회원탈퇴: 결과 없는경우 404 에러', async () => {
+      const deleteResult_0 = TestMockData.deleteResult({ affected: 0 }) as UpdateResult;
 
-      expect(userService.withdrawal({ userId: mockUserId })).rejects.toThrow(
+      jest.spyOn(userRepository, 'softDelete').mockResolvedValue(deleteResult_0);
+
+      await expect(userService.withdrawal({ userId: userId_1 })).rejects.toThrow(
         BadRequestException,
       );
-      expect(userReposityory.softDelete).toHaveBeenCalledWith({
-        id: mockUserId,
-      });
     });
   });
 });

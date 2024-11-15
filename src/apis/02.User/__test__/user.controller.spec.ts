@@ -1,13 +1,7 @@
 import { TestBed } from '@automock/jest';
 import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
-import {
-  mockDeleteResultAffected_1,
-  mockUpdateMyInfoDto,
-  mockUpdateResultAffected_1,
-  mockUser,
-  mockUserId,
-} from 'src/common/__test__/test.mockdata';
+import { TestMockData } from 'src/common/data/test.mockdata';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -20,47 +14,65 @@ describe('UserController', () => {
     userService = unitRef.get<UserService>(UserService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(userController).toBeDefined();
   });
 
+  // --
   describe('fetchMyInfo', () => {
+    // --
     it('myInfo 데이터 가져오기', async () => {
-      jest.spyOn(userService, 'findOneByUserIdForMyInfo').mockResolvedValue(mockUser);
+      const userId_1 = 1;
+      const user = TestMockData.user({});
 
-      const result = await userController.fetchMyInfo(mockUserId);
+      jest.spyOn(userService, 'findOneByUserIdForMyInfo').mockResolvedValue(user);
 
-      expect(result).toBe(mockUser);
+      const result = await userController.fetchMyInfo(userId_1);
+
+      expect(result).toBe(user);
       expect(userService.findOneByUserIdForMyInfo).toHaveBeenCalledWith({
-        userId: mockUserId,
+        userId: userId_1,
       });
     });
   });
 
+  // --
   describe('updateMyInfo', () => {
+    // --
     it('myInfo 업데이트', async () => {
-      jest
-        .spyOn(userService, 'updateMyInfo')
-        .mockResolvedValue(mockUpdateResultAffected_1);
+      const userId_1 = 1;
+      const updateResult_1 = TestMockData.updateResult({ affected: 1 });
+      const updateMyInfoDto = TestMockData.updateMyInfoDto({});
 
-      const result = await userController.updateMyInfo(mockUserId, mockUpdateMyInfoDto);
+      jest.spyOn(userService, 'updateMyInfo').mockResolvedValue(updateResult_1);
 
-      expect(result).toBe(mockUpdateResultAffected_1);
+      const result = await userController.updateMyInfo(userId_1, updateMyInfoDto);
+
+      expect(result).toBe(updateResult_1);
       expect(userService.updateMyInfo).toHaveBeenCalledWith({
-        userId: mockUserId,
-        updateMyInfoDto: mockUpdateMyInfoDto,
+        userId: userId_1,
+        updateMyInfoDto,
       });
     });
   });
 
+  // --
   describe('withdrawal', () => {
+    // --
     it('회원탈퇴', async () => {
-      jest.spyOn(userService, 'withdrawal').mockResolvedValue(mockDeleteResultAffected_1);
+      const userId_1 = 1;
+      const deleteResult_1 = TestMockData.deleteResult({ affected: 1 });
 
-      const result = await userController.withdrawal(mockUserId);
+      jest.spyOn(userService, 'withdrawal').mockResolvedValue(deleteResult_1);
 
-      expect(result).toBe(mockDeleteResultAffected_1);
-      expect(userService.withdrawal).toHaveBeenCalledWith({ userId: mockUserId });
+      const result = await userController.withdrawal(userId_1);
+
+      expect(result).toBe(deleteResult_1);
+      expect(userService.withdrawal).toHaveBeenCalledWith({ userId: userId_1 });
     });
   });
 });

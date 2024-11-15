@@ -8,10 +8,9 @@ import {
 import * as request from 'supertest';
 import { AppModule } from 'src/app.module';
 import { AuthService } from '../auth.service';
-import { mockUserId } from 'src/common/__test__/test.mockdata';
 import { DynamicAuthGuard, SOCIAL_PROVIDERS } from '../guards/dynamic-auth.guard';
 import { DataSource } from 'typeorm';
-import { E2eError } from 'src/common/__test__/e2e.interface';
+import { E2eError } from 'src/common/interface/e2e.interface';
 
 console.log(`.env${process.env.NODE_ENV ?? ''}`);
 
@@ -22,7 +21,7 @@ const mockDynamicAuthGuard = {
     if (!SOCIAL_PROVIDERS.includes(social)) {
       throw new BadRequestException('잘못된 소셜 요청');
     }
-    request.user = { id: 'mockSocailId', provider: social };
+    request.user = { id: 'testId', provider: social };
     return true;
   },
 };
@@ -55,10 +54,11 @@ describe('AuthController (e2e)', () => {
 
     dataSource = app.get<DataSource>(DataSource);
 
+    const userId = 1;
     const authService = moduleFixture.get<AuthService>(AuthService);
-    refreshToken = authService.getRefreshToken({ userId: mockUserId });
-    expiredRefreshToken = authService.getExpiredRefreshToken({ userId: mockUserId });
-    accessToken = authService.getAccessToken({ userId: mockUserId });
+    refreshToken = authService.getRefreshToken({ userId });
+    expiredRefreshToken = authService.getExpiredRefreshToken({ userId });
+    accessToken = authService.getAccessToken({ userId });
   });
 
   afterAll(async () => {
@@ -68,7 +68,9 @@ describe('AuthController (e2e)', () => {
     await app.close();
   });
 
+  // --
   describe('[GET /signup/:social]', () => {
+    // --
     it.each(SOCIAL_PROVIDERS)('회원가입 성공: %s', async (social) => {
       const { statusCode, headers } = await request(app.getHttpServer()).get(
         `/signup/${social}`,
@@ -76,10 +78,11 @@ describe('AuthController (e2e)', () => {
 
       expect(statusCode).toBe(302);
       expect(headers['set-cookie']).toBeDefined();
-      const hashRefreshToken = headers['set-cookie'][0].includes('refreshToken=');
-      expect(hashRefreshToken).toBe(true);
+      const haveRefreshToken = headers['set-cookie'][0].includes('refreshToken=');
+      expect(haveRefreshToken).toBe(true);
     });
 
+    // --
     it.each(SOCIAL_PROVIDERS)('로그인: %s', async (social) => {
       const { statusCode, headers } = await request(app.getHttpServer()).get(
         `/signup/${social}`,
@@ -87,10 +90,11 @@ describe('AuthController (e2e)', () => {
 
       expect(statusCode).toBe(302);
       expect(headers['set-cookie']).toBeDefined();
-      const hashRefreshToken = headers['set-cookie'][0].includes('refreshToken=');
-      expect(hashRefreshToken).toBe(true);
+      const haveRefreshToken = headers['set-cookie'][0].includes('refreshToken=');
+      expect(haveRefreshToken).toBe(true);
     });
 
+    // --
     it('회원가입/로그인 실패: 잘못된 소셜 요청', async () => {
       const { statusCode, body }: E2eError = await request(app.getHttpServer()).get(
         '/signup/test',
@@ -100,6 +104,7 @@ describe('AuthController (e2e)', () => {
       expect(body.message).toBe('잘못된 소셜 요청');
     });
 
+    // --
     it('회원 재가입(탈퇴 회원으로 7일 이내 재 로그인)', async () => {
       // 회원 탈퇴
       await request(app.getHttpServer())
@@ -118,7 +123,9 @@ describe('AuthController (e2e)', () => {
     });
   });
 
+  // --
   describe('[GET /getAccessToken - refreshToken 검증', () => {
+    // --
     it('엑세스토큰 발급 성공', async () => {
       const { statusCode, text } = await request(app.getHttpServer())
         .get('/getAccessToken')
@@ -129,6 +136,7 @@ describe('AuthController (e2e)', () => {
       expect(text).not.toBe(''); // accessToken 있는지 확인
     });
 
+    // --
     it('엑세스토큰 발급 실패: refreshToken 만료', async () => {
       const { statusCode } = await request(app.getHttpServer())
         .get('/getAccessToken')
@@ -137,6 +145,7 @@ describe('AuthController (e2e)', () => {
       expect(statusCode).toBe(401);
     });
 
+    // --
     it.each([
       ['cookie가 비어있는 경우', ''],
       ['refresh 글자가 없는 경우', `=${refreshToken}`],

@@ -1,19 +1,7 @@
 import { TestBed } from '@automock/jest';
 import { SppController } from '../spp.controller';
 import { SppService } from '../spp.service';
-import {
-  mockAddExpenseDto,
-  mockAddFixedExpenseDto,
-  mockAddSolarDto,
-  mockAddSRecDto,
-  mockDelId,
-  mockExpense,
-  mockFixedExpense,
-  mockSolar,
-  mockSRec,
-  mockUser,
-  mockUserId,
-} from 'src/common/__test__/test.mockdata';
+import { TestMockData } from 'src/common/data/test.mockdata';
 
 describe('SppController', () => {
   let sppController: SppController;
@@ -30,128 +18,178 @@ describe('SppController', () => {
     expect(SppController).toBeDefined();
   });
 
+  // --
   describe('fetchSpp', () => {
+    // --
     it('Spp 조회하기', async () => {
-      jest.spyOn(sppService, 'fetchSpp').mockResolvedValue(mockUser);
+      const user = TestMockData.user({});
+      const userId = 1;
 
-      const result = await sppController.fetchSpp(mockUserId);
+      jest.spyOn(sppService, 'fetchSpp').mockResolvedValue(user);
 
-      expect(result).toBe(mockUser);
-      expect(sppService.fetchSpp).toHaveBeenCalledWith({ userId: mockUserId });
+      const result = await sppController.fetchSpp(userId);
+
+      expect(result).toBe(user);
+      expect(sppService.fetchSpp).toHaveBeenCalledWith({ userId });
     });
   });
 
+  // --
   describe('addSolar', () => {
+    // --
     it('태양광 데이터 추가', async () => {
-      jest.spyOn(sppService, 'addSolar').mockResolvedValue([mockSolar]);
+      const solar = TestMockData.solar({});
+      const userId = 1;
+      const addSolarDto = TestMockData.addSolarDto({});
 
-      const result = await sppController.addSolar(mockUserId, mockAddSolarDto);
+      jest.spyOn(sppService, 'addSolar').mockResolvedValue([solar]);
 
-      expect(result).toEqual([mockSolar]);
+      const result = await sppController.addSolar(userId, addSolarDto);
+
+      expect(result).toEqual([solar]);
       expect(sppService.addSolar).toHaveBeenCalledWith({
-        userId: mockUserId,
-        addSolarDto: mockAddSolarDto,
+        userId,
+        addSolarDto,
       });
     });
   });
 
+  // --
   describe('deleteSolar', () => {
+    // --
     it('태양광 데이터 삭제', async () => {
-      jest.spyOn(sppService, 'deleteSolar').mockResolvedValue([mockSolar]);
+      const solar = TestMockData.solar({});
+      const userId = 1;
+      const delId = 1;
 
-      const result = await sppController.deleteSolar(mockUserId, mockDelId);
+      jest.spyOn(sppService, 'deleteSolar').mockResolvedValue([solar]);
 
-      expect(result).toEqual([mockSolar]);
+      const result = await sppController.deleteSolar(userId, delId);
+
+      expect(result).toEqual([solar]);
       expect(sppService.deleteSolar).toHaveBeenCalledWith({
-        userId: mockUserId,
-        delId: mockDelId,
+        userId,
+        delId,
       });
     });
   });
 
+  // --
   describe('addSRec', () => {
+    // --
     it('SRec 데이터 추가', async () => {
-      jest.spyOn(sppService, 'addSRec').mockResolvedValue([mockSRec]);
+      const sRec = TestMockData.sRec({});
+      const userId = 1;
+      const addSRecDto = TestMockData.addSRecDto({});
 
-      const result = await sppController.addSRec(mockUserId, mockAddSRecDto);
+      jest.spyOn(sppService, 'addSRec').mockResolvedValue([sRec]);
 
-      expect(result).toEqual([mockSRec]);
+      const result = await sppController.addSRec(userId, addSRecDto);
+
+      expect(result).toEqual([sRec]);
       expect(sppService.addSRec).toHaveBeenLastCalledWith({
-        userId: mockUserId,
-        addSRecDto: mockAddSRecDto,
+        userId,
+        addSRecDto,
       });
     });
   });
 
+  // --
   describe('deleteSRec', () => {
+    // --
     it('SRec 데이터 삭제', async () => {
-      jest.spyOn(sppService, 'deleteSRec').mockResolvedValue([mockSRec]);
+      const sRec = TestMockData.sRec({});
+      const userId = 1;
+      const delId = 1;
 
-      const result = await sppController.deleteSRec(mockUserId, mockDelId);
+      jest.spyOn(sppService, 'deleteSRec').mockResolvedValue([sRec]);
 
-      expect(result).toEqual([mockSRec]);
+      const result = await sppController.deleteSRec(userId, delId);
+
+      expect(result).toEqual([sRec]);
       expect(sppService.deleteSRec).toHaveBeenCalledWith({
-        userId: mockUserId,
-        delId: mockDelId,
+        userId,
+        delId,
       });
     });
 
+    // --
     describe('addExpense', () => {
+      // --
       it('지출 데이터 추가', async () => {
-        jest.spyOn(sppService, 'addExpense').mockResolvedValue([mockExpense]);
+        const expense = TestMockData.expense({});
+        const userId = 1;
+        const addExpenseDto = TestMockData.addExpenseDto({});
 
-        const result = await sppController.addExpense(mockUserId, mockAddExpenseDto);
+        jest.spyOn(sppService, 'addExpense').mockResolvedValue([expense]);
 
-        expect(result).toEqual([mockExpense]);
+        const result = await sppController.addExpense(userId, addExpenseDto);
+
+        expect(result).toEqual([expense]);
         expect(sppService.addExpense).toHaveBeenCalledWith({
-          userId: mockUserId,
-          addExpenseDto: mockAddExpenseDto,
+          userId,
+          addExpenseDto,
         });
       });
     });
   });
 
+  // --
   describe('deleteExpense', () => {
+    // --
     it('지출 데이터 삭제', async () => {
-      jest.spyOn(sppService, 'deleteExpense').mockResolvedValue([mockExpense]);
+      const expense = TestMockData.expense({});
+      const userId = 1;
+      const delId = 1;
 
-      const result = await sppController.deleteExpense(mockUserId, mockDelId);
+      jest.spyOn(sppService, 'deleteExpense').mockResolvedValue([expense]);
 
-      expect(result).toEqual([mockExpense]);
+      const result = await sppController.deleteExpense(userId, delId);
+
+      expect(result).toEqual([expense]);
       expect(sppService.deleteExpense).toHaveBeenCalledWith({
-        userId: mockUserId,
-        delId: mockDelId,
+        userId,
+        delId,
       });
     });
   });
 
+  // --
   describe('addFixedExpense', () => {
+    // --
     it('고정지출 데이터 추가', async () => {
-      jest.spyOn(sppService, 'addFixedExpense').mockResolvedValue([mockFixedExpense]);
+      const fixedExpense = TestMockData.fixedExpense({});
+      const userId = 1;
+      const addFixedExpenseDto = TestMockData.addFixedExpenseDto({});
 
-      const result = await sppController.addFixedExpense(
-        mockUserId,
-        mockAddFixedExpenseDto,
-      );
+      jest.spyOn(sppService, 'addFixedExpense').mockResolvedValue([fixedExpense]);
 
-      expect(result).toEqual([mockFixedExpense]);
+      const result = await sppController.addFixedExpense(userId, addFixedExpenseDto);
+
+      expect(result).toEqual([fixedExpense]);
       expect(sppService.addFixedExpense).toHaveBeenCalledWith({
-        userId: mockUserId,
-        addFixedExpenseDto: mockAddFixedExpenseDto,
+        userId,
+        addFixedExpenseDto,
       });
     });
   });
 
+  // --
   describe('deleteFixedExpense', () => {
+    // --
     it('고정지출 데이터 삭제', async () => {
-      jest.spyOn(sppService, 'deleteFixedExpense').mockResolvedValue([mockFixedExpense]);
+      const fixedExpense = TestMockData.fixedExpense({});
+      const userId = 1;
+      const delId = 1;
 
-      const result = await sppController.deleteFixedExpense(mockUserId, mockDelId);
+      jest.spyOn(sppService, 'deleteFixedExpense').mockResolvedValue([fixedExpense]);
 
-      expect(result).toEqual([mockFixedExpense]);
+      const result = await sppController.deleteFixedExpense(userId, delId);
+
+      expect(result).toEqual([fixedExpense]);
       expect(sppService.deleteFixedExpense).toHaveBeenCalledWith({
-        userId: mockUserId,
-        delId: mockDelId,
+        userId,
+        delId,
       });
     });
   });

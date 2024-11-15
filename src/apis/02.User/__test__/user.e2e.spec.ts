@@ -3,12 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { AuthService } from 'src/apis/01.Auth/auth.service';
-import { mockUpdateMyInfoDto, mockUserId } from 'src/common/__test__/test.mockdata';
 import { User } from '../entity/user.entity';
 import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
-import { mockingAuths, mockingUsers } from 'src/common/__test__/db.mockdata';
 import { AppModule } from 'src/app.module';
-import { E2eError, E2eUpdate, E2eUser } from 'src/common/__test__/e2e.interface';
+import { E2eError, E2eUpdate, E2eUser } from 'src/common/interface/e2e.interface';
+import { DBMockData } from 'src/common/data/db.mockdata';
+import { TestMockData } from 'src/common/data/test.mockdata';
 
 console.log(`.env${process.env.NODE_ENV ?? ''}`);
 
@@ -40,16 +40,16 @@ describe('UserController (e2e)', () => {
 
     dataSource = app.get<DataSource>(DataSource);
     const authService = moduleFixture.get<AuthService>(AuthService);
-    accessToken = authService.getAccessToken({ userId: mockUserId });
+    accessToken = authService.getAccessToken({ userId: 1 });
     accessToken2 = authService.getAccessToken({ userId: 2 });
     outAccessToken = authService.getAccessToken({ userId: 99999 });
-    expiredAccessToken = authService.getExpiredAccessToken({ userId: mockUserId });
+    expiredAccessToken = authService.getExpiredAccessToken({ userId: 1 });
 
     const authRepository = dataSource.getRepository(Auth);
     const userReposityory = dataSource.getRepository(User);
 
-    users = mockingUsers([1, 2], userReposityory);
-    auths = mockingAuths([1, 2], authRepository, users);
+    users = DBMockData.users([1, 2], userReposityory);
+    auths = DBMockData.auths([1, 2], authRepository, users);
 
     await userReposityory.save(users);
     await authRepository.save(auths);
@@ -62,13 +62,16 @@ describe('UserController (e2e)', () => {
     await app.close();
   });
 
+  // --
   describe('[GET /user]', () => {
+    // --
     it('myInfo(User) 데이터 가져오기', async () => {
       const { statusCode, body }: E2eUser = await request(app.getHttpServer())
         .get('/user')
         .set('authorization', `Bearer ${accessToken}`);
 
       expect(statusCode).toBe(200);
+      expect(Object.keys(body)).toHaveLength(8);
       expect(body).toHaveProperty('id');
       expect(body).toHaveProperty('kWh');
       expect(body).toHaveProperty('recWeight');
@@ -76,10 +79,15 @@ describe('UserController (e2e)', () => {
       expect(body).toHaveProperty('address');
       expect(body).toHaveProperty('role');
       expect(body).toHaveProperty('createdAt');
+      expect(body).toHaveProperty('deletedAt');
     });
   });
 
+  // --
   describe('[PUT /user', () => {
+    const mockUpdateMyInfoDto = TestMockData.updateMyInfoDto({}); // dto 같음
+
+    // --
     it('User 데이터 업데이트 하기 성공', async () => {
       const { statusCode, body }: E2eUpdate = await request(app.getHttpServer())
         .put('/user')
@@ -90,6 +98,7 @@ describe('UserController (e2e)', () => {
       expect(body.affected).toBe(1);
     });
 
+    // --
     it('User 데이터 업데이트 하기 실패: 사업자 번호 중복', async () => {
       const { statusCode, body }: E2eError = await request(app.getHttpServer())
         .put('/user')
@@ -101,7 +110,9 @@ describe('UserController (e2e)', () => {
     });
   });
 
+  // --
   describe('[DELETE /user]', () => {
+    // --
     it('회원탈퇴 성공', async () => {
       const { statusCode, body }: E2eUpdate = await request(app.getHttpServer())
         .delete('/user')
@@ -111,6 +122,7 @@ describe('UserController (e2e)', () => {
       expect(body.affected).toBe(1);
     });
 
+    // --
     it('회원탈퇴 실패: 탈퇴 실패 DB', async () => {
       const { statusCode, body }: E2eError = await request(app.getHttpServer())
         .delete('/user')
@@ -121,7 +133,9 @@ describe('UserController (e2e)', () => {
     });
   });
 
+  // --
   describe('[DELETE /user - accessToken검증 통합테스트]', () => {
+    // --
     it('엑세스 토큰 검증 실패: accessToken 만료', async () => {
       const { statusCode } = await request(app.getHttpServer())
         .delete('/user')
@@ -130,6 +144,7 @@ describe('UserController (e2e)', () => {
       expect(statusCode).toBe(401);
     });
 
+    // --
     it.each([
       ['authorization가 비어있는 경우', ''],
       ['Bearer 글자가 없는 경우', ` ${accessToken}`],

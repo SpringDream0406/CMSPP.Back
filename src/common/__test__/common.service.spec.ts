@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
-import { mockToken } from './test.mockdata';
+import { TestMockData } from '../data/test.mockdata';
 
 describe('CommonService', () => {
   let commonService: CommonService;
@@ -27,19 +27,20 @@ describe('CommonService', () => {
     expect(CommonService).toBeDefined();
   });
 
+  // --
   describe('parseRefreshToken', () => {
+    // --
     it('쿠키에서 refreshToken 가져오기 성공', () => {
-      const req = {
-        headers: {
-          cookie: 'refreshToken=mockRefreshToken',
-        },
-      } as Request;
+      const refreshToken = 'mockRefreshToken';
+      const req = TestMockData.req();
+      req.headers.cookie = `refreshToken=${refreshToken}`;
 
       const result = commonService.parseRefreshToken(req);
 
-      expect(result).toBe('mockRefreshToken');
+      expect(result).toBe(refreshToken);
     });
 
+    // --
     it.each([
       ['cookie가 비어있는 경우', ''],
       ['refresh 글자가 없는 경우', '=mockRefreshToken'],
@@ -47,9 +48,8 @@ describe('CommonService', () => {
       ['refreshToken이 없는 경우', 'refreshToken='],
       ['잘못된 토큰 형식', 'test'],
     ])('쿠키에서 refreshToken 가져오기 실패: %s', (_, cookies) => {
-      const req = {
-        headers: { cookie: cookies },
-      } as Request;
+      const req = TestMockData.req();
+      req.headers.cookie = cookies;
 
       const result = commonService.parseRefreshToken(req);
 
@@ -57,8 +57,13 @@ describe('CommonService', () => {
     });
   });
 
+  // --
   describe('parseAccessToken', () => {
+    // --
     it('authorization에서 accessToken 가져오기 성공', () => {
+      const accessToken = 'mockAccessToken';
+      const req = TestMockData.req();
+      req.headers.authorization = `Bearer ${mockAccessToken}`;
       const req = {
         headers: { authorization: 'Bearer mockAccessToken' },
       } as Request;
@@ -68,6 +73,7 @@ describe('CommonService', () => {
       expect(result).toBe('mockAccessToken');
     });
 
+    // --
     it.each([
       ['authorization가 비어있는 경우', ''],
       ['Bearer 글자가 없는 경우', ' mockAccessToken'],
@@ -85,9 +91,11 @@ describe('CommonService', () => {
     });
   });
 
+  // --
   describe('getToken', () => {
     const req = {} as Request;
 
+    // --
     it.each([
       ['cookie가 정상일 때', 'mockRefreshToken'],
       ['cookie에 문제가 있을 때', false],
@@ -100,6 +108,7 @@ describe('CommonService', () => {
       expect(commonService.parseRefreshToken).toHaveBeenCalledWith(req);
     });
 
+    // --
     it.each([
       ['authorization이 정상일 때', 'mockAccessToken'],
       ['authorization에 문제가 있을 때', false],
@@ -113,6 +122,7 @@ describe('CommonService', () => {
     });
   });
 
+  // --
   describe('validateToken', () => {
     const payload = {
       sub: 1,
@@ -125,6 +135,7 @@ describe('CommonService', () => {
       jest.spyOn(configService, 'get').mockReturnValue('secret');
     });
 
+    // --
     it.each([
       ['refreshToken 일 때', true],
       ['accessToken 일 때', false],
@@ -141,6 +152,7 @@ describe('CommonService', () => {
       expect(req.user).toEqual({ userId: payload.sub });
     });
 
+    // --
     it.each([
       ['refreshToken 일 때', true],
       ['accessToken 일 때', false],

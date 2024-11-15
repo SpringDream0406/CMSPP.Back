@@ -137,11 +137,11 @@ export class AuthService {
       res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
     } else {
       // 배포
-      // res.setHeader(
-      //   'set-Cookie',
-      //   `refreshToken=${refreshToken}; path=/; domain=.도메인주소; SameSite=None; Secure; httpOnly`,
-      // );
-      // res.setHeader('Access-Control-Allow-Origin', 'https://프론트주소');
+      res.setHeader(
+        'set-Cookie',
+        `refreshToken=${refreshToken}; path=/; domain=.도메인주소; SameSite=None; Secure; httpOnly`,
+      );
+      res.setHeader('Access-Control-Allow-Origin', 'https://프론트주소');
     }
   }
 }
