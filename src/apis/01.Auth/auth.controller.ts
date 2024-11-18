@@ -41,6 +41,6 @@ export class AuthController {
   @Get('getAccessToken')
   @Public('refresh')
   getAccessToken(@UserId() userId: number): string {
-    return this.authService.getAccessToken({ userId });
+    return this.authService.getToken({ userId });
   }
 }

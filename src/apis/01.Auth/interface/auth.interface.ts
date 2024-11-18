@@ -24,6 +24,10 @@ export interface userId {
   userId: number;
 }
 
+export interface IGetToken extends userId {
+  isRefresh?: boolean;
+}
+
 export interface ISetRefreshToken extends userId {
   res: Response;
 }

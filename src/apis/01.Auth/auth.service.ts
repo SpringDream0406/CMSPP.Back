@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Auth } from './entity/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  IGetToken,
   IOAuthUser,
   ISetRefreshToken,
   ISignUp,
-  userId,
 } from './interface/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -22,7 +22,6 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly dataSource: DataSource, // 쿼리러너
   ) {}
 
   /* istanbul ignore next */
@@ -82,54 +81,38 @@ export class AuthService {
   }
 
   /* istanbul ignore next */
-  /** 만료된 엑세스토큰 발급__  */
-  getExpiredAccessToken({ userId }: userId): string {
-    return this.jwtService.sign(
+  /** 만료된 토큰 발급__ e2e Test */
+  getExpiredToken({ userId, isRefresh = false }: IGetToken): string {
+    const secret = this.configService.get<string>(
+      isRefresh ? envKeys.refreshTokenSecret : envKeys.accessTokenSecret,
+    );
+    const token = this.jwtService.sign(
       { sub: userId },
       {
-        secret: this.configService.get<string>(envKeys.accessTokenSecret),
+        secret,
         expiresIn: -1,
       },
     );
+    return token;
   }
 
-  /** 엑세스토큰 발급__  */
-  getAccessToken({ userId }: userId): string {
-    return this.jwtService.sign(
+  getToken({ userId, isRefresh = false }: IGetToken): string {
+    const secret = this.configService.get<string>(
+      isRefresh ? envKeys.refreshTokenSecret : envKeys.accessTokenSecret,
+    );
+    const token = this.jwtService.sign(
       { sub: userId },
       {
-        secret: this.configService.get<string>(envKeys.accessTokenSecret),
-        expiresIn: '15m',
+        secret,
+        expiresIn: isRefresh ? '24h' : '15m',
       },
     );
-  }
-
-  /* istanbul ignore next */
-  /** 만료된 리프래시토큰 발급__ e2e 테스트용 */
-  getExpiredRefreshToken({ userId }: userId): string {
-    return this.jwtService.sign(
-      { sub: userId },
-      {
-        secret: this.configService.get<string>(envKeys.refreshTokenSecret),
-        expiresIn: -1,
-      },
-    );
-  }
-
-  /** 리프래시토큰 발급__ */
-  getRefreshToken({ userId }: userId): string {
-    return this.jwtService.sign(
-      { sub: userId },
-      {
-        secret: this.configService.get<string>(envKeys.refreshTokenSecret),
-        expiresIn: '24h',
-      },
-    );
+    return token;
   }
 
   /** 리프래시토큰 세팅__ */
   setRefreshToken({ userId, res }: ISetRefreshToken): void {
-    const refreshToken = this.getRefreshToken({ userId });
+    const refreshToken = this.getToken({ userId, isRefresh: true });
     const env = this.configService.get(envKeys.env);
 
     // 개발/테스트

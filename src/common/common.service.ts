@@ -6,7 +6,7 @@ import { Request } from 'express';
 import { envKeys } from './config/validation.schema';
 import {
   IGetMetaData,
-  IGetToken,
+  IReturnToken,
   IValidateToken,
 } from './interface/common.service.interface';
 
@@ -51,7 +51,7 @@ export class CommonService {
   }
 
   /** refreshToken인지 boolean으로 넣음에 따라 refresh | access Token 반환해줌. 문제 있는 경우 false 반환 */
-  getToken({ isRefresh, req }: IGetToken): string | boolean {
+  returnToken({ isRefresh, req }: IReturnToken): string | boolean {
     if (isRefresh) {
       return this.parseRefreshToken(req);
     }

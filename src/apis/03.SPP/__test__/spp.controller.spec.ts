@@ -7,7 +7,7 @@ describe('SppController', () => {
   let sppController: SppController;
   let sppService: jest.Mocked<SppService>;
 
-  beforeEach(() => {
+  beforeAll(() => {
     const { unit, unitRef } = TestBed.create(SppController).compile();
 
     sppController = unit;
@@ -18,34 +18,36 @@ describe('SppController', () => {
     expect(SppController).toBeDefined();
   });
 
-  // --
   describe('fetchSpp', () => {
-    // --
     it('Spp 조회하기', async () => {
+      // given
       const user = TestMockData.user({});
       const userId = 1;
 
       jest.spyOn(sppService, 'fetchSpp').mockResolvedValue(user);
 
+      // when
       const result = await sppController.fetchSpp(userId);
 
+      // then
       expect(result).toBe(user);
       expect(sppService.fetchSpp).toHaveBeenCalledWith({ userId });
     });
   });
 
-  // --
   describe('addSolar', () => {
-    // --
     it('태양광 데이터 추가', async () => {
+      // given
       const solar = TestMockData.solar({});
       const userId = 1;
       const addSolarDto = TestMockData.addSolarDto({});
 
       jest.spyOn(sppService, 'addSolar').mockResolvedValue([solar]);
 
+      // when
       const result = await sppController.addSolar(userId, addSolarDto);
 
+      // then
       expect(result).toEqual([solar]);
       expect(sppService.addSolar).toHaveBeenCalledWith({
         userId,
@@ -54,18 +56,19 @@ describe('SppController', () => {
     });
   });
 
-  // --
   describe('deleteSolar', () => {
-    // --
     it('태양광 데이터 삭제', async () => {
+      // given
       const solar = TestMockData.solar({});
       const userId = 1;
       const delId = 1;
 
       jest.spyOn(sppService, 'deleteSolar').mockResolvedValue([solar]);
 
+      // when
       const result = await sppController.deleteSolar(userId, delId);
 
+      // then
       expect(result).toEqual([solar]);
       expect(sppService.deleteSolar).toHaveBeenCalledWith({
         userId,
@@ -74,18 +77,19 @@ describe('SppController', () => {
     });
   });
 
-  // --
   describe('addSRec', () => {
-    // --
     it('SRec 데이터 추가', async () => {
+      // given
       const sRec = TestMockData.sRec({});
       const userId = 1;
       const addSRecDto = TestMockData.addSRecDto({});
 
       jest.spyOn(sppService, 'addSRec').mockResolvedValue([sRec]);
 
+      // when
       const result = await sppController.addSRec(userId, addSRecDto);
 
+      // then
       expect(result).toEqual([sRec]);
       expect(sppService.addSRec).toHaveBeenLastCalledWith({
         userId,
@@ -94,18 +98,19 @@ describe('SppController', () => {
     });
   });
 
-  // --
   describe('deleteSRec', () => {
-    // --
     it('SRec 데이터 삭제', async () => {
+      // given
       const sRec = TestMockData.sRec({});
       const userId = 1;
       const delId = 1;
 
       jest.spyOn(sppService, 'deleteSRec').mockResolvedValue([sRec]);
 
+      // when
       const result = await sppController.deleteSRec(userId, delId);
 
+      // then
       expect(result).toEqual([sRec]);
       expect(sppService.deleteSRec).toHaveBeenCalledWith({
         userId,

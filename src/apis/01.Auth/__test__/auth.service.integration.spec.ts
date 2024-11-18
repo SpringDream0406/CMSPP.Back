@@ -4,64 +4,70 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Auth } from '../entity/auth.entity';
 import { User } from 'src/apis/02.User/entity/user.entity';
-import { Solar } from 'src/apis/03.SPP/entity/solar.entity';
-import { SRec } from 'src/apis/03.SPP/entity/sRec.entity';
-import { Expense } from 'src/apis/03.SPP/entity/expense.entity';
-import { FixedExpense } from 'src/apis/03.SPP/entity/fixedExpense.entity';
 import { UserService } from 'src/apis/02.User/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validationSchema } from 'src/common/config/validation.schema';
 import { TestMockData } from 'src/common/data/test.mockdata';
+import { IBackup, newDb } from 'pg-mem';
+import { initPgMem } from 'src/common/config/initPgMem';
+import { DBDataFactory, getEntitis } from 'src/common/data/db.mockdata';
 
-describe('AuthService (Integration)', () => {
+describe('AuthServcie_Integration', () => {
   let authService: AuthService;
   let userService: UserService;
-  let dataSource: DataSource;
+  let configService: ConfigService;
 
   let authRepository: Repository<Auth>;
   let userRepository: Repository<User>;
 
-  beforeEach(async () => {
+  let dataSource: DataSource;
+  let dBDataFactory: DBDataFactory;
+  let backup: IBackup;
+
+  beforeAll(async () => {
+    const db = newDb();
+    const entities = getEntitis();
+    dataSource = await initPgMem('AuthServcie_Integration', db, entities);
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
           validationSchema: validationSchema,
           envFilePath: `.env${process.env.NODE_ENV ?? ''}`,
         }),
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: ':memory:',
-          dropSchema: true,
-          autoLoadEntities: true,
-          synchronize: true,
-          logging: false,
-        }),
-        TypeOrmModule.forFeature([
-          Auth, //
-          User,
-          Solar,
-          SRec,
-          Expense,
-          FixedExpense,
-        ]),
+        TypeOrmModule.forRoot(),
+        TypeOrmModule.forFeature(entities),
       ],
       providers: [
         AuthService, //
         UserService,
         JwtService,
       ],
-    }).compile();
+    })
+      .overrideProvider(DataSource)
+      .useValue(dataSource)
+      .compile();
 
-    authService = module.get<AuthService>(AuthService);
-    userService = module.get<UserService>(UserService);
-    dataSource = module.get<DataSource>(DataSource);
+    authService = module.get(AuthService);
+    userService = module.get(UserService);
+    configService = module.get(ConfigService);
 
     authRepository = dataSource.getRepository(Auth);
     userRepository = dataSource.getRepository(User);
+
+    const entityManager = dataSource.createEntityManager();
+    dBDataFactory = new DBDataFactory(entityManager);
+
+    backup = db.backup();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
+    backup.restore();
+    jest.clearAllMocks();
+  });
+
+  afterAll(async () => {
     await dataSource.destroy();
   });
 
@@ -69,69 +75,112 @@ describe('AuthService (Integration)', () => {
     expect(authService).toBeDefined();
   });
 
-  // // --
-  // describe('signUp', () => {
-  //   // --
-  //   it('회원가입, 회원 탈퇴 후 재가입', async () => {
-  //     // 비었나 확인
-  //     const beforeAuth = await authRepository.find();
-  //     const beforeUser = await userRepository.find();
+  describe('signUp', () => {
+    it('회원가입', async () => {
+      // given
+      const user_1 = TestMockData.reqUser({ id: 'test_1' });
+      const user_2 = TestMockData.reqUser({ id: 'test_2' });
+      const res_1 = TestMockData.res();
+      const res_2 = TestMockData.res();
 
-  //     expect(beforeAuth).toHaveLength(0);
-  //     expect(beforeUser).toHaveLength(0);
+      // when
+      await authService.signUp({ user: user_1, res: res_1 }); // 회원 가입
+      await authService.signUp({ user: user_2, res: res_2 });
+      const AfterAuth = await authRepository.find();
+      const AfterUser = await userRepository.find();
 
-  //     // 가입, 잘 되었나 확인
-  //     const user_1 = TestMockData.reqUser({ id: 'test_1' });
-  //     const user_2 = TestMockData.reqUser({ id: 'test_2' });
-  //     const res = TestMockData.res();
+      // then
+      expect(AfterAuth).toHaveLength(2); // 가입된 회원수 이상 없나
+      expect(AfterUser).toHaveLength(2);
+      expect(res_1.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+      expect(res_2.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+    });
 
-  //     await authService.signUp({ user: user_1, res });
-  //     await authService.signUp({ user: user_2, res });
+    it('회원 탈퇴 후 재가입', async () => {
+      // given
+      await dBDataFactory.insertUsersAndAuths([1, 2]);
+      const user_1 = TestMockData.reqUser({ id: 'test_1' });
+      const res = TestMockData.res();
+      const authOfUser_1 = await authRepository.findOne({
+        where: { id: 'test_1' },
+        relations: { user: true },
+      });
+      await userService.withdrawal({ userId: authOfUser_1.user.id }); // 1명 회원 탈퇴
 
-  //     const AfterAuth = await authRepository.find();
-  //     const AfterUser = await userRepository.find();
+      // when
+      await authService.signUp({ user: user_1, res }); // 회원 재 가입
 
-  //     expect(AfterAuth).toHaveLength(2);
-  //     expect(AfterUser).toHaveLength(2);
+      const auth = await authRepository.findOne({
+        where: { id: authOfUser_1.id },
+        relations: { user: true },
+      });
+      const user = await userRepository.findOne({
+        where: { id: authOfUser_1.user.id },
+      });
+      const auths = await authRepository.find();
+      const users = await userRepository.find();
 
-  //     // 1명 회원 탈퇴
-  //     const userId_1 = AfterUser[0].id;
-  //     const result = await userService.withdrawal({ userId: userId_1 });
+      // then
+      expect(auths).toHaveLength(2); // 회원수 이상 없나
+      expect(users).toHaveLength(2);
+      expect(auth.user).not.toBeNull(); // restore 제대로 되었나
+      expect(user.deletedAt).toBeNull();
+      expect(auth.user.id).toBe(user.id);
+      expect(res.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+    });
 
-  //     expect(result.affected).toBe(1);
+    it('로그인', async () => {
+      // given
+      await dBDataFactory.insertUsersAndAuths([1, 2]);
+      const user_1 = TestMockData.reqUser({ id: 'test_1' });
+      const res = TestMockData.res();
 
-  //     const dAfterAuth = await authRepository.find();
-  //     const dAfterUser = await userRepository.find();
+      // when
+      await authService.signUp({ user: user_1, res }); // 로그인
+      const auths = await authRepository.find();
+      const users = await userRepository.find();
 
-  //     expect(dAfterAuth).toHaveLength(2);
-  //     expect(dAfterUser).toHaveLength(1); // softDeleted 일반 조회 안됨
+      // then
+      expect(auths).toHaveLength(2); // 회원수 이상 없나
+      expect(users).toHaveLength(2);
+      expect(res.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+    });
+  });
 
-  //     const dAfterAuthWithDeleted = await authRepository.find({
-  //       relations: { user: true },
-  //       withDeleted: true,
-  //     });
-  //     const dAfterUserWithDeleted = await userRepository.find({
-  //       withDeleted: true,
-  //     });
+  describe('토큰 발급', () => {
+    it.each([
+      ['refreshToken', true, '24h'],
+      ['accessToken', false, '15m'],
+    ])('%s', (_, isRefresh) => {
+      // given
+      const userId = 1;
+      const result = authService.getToken({ userId, isRefresh });
 
-  //     expect(dAfterAuthWithDeleted[0].user).toHaveProperty('id');
-  //     expect(dAfterAuthWithDeleted[0].user).toHaveProperty('deletedAt');
-  //     expect(dAfterAuthWithDeleted[0].user.deletedAt).not.toBeNull(); // softDeleted
-  //     expect(dAfterUserWithDeleted).toHaveLength(2); // withDeleted로 조회 됨
-  //     expect(dAfterUserWithDeleted[0].deletedAt).not.toBeNull(); // softDeleted 더블체크
+      // then
+      expect(result).toBeDefined();
+      const parts = result.split('.');
+      expect(parts).toHaveLength(3);
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+      expect(payload.sub).toBe(userId);
+    });
+  });
 
-  //     // 회원 재 가입
-  //     await authService.signUp({ user: user_1, res });
+  describe('setRefreshToken', () => {
+    it.each(['test', 'dev', 'prod'])(
+      '리프래시토큰 쿠키에 담기 - 테스트 환경: %s',
+      (env) => {
+        // given
+        const userId = 1;
+        const res = TestMockData.res();
 
-  //     const afterAuth = await authRepository.find({
-  //       relations: { user: true },
-  //     });
-  //     const afterUser = await userRepository.find();
+        jest.spyOn(configService, 'get').mockReturnValue(env);
 
-  //     expect(afterAuth).toHaveLength(2);
-  //     expect(afterAuth[0].user.deletedAt).toBeNull();
-  //     expect(afterUser).toHaveLength(2);
-  //     expect(afterUser[0].deletedAt).toBeNull();
-  //   });
-  // });
+        // when
+        authService.setRefreshToken({ userId, res });
+
+        // then
+        expect(res.getHeader('set-cookie')).toContain(`refreshToken=`);
+      },
+    );
+  });
 });

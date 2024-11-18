@@ -43,14 +43,6 @@ export interface MDISecret {
   secret?: string;
 }
 
-export interface MDIUserId {
-  userId?: number;
-}
-
-export interface MDIDelId {
-  delId?: number;
-}
-
 export interface MDIUpdateMyInfoDto extends Partial<UpdateMyInfoDto> {}
 export interface MDIAddSolarDto extends Partial<AddSolarDto> {}
 export interface MDIAddSRecDto extends Partial<AddSRecDto> {}

@@ -7,13 +7,11 @@ export interface IGetMetaData {
   context: ExecutionContext;
 }
 
-export interface IGetToken {
+export interface IReturnToken {
   isRefresh: boolean;
   req: Request;
 }
 
-export interface IValidateToken {
-  isRefresh: boolean;
+export interface IValidateToken extends IReturnToken {
   token: string;
-  req: Request;
 }

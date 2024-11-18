@@ -24,13 +24,11 @@ import {
   MDIBaseData,
   MDIDate,
   MDIDeleteResult,
-  MDIDelId,
   MDIOAuthUserData,
   MDISecret,
   MDIToken,
   MDIUpdateMyInfoDto,
   MDIUpdateResult,
-  MDIUserId,
 } from '../interface/test.mockdata.interface';
 import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
 
@@ -92,14 +90,6 @@ export const TestMockData = {
 
   secret({ secret = 'mockSecret' }: MDISecret): string {
     return secret;
-  },
-
-  userId({ userId = 1 }: MDIUserId): number {
-    return userId;
-  },
-
-  delId({ delId = 1 }: MDIDelId): number {
-    return delId;
   },
 
   updateMyInfoDto({
@@ -203,7 +193,7 @@ export const TestMockData = {
   },
 
   user({
-    id = this.userId({}),
+    id = 1,
     updateMyInfoDto = this.updateMyInfoDto({}),
     solar = [this.solar({})],
     sRec = [this.sRec({})],
@@ -226,10 +216,10 @@ export const TestMockData = {
     };
   },
 
-  executionContext(social: string): ExecutionContext {
+  executionContext(mock?: any): ExecutionContext {
     return {
       switchToHttp: () => ({
-        getRequest: () => ({ params: { social } }),
+        getRequest: () => mock,
       }),
     } as ExecutionContext;
   },

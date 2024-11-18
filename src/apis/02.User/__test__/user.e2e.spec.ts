@@ -3,33 +3,37 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { AuthService } from 'src/apis/01.Auth/auth.service';
-import { User } from '../entity/user.entity';
-import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
 import { AppModule } from 'src/app.module';
 import { E2eError, E2eUpdate, E2eUser } from 'src/common/interface/e2e.interface';
-import { DBMockData } from 'src/common/data/db.mockdata';
 import { TestMockData } from 'src/common/data/test.mockdata';
+import { DBDataFactory, getEntitis } from 'src/common/data/db.mockdata';
+import { IBackup, newDb } from 'pg-mem';
+import { initPgMem } from 'src/common/config/initPgMem';
 
-console.log(`.env${process.env.NODE_ENV ?? ''}`);
-
-describe('UserController (e2e)', () => {
+describe('User_e2e', () => {
   let app: INestApplication;
-  let dataSource: DataSource;
 
   let accessToken: string;
-  let accessToken2: string;
   let outAccessToken: string;
   let expiredAccessToken: string;
 
-  let users: User[];
-  let auths: Auth[];
+  let dataSource: DataSource;
+  let dBDataFactory: DBDataFactory;
+  let backup: IBackup;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    const db = newDb();
+    const entities = getEntitis();
+    dataSource = await initPgMem('User_e2e', db, entities);
 
-    app = moduleFixture.createNestApplication();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
+      .overrideProvider(DataSource)
+      .useValue(dataSource)
+      .compile();
+
+    app = module.createNestApplication();
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -38,38 +42,37 @@ describe('UserController (e2e)', () => {
     );
     await app.init();
 
-    dataSource = app.get<DataSource>(DataSource);
-    const authService = moduleFixture.get<AuthService>(AuthService);
-    accessToken = authService.getAccessToken({ userId: 1 });
-    accessToken2 = authService.getAccessToken({ userId: 2 });
-    outAccessToken = authService.getAccessToken({ userId: 99999 });
-    expiredAccessToken = authService.getExpiredAccessToken({ userId: 1 });
+    const authService = module.get(AuthService);
+    accessToken = authService.getToken({ userId: 1 });
+    outAccessToken = authService.getToken({ userId: 99999 });
+    expiredAccessToken = authService.getExpiredToken({ userId: 1 });
 
-    const authRepository = dataSource.getRepository(Auth);
-    const userReposityory = dataSource.getRepository(User);
+    const entityManager = dataSource.createEntityManager();
+    dBDataFactory = new DBDataFactory(entityManager);
 
-    users = DBMockData.users([1, 2], userReposityory);
-    auths = DBMockData.auths([1, 2], authRepository, users);
+    backup = db.backup();
+  });
 
-    await userReposityory.save(users);
-    await authRepository.save(auths);
+  afterEach(() => {
+    backup.restore();
   });
 
   afterAll(async () => {
-    await dataSource.synchronize(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
     await dataSource.destroy();
     await app.close();
   });
 
-  // --
   describe('[GET /user]', () => {
-    // --
     it('myInfo(User) 데이터 가져오기', async () => {
+      // given
+      await dBDataFactory.insertDatas([1, 2]);
+
+      // when
       const { statusCode, body }: E2eUser = await request(app.getHttpServer())
         .get('/user')
         .set('authorization', `Bearer ${accessToken}`);
 
+      // then
       expect(statusCode).toBe(200);
       expect(Object.keys(body)).toHaveLength(8);
       expect(body).toHaveProperty('id');
@@ -83,68 +86,83 @@ describe('UserController (e2e)', () => {
     });
   });
 
-  // --
   describe('[PUT /user', () => {
-    const mockUpdateMyInfoDto = TestMockData.updateMyInfoDto({}); // dto 같음
-
-    // --
     it('User 데이터 업데이트 하기 성공', async () => {
+      // given
+      await dBDataFactory.insertDatas([1, 2]);
+      const mockUpdateMyInfoDto = TestMockData.updateMyInfoDto({});
+
+      // when
       const { statusCode, body }: E2eUpdate = await request(app.getHttpServer())
         .put('/user')
         .set('authorization', `Bearer ${accessToken}`)
         .send(mockUpdateMyInfoDto);
 
+      // then
       expect(statusCode).toBe(200);
       expect(body.affected).toBe(1);
     });
 
-    // --
     it('User 데이터 업데이트 하기 실패: 사업자 번호 중복', async () => {
+      // given
+      await dBDataFactory.insertDatas([1, 2]);
+      const mockUpdateMyInfoDto = TestMockData.updateMyInfoDto({
+        businessNumber: 123456782 as unknown as string,
+      });
+
+      // when
       const { statusCode, body }: E2eError = await request(app.getHttpServer())
         .put('/user')
-        .set('authorization', `Bearer ${accessToken2}`)
+        .set('authorization', `Bearer ${accessToken}`)
         .send(mockUpdateMyInfoDto);
 
+      // then
       expect(statusCode).toBe(400);
       expect(body.message).toBe('사업자 번호 중복');
     });
   });
 
-  // --
   describe('[DELETE /user]', () => {
-    // --
     it('회원탈퇴 성공', async () => {
+      // given
+      await dBDataFactory.insertDatas([1, 2]);
+
+      // when
       const { statusCode, body }: E2eUpdate = await request(app.getHttpServer())
         .delete('/user')
         .set('authorization', `Bearer ${accessToken}`);
 
+      // then
       expect(statusCode).toBe(200);
       expect(body.affected).toBe(1);
     });
 
-    // --
     it('회원탈퇴 실패: 탈퇴 실패 DB', async () => {
+      // given
+      await dBDataFactory.insertDatas([1, 2]);
+
+      // when
       const { statusCode, body }: E2eError = await request(app.getHttpServer())
         .delete('/user')
         .set('authorization', `Bearer ${outAccessToken}`);
 
+      // then
       expect(statusCode).toBe(400);
       expect(body.message).toBe('탈퇴 실패 DB');
     });
   });
 
-  // --
   describe('[DELETE /user - accessToken검증 통합테스트]', () => {
-    // --
     it('엑세스 토큰 검증 실패: accessToken 만료', async () => {
+      // when
       const { statusCode } = await request(app.getHttpServer())
         .delete('/user')
         .set('authorization', `Bearer ${expiredAccessToken}`);
 
+      // then
       expect(statusCode).toBe(401);
     });
 
-    // --
     it.each([
       ['authorization가 비어있는 경우', ''],
       ['Bearer 글자가 없는 경우', ` ${accessToken}`],
@@ -152,10 +170,12 @@ describe('UserController (e2e)', () => {
       ['accessToken이 없는 경우', `Bearer `],
       ['잘못된 토큰 형식', 'test'],
     ])('엑세스 토큰 검증 실패: %s', async (_, token) => {
+      // when
       const { statusCode } = await request(app.getHttpServer())
         .delete('/user')
         .set('authorization', token);
 
+      // then
       expect(statusCode).toBe(403);
     });
   });

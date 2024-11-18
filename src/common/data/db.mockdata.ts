@@ -1,49 +1,105 @@
 import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
 import { Role, User } from 'src/apis/02.User/entity/user.entity';
 import { Solar } from 'src/apis/03.SPP/entity/solar.entity';
-import { Repository } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { TestMockData } from './test.mockdata';
+import { SRec } from 'src/apis/03.SPP/entity/sRec.entity';
+import { Expense } from 'src/apis/03.SPP/entity/expense.entity';
+import { FixedExpense } from 'src/apis/03.SPP/entity/fixedExpense.entity';
 
-export const DBMockData = {
-  users(xList: number[], userRepository: Repository<User>): User[] {
+export const getEntitis = () => {
+  return [Auth, User, Solar, SRec, Expense, FixedExpense];
+};
+
+export class DBDataFactory {
+  private readonly entities = {
+    Solar,
+    SRec,
+    Expense,
+    FixedExpense,
+  };
+
+  constructor(private readonly entityManager: EntityManager) {}
+
+  createUsers(xList: number[]): User[] {
     return xList.map((x) =>
-      userRepository.create({
-        id: x,
+      this.entityManager.create(User, {
+        kWh: 100,
+        recWeight: 1,
+        businessNumber: `12345678${x}`,
+        address: 'mockAddress',
         role: Role.USER,
       }),
     );
-  },
+  }
 
-  auths(xList: number[], authRepository: Repository<Auth>, users: User[]): Auth[] {
+  createAuths(xList: number[], users: User[]): Auth[] {
     return xList.map((x) =>
-      authRepository.create({
-        uid: `123e4567-e89b-12d3-a456-42661417400${x}`,
-        id: `socialMockId${x}`,
-        provider: `social${x}`,
+      this.entityManager.create(Auth, {
+        id: `test_${x}`,
+        provider: `google`,
         user: users[x - 1],
-        createdAt: new Date(`2024-11-${x}`),
       }),
     );
-  },
+  }
 
-  spp<T>(xList: number[], repository: Repository<T>, users: User[], mockDto?: any): T[] {
+  createSpp(
+    xList: number[],
+    entity: keyof DBDataFactory['entities'],
+    users: User[],
+    sameUser: boolean = false,
+    mockDto?: any,
+  ) {
     return xList.flatMap((x) => {
-      const dtoName = repository.target.toString().split(' ')[1]; // 제네릭 T에서 이름 추출
-
       const baseData = {
         id: x,
-        user: users[x - 1],
-        createdAt: new Date(`2024-11-${x}`),
+        user: sameUser ? users[0] : users[x - 1],
       };
-      const dto = mockDto ?? TestMockData[`add${dtoName}Dto`]({}); // mockDto 받은거 없으면 T에서 추출한 이름으로 dto 넣기
-      const changeDate = repository.target === Solar ? { date: `2024-1${x}` } : {}; // solar의 경우 월 중복 안되서 dto의 date 변동 필요
+      const dto = mockDto ?? TestMockData[`add${entity}Dto`]({});
+      const changeDate = entity === 'Solar' ? { date: `2024-0${x}` } : {};
 
       const data = {
         ...baseData,
         ...dto,
         ...changeDate,
       };
-      return repository.create(data);
+
+      return this.entityManager.create(this.entities[entity], data);
     });
-  },
-};
+  }
+
+  async insertUsers(xList: number[]): Promise<User[]> {
+    const users = this.createUsers(xList);
+    await this.entityManager.insert(User, users);
+    return users;
+  }
+
+  async insertAuths(xList: number[], users: User[]): Promise<void> {
+    const auths = this.createAuths(xList, users);
+    await this.entityManager.insert(Auth, auths);
+  }
+
+  async insertSpps(
+    xList: number[],
+    users: User[],
+    sameUser: boolean = false,
+  ): Promise<void> {
+    for (const entity of Object.keys(this.entities) as Array<
+      keyof DBDataFactory['entities']
+    >) {
+      const spp = this.createSpp(xList, entity, users, sameUser);
+      await this.entityManager.insert(this.entities[entity], spp);
+    }
+  }
+
+  async insertUsersAndAuths(xList: number[]) {
+    const users = await this.insertUsers(xList);
+    await this.insertAuths(xList, users);
+    return users;
+  }
+
+  async insertDatas(xList: number[], sameUser: boolean = false): Promise<void> {
+    const users = await this.insertUsersAndAuths(xList);
+    await this.insertSpps(xList, users, sameUser);
+  }
+}
