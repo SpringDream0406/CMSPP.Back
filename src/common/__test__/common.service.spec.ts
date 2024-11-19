@@ -138,11 +138,11 @@ describe('CommonService_Unit', () => {
 
   describe('validateToken', () => {
     it.each([
-      ['refreshToken 일 때', 'refreshTokenSecret', '24h', true],
-      ['accessToken 일 때', 'accessTokenSecret', '15m', false],
-    ])('검증 통과: %s', async (_, env, expiresIn, isRefresh) => {
+      ['refreshToken', '24h', true],
+      ['accessToken', '15m', false],
+    ])('검증 통과: %s 일 때', async (env, expiresIn, isRefresh) => {
       // given
-      const secret = configService.get(envKeys[env]);
+      const secret = configService.get(envKeys[`${env}Secret`]);
       const token = jwtService.sign({ sub: 1 }, { secret, expiresIn });
       const req = TestMockData.req();
 

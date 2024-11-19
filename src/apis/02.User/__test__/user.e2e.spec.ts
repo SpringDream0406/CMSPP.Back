@@ -55,6 +55,7 @@ describe('User_e2e', () => {
 
   afterEach(() => {
     backup.restore();
+    jest.clearAllMocks();
   });
 
   afterAll(async () => {

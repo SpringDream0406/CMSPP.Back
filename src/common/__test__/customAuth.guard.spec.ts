@@ -3,25 +3,16 @@ import { CommonService } from '../common.service';
 import { TestMockData } from '../data/test.mockdata';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
-import { validationSchema } from '../config/validation.schema';
-import { AuthService } from 'src/apis/01.Auth/auth.service';
-import { UserService } from 'src/apis/02.User/user.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from 'src/apis/02.User/entity/user.entity';
-import { Auth } from 'src/apis/01.Auth/entity/auth.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { envKeys, validationSchema } from '../config/validation.schema';
 import { UnauthorizedException } from '@nestjs/common';
 
 describe('CustomAuthGuard', () => {
   let customAuthGuard: CustomAuthGuard;
 
   let commonService: CommonService;
-  let authService: AuthService;
-
-  let refreshToken: string;
-  let expiredRefreshToken: string;
-  let accessToken: string;
-  let expiredAccessToken: string;
+  let configService: ConfigService;
+  let jwtService: JwtService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,30 +25,16 @@ describe('CustomAuthGuard', () => {
       providers: [
         CustomAuthGuard, //
         CommonService,
+        ConfigService,
         JwtService,
-        AuthService,
-        UserService,
-        {
-          provide: getRepositoryToken(Auth),
-          useValue: TestMockData.repository(),
-        },
-        {
-          provide: getRepositoryToken(User), //
-          useValue: TestMockData.repository(),
-        },
       ],
     }).compile();
 
     customAuthGuard = module.get(CustomAuthGuard);
+
     commonService = module.get(CommonService);
-
-    authService = await module.get(AuthService);
-
-    const userId = 1;
-    refreshToken = authService.getToken({ userId, isRefresh: true });
-    expiredRefreshToken = authService.getExpiredToken({ userId, isRefresh: true });
-    accessToken = authService.getToken({ userId });
-    expiredAccessToken = authService.getExpiredToken({ userId });
+    configService = module.get(ConfigService);
+    jwtService = module.get(JwtService);
   });
 
   afterEach(() => {
@@ -83,14 +60,33 @@ describe('CustomAuthGuard', () => {
       expect(result).toBe(true);
     });
 
+    /** 테스트용 헤더에 들어가는 인증 만들기 */
+    class makeToken {
+      static cookie(expiresIn = '24h') {
+        if (expiresIn === 'w') {
+          return `refreshToken=token`;
+        }
+        const secret = configService.get<string>(envKeys.refreshTokenSecret);
+        const token = jwtService.sign({ sub: 1 }, { secret, expiresIn });
+        return `refreshToken=${token}`;
+      }
+      static authorization(expiresIn = '15m') {
+        if (expiresIn === 'w') {
+          return `Bearer token`;
+        }
+        const secret = configService.get<string>(envKeys.accessTokenSecret);
+        const token = jwtService.sign({ sub: 1 }, { secret, expiresIn });
+        return `Bearer ${token}`;
+      }
+    }
+
     it.each([
       ['cookie', 'refresh'],
       ['authorization', undefined],
     ])('통과 %s', async (header, isPublic) => {
       // given
       const req = TestMockData.req();
-      req.headers[header] =
-        isPublic === 'refresh' ? `refreshToken=${refreshToken}` : `Bearer ${accessToken}`;
+      req.headers[header] = makeToken[header]();
       const context = TestMockData.executionContext(req);
 
       jest.spyOn(commonService, 'getMetaData').mockReturnValue(isPublic);
@@ -128,12 +124,9 @@ describe('CustomAuthGuard', () => {
       ['잘못된', 'authorization', undefined],
     ])('오류, %s token', async (message, header, isPublic) => {
       // given
-      const expired = message === 'expired';
       const req = TestMockData.req();
-      req.headers[header] =
-        isPublic === 'refresh'
-          ? `refreshToken=${expired ? expiredRefreshToken : 'toekn'}`
-          : `Bearer ${expired ? expiredAccessToken : 'token'}`;
+      const expired = message === 'expired';
+      req.headers[header] = expired ? makeToken[header](-1) : makeToken[header]('w');
       const context = TestMockData.executionContext(req);
 
       jest.spyOn(commonService, 'getMetaData').mockReturnValue(isPublic);
