@@ -11,7 +11,7 @@ describe('CommonService_Unit', () => {
   let configService: ConfigService;
   let jwtService: JwtService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({

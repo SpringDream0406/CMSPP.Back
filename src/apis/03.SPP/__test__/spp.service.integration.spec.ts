@@ -16,7 +16,7 @@ describe('SppService_Integation', () => {
   let dBDataFactory: DBDataFactory;
   let backup: IBackup;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const db = newDb();
     const entities = getEntitis();
     dataSource = await initPgMem('SppService_Integation', db, entities);
