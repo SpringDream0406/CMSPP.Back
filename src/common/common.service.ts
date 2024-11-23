@@ -31,7 +31,7 @@ export class CommonService {
       return false;
     }
     const [auth, refreshToken] = cookie.split('=');
-    if (!auth || auth != 'refreshToken' || !refreshToken) {
+    if (!auth || auth.toLocaleLowerCase() != 'refreshToken' || !refreshToken) {
       return false;
     }
     return refreshToken;
@@ -44,7 +44,7 @@ export class CommonService {
       return false;
     }
     const [auth, accessToken] = authorization.split(' ');
-    if (!auth || auth != 'Bearer' || !accessToken) {
+    if (!auth || auth.toLocaleLowerCase() != 'bearer' || !accessToken) {
       return false;
     }
     return accessToken;
@@ -64,7 +64,7 @@ export class CommonService {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get<string>(secretKey),
+        secret: this.configService.getOrThrow<string>(secretKey),
       });
       req.user = { userId: payload.sub };
       return true;

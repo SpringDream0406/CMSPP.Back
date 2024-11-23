@@ -34,7 +34,7 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     await this.authService.signUp({ ...req, res });
-    res.redirect(this.configService.get(envKeys.redirectURL));
+    res.redirect(this.configService.getOrThrow(envKeys.redirectURL));
   }
 
   // 엑세스 토큰 발급

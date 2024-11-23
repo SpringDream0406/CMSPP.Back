@@ -83,7 +83,7 @@ export class AuthService {
   /* istanbul ignore next */
   /** 만료된 토큰 발급__ e2e Test */
   getExpiredToken({ userId, isRefresh = false }: IGetToken): string {
-    const secret = this.configService.get<string>(
+    const secret = this.configService.getOrThrow<string>(
       isRefresh ? envKeys.refreshTokenSecret : envKeys.accessTokenSecret,
     );
     const token = this.jwtService.sign(
@@ -97,7 +97,7 @@ export class AuthService {
   }
 
   getToken({ userId, isRefresh = false }: IGetToken): string {
-    const secret = this.configService.get<string>(
+    const secret = this.configService.getOrThrow<string>(
       isRefresh ? envKeys.refreshTokenSecret : envKeys.accessTokenSecret,
     );
     const token = this.jwtService.sign(
@@ -113,7 +113,7 @@ export class AuthService {
   /** 리프래시토큰 세팅__ */
   setRefreshToken({ userId, res }: ISetRefreshToken): void {
     const refreshToken = this.getToken({ userId, isRefresh: true });
-    const env = this.configService.get(envKeys.env);
+    const env = this.configService.getOrThrow(envKeys.env);
 
     // 개발/테스트
     if (env === 'dev' || env === 'test') {

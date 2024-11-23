@@ -13,14 +13,13 @@ import { CommonModule } from './common/common.module';
 import { validationSchema } from './common/config/validation.schema';
 import { ScheduleModule } from '@nestjs/schedule';
 
-// console.log(`.env${process.env.NODE_ENV ?? ''}`);
+console.log(process.env.ENV);
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, //
       validationSchema: validationSchema,
-      envFilePath: `.env${process.env.NODE_ENV ?? ''}`,
     }), //
     AuthModule,
     UserModule,
