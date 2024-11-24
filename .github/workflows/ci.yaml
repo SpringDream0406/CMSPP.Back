@@ -1,0 +1,47 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  #
+  test:
+    runs-one: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup node.js 22
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm i -g pnpm
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Run tests
+        run: pnpm test
+
+  #
+  build:
+    # test가 완료되어야 함
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_ACCESSTOKEN}}
+
+      - name: Build and  Push Dokcer image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/cmspp -f Dockerfile.prod .
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/cmspp

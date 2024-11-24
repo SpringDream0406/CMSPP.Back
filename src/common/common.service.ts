@@ -31,7 +31,7 @@ export class CommonService {
       return false;
     }
     const [auth, refreshToken] = cookie.split('=');
-    if (!auth || auth.toLocaleLowerCase() != 'refreshToken' || !refreshToken) {
+    if (!auth || auth.toLocaleLowerCase() != 'refreshtoken' || !refreshToken) {
       return false;
     }
     return refreshToken;

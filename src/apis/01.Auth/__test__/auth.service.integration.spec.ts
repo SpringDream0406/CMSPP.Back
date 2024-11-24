@@ -149,8 +149,8 @@ describe('AuthServcie_Integration', () => {
 
   describe('토큰 발급', () => {
     it.each([
-      ['refreshToken', true, '24h'],
-      ['accessToken', false, '15m'],
+      ['refreshToken', true],
+      ['accessToken', false],
     ])('%s', (_, isRefresh) => {
       // given
       const userId = 1;

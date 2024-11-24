@@ -37,7 +37,7 @@ describe('AuthController_Unit', () => {
       const secret = TestMockData.secret({});
 
       jest.spyOn(authService, 'signUp').mockResolvedValue(null);
-      jest.spyOn(configService, 'get').mockReturnValue(secret);
+      jest.spyOn(configService, 'getOrThrow').mockReturnValue(secret);
       jest.spyOn(res, 'redirect');
 
       // when

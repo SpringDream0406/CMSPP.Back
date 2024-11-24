@@ -19,4 +19,4 @@ RUN pnpm i
 COPY . .
 
 # 커맨드 실행
-CMD ["pnpm", "start:dev", "user"]
+CMD ["pnpm", "start:dev"]

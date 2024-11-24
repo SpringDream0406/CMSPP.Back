@@ -4,7 +4,7 @@ services:
   cmspp:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       target: development
     ports:
       - '3009:3009'
@@ -19,15 +19,17 @@ services:
 
   db:
     image: postgres:16
-    env_file:
-      - .env.test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
       - '5432:5432'
     volumes:
       - ./postgres/user:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 15s
+      start_period: 5s
