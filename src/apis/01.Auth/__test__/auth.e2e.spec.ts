@@ -14,7 +14,7 @@ import { E2eError } from 'src/common/interface/e2e.interface';
 import { IBackup, newDb } from 'pg-mem';
 import { initPgMem } from 'src/common/config/initPgMem';
 import { DBDataFactory, getEntitis } from 'src/common/data/db.mockdata';
-import { CustomAuthGuard } from 'src/common/guard/customAuth.guard';
+import { CustomAuthGuard } from 'src/common/guard/custom-auth.guard';
 
 const mockDynamicAuthGuard = {
   canActivate: (context: ExecutionContext) => {
