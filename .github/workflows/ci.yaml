@@ -27,20 +27,20 @@ jobs:
           SOCIAL_NAVER_ID: ${{secrets.SOCIAL_NAVER_ID}}
           SOCIAL_NAVER_SECRET: ${{secrets.SOCIAL_NAVER_SECRET}}
         run: |
-          touch test.env
-          echo ENV="test" >> test.env
-          echo REFRESHTOKEN_SECRET="$REFRESHTOKEN_SECRET" >> test.env
-          echo ACCESSTOKEN_SECRET="$ACCESSTOKEN_SECRET" >> test.env
-          echo REDIRECT_URL="$REDIRECT_URL" >> test.env
-          echo SOCIAL_CALLBACK_URL="$SOCIAL_CALLBACK_URL" >> test.env
-          echo SOCIAL_GOOGLE_ID="$SOCIAL_GOOGLE_ID" >> test.env
-          echo SOCIAL_GOOGLE_SECRET="$SOCIAL_GOOGLE_SECRET" >> test.env
-          echo SOCIAL_KAKAO_ID="$SOCIAL_KAKAO_ID" >> test.env
-          echo SOCIAL_KAKAO_SECRET="$SOCIAL_KAKAO_SECRET" >> test.env
-          echo SOCIAL_NAVER_ID="$SOCIAL_NAVER_ID" >> test.env
-          echo SOCIAL_NAVER_SECRET="$SOCIAL_NAVER_SECRET" >> test.env
-          echo "test.env created"
-          cat test.env
+          touch .env.test
+          echo ENV="test" >> .env.test
+          echo REFRESHTOKEN_SECRET="$REFRESHTOKEN_SECRET" >> .env.test
+          echo ACCESSTOKEN_SECRET="$ACCESSTOKEN_SECRET" >> .env.test
+          echo REDIRECT_URL="$REDIRECT_URL" >> .env.test
+          echo SOCIAL_CALLBACK_URL="$SOCIAL_CALLBACK_URL" >> .env.test
+          echo SOCIAL_GOOGLE_ID="$SOCIAL_GOOGLE_ID" >> .env.test
+          echo SOCIAL_GOOGLE_SECRET="$SOCIAL_GOOGLE_SECRET" >> .env.test
+          echo SOCIAL_KAKAO_ID="$SOCIAL_KAKAO_ID" >> .env.test
+          echo SOCIAL_KAKAO_SECRET="$SOCIAL_KAKAO_SECRET" >> .env.test
+          echo SOCIAL_NAVER_ID="$SOCIAL_NAVER_ID" >> .env.test
+          echo SOCIAL_NAVER_SECRET="$SOCIAL_NAVER_SECRET" >> .env.test
+          echo ".env.test created"
+          cat .env.test
 
       - name: Setup node.js
         uses: actions/setup-node@v3
