@@ -9,7 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CommonModule } from './common/common.module';
 import { validationSchema } from './common/config/validation.schema';
 import { ScheduleModule } from '@nestjs/schedule';
-import { CustomAuthGuard } from 'src/common/guard/customAuth.guard';
+import { CustomAuthGuard } from './common/guard/customAuth.guard';
 
 @Module({
   imports: [

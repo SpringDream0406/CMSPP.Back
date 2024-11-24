@@ -1,4 +1,3 @@
-import { CustomAuthGuard } from '../guard/customAuth.guard';
 import { CommonService } from '../common.service';
 import { TestMockData } from '../data/test.mockdata';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { envKeys, validationSchema } from '../config/validation.schema';
 import { UnauthorizedException } from '@nestjs/common';
+import { CustomAuthGuard } from '../guard/customAuth.guard';
 
 describe('CustomAuthGuard', () => {
   let customAuthGuard: CustomAuthGuard;
