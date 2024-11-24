@@ -7,16 +7,16 @@ on:
 jobs:
   #
   test:
-    runs-one: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup node.js 22
+      - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: '20'
 
       - name: Install pnpm
         run: npm i -g pnpm
@@ -27,7 +27,7 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-  #
+  # #
   build:
     # test가 완료되어야 함
     needs: test
