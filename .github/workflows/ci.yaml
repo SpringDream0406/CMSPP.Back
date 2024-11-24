@@ -16,6 +16,12 @@ jobs:
       - name: Create Env File
         env:
           ENV: ${{secrets.ENV}}
+          DB_TYPE: ${{secrets.DB_TYPE}}
+          DB_HOST: ${{secrets.DB_HOST}}
+          DB_PORT: ${{secrets.DB_PORT}}
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          DB_DATABASE: ${{secrets.DB_DATABASE}}
           REFRESHTOKEN_SECRET: ${{secrets.REFRESHTOKEN_SECRET}}
           ACCESSTOKEN_SECRET: ${{secrets.ACCESSTOKEN_SECRET}}
           REDIRECT_URL: ${{secrets.REDIRECT_URL}}
@@ -29,6 +35,12 @@ jobs:
         run: |
           touch .env.test
           echo ENV="test" >> .env.test
+          echo DB_TYPE="$DB_TYPE" >> .env.test
+          echo DB_HOST="localhost" >> .env.test
+          echo DB_PORT="$DB_PORT" >> .env.test
+          echo DB_USERNAME="$DB_USERNAME" >> .env.test
+          echo DB_PASSWORD="$DB_PASSWORD" >> .env.test
+          echo DB_DATABASE="$DB_DATABASE" >> .env.test
           echo REFRESHTOKEN_SECRET="$REFRESHTOKEN_SECRET" >> .env.test
           echo ACCESSTOKEN_SECRET="$ACCESSTOKEN_SECRET" >> .env.test
           echo REDIRECT_URL="$REDIRECT_URL" >> .env.test
