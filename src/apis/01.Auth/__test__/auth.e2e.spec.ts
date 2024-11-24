@@ -14,6 +14,7 @@ import { E2eError } from 'src/common/interface/e2e.interface';
 import { IBackup, newDb } from 'pg-mem';
 import { initPgMem } from 'src/common/config/initPgMem';
 import { DBDataFactory, getEntitis } from 'src/common/data/db.mockdata';
+import { CustomAuthGuard } from 'src/common/guard/customAuth.guard';
 
 const mockDynamicAuthGuard = {
   canActivate: (context: ExecutionContext) => {
@@ -35,6 +36,8 @@ describe('Auth_e2e', () => {
 
   let accessToken: string;
 
+  let customAuthGuard: CustomAuthGuard;
+
   let dataSource: DataSource;
   let dBDataFactory: DBDataFactory;
   let backup: IBackup;
@@ -51,6 +54,8 @@ describe('Auth_e2e', () => {
       .useValue(mockDynamicAuthGuard)
       .overrideProvider(DataSource)
       .useValue(dataSource)
+      .overrideProvider(CustomAuthGuard)
+      .useClass(customAuthGuard)
       .compile();
 
     app = module.createNestApplication();

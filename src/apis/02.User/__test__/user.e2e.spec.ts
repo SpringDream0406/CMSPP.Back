@@ -9,9 +9,12 @@ import { TestMockData } from 'src/common/data/test.mockdata';
 import { DBDataFactory, getEntitis } from 'src/common/data/db.mockdata';
 import { IBackup, newDb } from 'pg-mem';
 import { initPgMem } from 'src/common/config/initPgMem';
+import { CustomAuthGuard } from 'src/common/guard/customAuth.guard';
 
 describe('User_e2e', () => {
   let app: INestApplication;
+
+  let customAuthGuard: CustomAuthGuard;
 
   let accessToken: string;
   let outAccessToken: string;
@@ -31,6 +34,8 @@ describe('User_e2e', () => {
     })
       .overrideProvider(DataSource)
       .useValue(dataSource)
+      .overrideProvider(CustomAuthGuard)
+      .useClass(customAuthGuard)
       .compile();
 
     app = module.createNestApplication();

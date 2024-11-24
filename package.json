@@ -127,8 +127,7 @@
       "database.config.ts",
       "initPgMem.ts",
       "validation.schema.ts",
-      "response-time.interceptor.ts",
-      "customAuth.guard.spec.ts"
+      "response-time.interceptor.ts"
     ]
   }
 }
