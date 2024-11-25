@@ -103,4 +103,5 @@ jobs:
             sudo docker compose -f docker-compose.prod.yaml stop
             sudo docker compose -f docker-compose.prod.yaml down
             sudo docker rmi ${{secrets.DOCKERHUB_USERNAME}}/cmspp:latest
+            sudo docker pull ${{secrets.DOCKERHUB_USERNAME}}/cmspp:latest
             sudo docker compose -f docker-compose.prod.yaml up -d
