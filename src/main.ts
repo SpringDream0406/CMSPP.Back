@@ -11,8 +11,8 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: 'http://localhost:3000', // 허용할 원본(origin) 설정
-    credentials: true, // credentials 포함 여부 설정
+    origin: process.env.FRONT_URL, // 허용할 원본(origin) 설정
+    credentials: true, // 쿠키 또는 인증 정보를 포함한 요청을 허용
   });
   await app.listen(3009);
 }

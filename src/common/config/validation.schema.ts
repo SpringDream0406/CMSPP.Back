@@ -18,7 +18,7 @@ export const validationSchema = Joi.object({
   ACCESSTOKEN_SECRET: requiredString,
 
   // 프론트주소
-  REDIRECT_URL: requiredString,
+  FRONT_URL: requiredString,
 
   // 소셜 로그인 콜백
   SOCIAL_CALLBACK_URL: requiredString,
@@ -52,7 +52,7 @@ export enum envKeys {
   accessTokenSecret = 'ACCESSTOKEN_SECRET',
 
   // 프론트주소
-  redirectURL = 'REDIRECT_URL',
+  frontURL = 'FRONT_URL',
 
   // 소셜 로그인 콜백
   socailCallBackURL = 'SOCIAL_CALLBACK_URL',
