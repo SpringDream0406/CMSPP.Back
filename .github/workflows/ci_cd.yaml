@@ -103,4 +103,4 @@ jobs:
             sudo docker rm ${{secrets.PROJECT_NAME}}-container
             sudo docker rmi ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
             sudo docker pull ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
-            sudo docker run -d -p 80:3009 --name ${{secrets.PROJECT_NAME}}-container ${secrets.DOCKERHUB_USERNAME}/${{secrets.PROJECT_NAME}}:latest
+            sudo docker run -d -p 80:3009 --name ${{secrets.PROJECT_NAME}}-container ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
