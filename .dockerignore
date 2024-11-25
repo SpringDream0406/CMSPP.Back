@@ -1,8 +1,11 @@
+.github/
 .vscode/
 coverage/
 dist/
 node_modules/
 postgres/
-*.env
+.env*
 .git/
 .gitignore
+docker-compose*
+Dockerfile*

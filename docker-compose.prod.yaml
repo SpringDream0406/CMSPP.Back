@@ -1,13 +1,10 @@
-version: '3.7'
-
 services:
   cmspp:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-      target: development
+    image: springdream0406/cmspp:latest
     ports:
       - '80:3009'
+    env_file:
+      - .env
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
