@@ -5,6 +5,3 @@ services:
       - '80:3009'
     env_file:
       - .env
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
