@@ -40,6 +40,9 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     await this.authService.signUp({ ...req, res });
+    const cookie = res.getHeaders();
+    console.log(cookie);
+
     res.redirect(this.configService.getOrThrow(envKeys.frontURL));
   }
 
