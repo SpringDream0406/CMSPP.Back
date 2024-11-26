@@ -116,15 +116,15 @@ export class AuthService {
     const env = this.configService.getOrThrow(envKeys.env);
 
     // 개발/테스트
-    if (env === 'dev' || env === 'test') {
-      res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
-    } else {
-      // 배포
-      res.setHeader(
-        'set-Cookie',
-        `refreshToken=${refreshToken}; path=/; domain=.cmspp.store; SameSite=None; Secure; httpOnly`,
-      );
-      res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
-    }
+    // if (env === 'dev' || env === 'test') {
+    res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+    // } else {
+    // 배포
+    //   res.setHeader(
+    //     'set-Cookie',
+    //     `refreshToken=${refreshToken}; path=/; domain=.cmspp.store; SameSite=None; Secure; httpOnly`,
+    //   );
+    //   res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
+    // }
   }
 }
