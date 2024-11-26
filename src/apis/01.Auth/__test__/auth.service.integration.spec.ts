@@ -92,6 +92,8 @@ describe('AuthServcie_Integration', () => {
       // then
       expect(AfterAuth).toHaveLength(2); // 가입된 회원수 이상 없나
       expect(AfterUser).toHaveLength(2);
+      console.log(res_1.getHeaders());
+
       expect(res_1.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
       expect(res_2.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
     });
