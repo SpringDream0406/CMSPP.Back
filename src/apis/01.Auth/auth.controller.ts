@@ -22,6 +22,7 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  @Public()
   @Get()
   healthCheck(): string {
     return 'OK';
