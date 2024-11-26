@@ -122,13 +122,9 @@ export class AuthService {
       // 배포
       res.setHeader(
         'set-Cookie',
-        `refreshToken=${refreshToken}; path=/; SameSite=None; Secure; httpOnly`,
+        `refreshToken=${refreshToken}; path=/; domain=.cmspp.store; SameSite=None; Secure; httpOnly`,
       );
-      res.setHeader(
-        'Access-Control-Allow-Origin',
-        this.configService.get(envKeys.frontURL),
-      );
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
     }
   }
 }
