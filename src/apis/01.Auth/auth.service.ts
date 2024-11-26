@@ -122,9 +122,13 @@ export class AuthService {
       // 배포
       res.setHeader(
         'set-Cookie',
-        `refreshToken=${refreshToken}; path=/; domain=.도메인주소; SameSite=None; Secure; httpOnly`,
+        `refreshToken=${refreshToken}; path=/; SameSite=None; Secure; httpOnly`,
       );
-      res.setHeader('Access-Control-Allow-Origin', 'https://프론트주소');
+      res.setHeader(
+        'Access-Control-Allow-Origin',
+        this.configService.get(envKeys.frontURL),
+      );
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
     }
   }
 }
