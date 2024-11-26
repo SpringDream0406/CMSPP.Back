@@ -1,7 +1,0 @@
-services:
-  cmspp:
-    image: springdream0406/cmspp:latest
-    ports:
-      - '80:3009'
-    env_file:
-      - .env

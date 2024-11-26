@@ -22,6 +22,11 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  @Get()
+  healthCheck(): string {
+    return 'OK';
+  }
+
   // 소셜 회원가입/로그인
   @Get('signup/:social')
   @Public()
