@@ -11,7 +11,6 @@ export const databaseConfig = {
       username: configService.get<string>(envKeys.dbUsername),
       password: configService.get<string>(envKeys.dbPassword),
       database: configService.get<string>(envKeys.dbDatabase),
-      // url: configService.get<string>('DB_URL'),
       autoLoadEntities: true, // 각각의 entity 일일이 입력 or 자동
       synchronize: true, // 스키마 동기화
       logging: false, // 쿼리 실행 내역 터미널에 띄움
