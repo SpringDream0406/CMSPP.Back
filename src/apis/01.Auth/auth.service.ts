@@ -124,7 +124,7 @@ export class AuthService {
         'set-Cookie',
         `refreshToken=${refreshToken}; path=/; domain=.cmspp.kr; SameSite=None; Secure; httpOnly`,
       );
-      res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
+      res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr/');
     }
 
     // // 개발/테스트
