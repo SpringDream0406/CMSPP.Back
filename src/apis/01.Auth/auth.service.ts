@@ -174,6 +174,7 @@ export class AuthService {
       });
     } else {
       res.cookie('refreshToken', refreshToken, {
+        expires: new Date(Date.now() + 3600000),
         path: '/',
         // domain: '.cmspp.store',
         sameSite: 'none',
