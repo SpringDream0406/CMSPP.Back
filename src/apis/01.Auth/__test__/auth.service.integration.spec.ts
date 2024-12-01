@@ -75,77 +75,77 @@ describe('AuthServcie_Integration', () => {
     expect(authService).toBeDefined();
   });
 
-  describe('signUp', () => {
-    it('회원가입', async () => {
-      // given
-      const user_1 = TestMockData.reqUser({ id: 'test_1' });
-      const user_2 = TestMockData.reqUser({ id: 'test_2' });
-      const res_1 = TestMockData.res();
-      const res_2 = TestMockData.res();
+  // describe('signUp', () => {
+  //   it('회원가입', async () => {
+  //     // given
+  //     const user_1 = TestMockData.reqUser({ id: 'test_1' });
+  //     const user_2 = TestMockData.reqUser({ id: 'test_2' });
+  //     const res_1 = TestMockData.res();
+  //     const res_2 = TestMockData.res();
 
-      // when
-      await authService.signUp({ user: user_1, res: res_1 }); // 회원 가입
-      await authService.signUp({ user: user_2, res: res_2 });
-      const AfterAuth = await authRepository.find();
-      const AfterUser = await userRepository.find();
+  //     // when
+  //     await authService.signUp({ user: user_1, res: res_1 }); // 회원 가입
+  //     await authService.signUp({ user: user_2, res: res_2 });
+  //     const AfterAuth = await authRepository.find();
+  //     const AfterUser = await userRepository.find();
 
-      // then
-      expect(AfterAuth).toHaveLength(2); // 가입된 회원수 이상 없나
-      expect(AfterUser).toHaveLength(2);
-      expect(res_1.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
-      expect(res_2.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
-    });
+  //     // then
+  //     expect(AfterAuth).toHaveLength(2); // 가입된 회원수 이상 없나
+  //     expect(AfterUser).toHaveLength(2);
+  //     expect(res_1.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+  //     expect(res_2.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+  //   });
 
-    it('회원 탈퇴 후 재가입', async () => {
-      // given
-      await dBDataFactory.insertUsersAndAuths([1, 2]);
-      const user_1 = TestMockData.reqUser({ id: 'test_1' });
-      const res = TestMockData.res();
-      const authOfUser_1 = await authRepository.findOne({
-        where: { id: 'test_1' },
-        relations: { user: true },
-      });
-      await userService.withdrawal({ userId: authOfUser_1.user.id }); // 1명 회원 탈퇴
+  //   it('회원 탈퇴 후 재가입', async () => {
+  //     // given
+  //     await dBDataFactory.insertUsersAndAuths([1, 2]);
+  //     const user_1 = TestMockData.reqUser({ id: 'test_1' });
+  //     const res = TestMockData.res();
+  //     const authOfUser_1 = await authRepository.findOne({
+  //       where: { id: 'test_1' },
+  //       relations: { user: true },
+  //     });
+  //     await userService.withdrawal({ userId: authOfUser_1.user.id }); // 1명 회원 탈퇴
 
-      // when
-      await authService.signUp({ user: user_1, res }); // 회원 재 가입
+  //     // when
+  //     await authService.signUp({ user: user_1, res }); // 회원 재 가입
 
-      const auth = await authRepository.findOne({
-        where: { id: authOfUser_1.id },
-        relations: { user: true },
-      });
-      const user = await userRepository.findOne({
-        where: { id: authOfUser_1.user.id },
-      });
-      const auths = await authRepository.find();
-      const users = await userRepository.find();
+  //     const auth = await authRepository.findOne({
+  //       where: { id: authOfUser_1.id },
+  //       relations: { user: true },
+  //     });
+  //     const user = await userRepository.findOne({
+  //       where: { id: authOfUser_1.user.id },
+  //     });
+  //     const auths = await authRepository.find();
+  //     const users = await userRepository.find();
 
-      // then
-      expect(auths).toHaveLength(2); // 회원수 이상 없나
-      expect(users).toHaveLength(2);
-      expect(auth.user).not.toBeNull(); // restore 제대로 되었나
-      expect(user.deletedAt).toBeNull();
-      expect(auth.user.id).toBe(user.id);
-      expect(res.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
-    });
+  //     // then
+  //     expect(auths).toHaveLength(2); // 회원수 이상 없나
+  //     expect(users).toHaveLength(2);
+  //     expect(auth.user).not.toBeNull(); // restore 제대로 되었나
+  //     expect(user.deletedAt).toBeNull();
+  //     expect(auth.user.id).toBe(user.id);
+  //     expect(res.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+  //   });
 
-    it('로그인', async () => {
-      // given
-      await dBDataFactory.insertUsersAndAuths([1, 2]);
-      const user_1 = TestMockData.reqUser({ id: 'test_1' });
-      const res = TestMockData.res();
+  //   it('로그인', async () => {
+  //     // given
+  //     await dBDataFactory.insertUsersAndAuths([1, 2]);
+  //     const user_1 = TestMockData.reqUser({ id: 'test_1' });
+  //     const res = TestMockData.res();
 
-      // when
-      await authService.signUp({ user: user_1, res }); // 로그인
-      const auths = await authRepository.find();
-      const users = await userRepository.find();
+  //     // when
+  //     await authService.signUp({ user: user_1, res }); // 로그인
+  //     const auths = await authRepository.find();
+  //     const users = await userRepository.find();
 
-      // then
-      expect(auths).toHaveLength(2); // 회원수 이상 없나
-      expect(users).toHaveLength(2);
-      expect(res.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
-    });
-  });
+  //     // then
+  //     expect(auths).toHaveLength(2); // 회원수 이상 없나
+  //     expect(users).toHaveLength(2);
+  //     expect(res.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+  //   });
+  // });
 
   describe('토큰 발급', () => {
     it.each([

@@ -12,6 +12,10 @@ export interface ISignUp {
   user: IOAuthUserData;
   res: Response;
 }
+// export interface ISignUp {
+//   social: string;
+//   code: string;
+// }
 
 // 일반 access
 // export interface IAuthUser {

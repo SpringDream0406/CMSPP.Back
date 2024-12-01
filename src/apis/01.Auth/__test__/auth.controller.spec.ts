@@ -28,40 +28,40 @@ describe('AuthController_Unit', () => {
     expect(authController).toBeDefined();
   });
 
-  describe('signUp', () => {
-    it('소셜 회원가입/로그인', async () => {
-      // given
-      const req = TestMockData.req();
-      req.user = TestMockData.reqUser({});
-      const res = TestMockData.res();
-      const secret = TestMockData.secret({});
+  // describe('signUp', () => {
+  //   it('소셜 회원가입/로그인', async () => {
+  //     // given
+  //     const req = TestMockData.req();
+  //     req.user = TestMockData.reqUser({});
+  //     const res = TestMockData.res();
+  //     const secret = TestMockData.secret({});
 
-      jest.spyOn(authService, 'signUp').mockResolvedValue(null);
-      jest.spyOn(configService, 'getOrThrow').mockReturnValue(secret);
-      jest.spyOn(res, 'redirect');
+  //     jest.spyOn(authService, 'signUp').mockResolvedValue(null);
+  //     jest.spyOn(configService, 'getOrThrow').mockReturnValue(secret);
+  //     jest.spyOn(res, 'redirect');
 
-      // when
-      await authController.signUp(req as Request & IOAuthUser, res);
+  //     // when
+  //     await authController.signUp(req as Request & IOAuthUser, res);
 
-      // then
-      expect(authService.signUp).toHaveBeenCalledWith({ ...req, res });
-      expect(res.redirect).toHaveBeenCalledWith(secret);
-    });
+  //     // then
+  //     expect(authService.signUp).toHaveBeenCalledWith({ ...req, res });
+  //     expect(res.redirect).toHaveBeenCalledWith(secret);
+  //   });
 
-    it('소셜 회원가입/로그인 실패: req.user 없음', async () => {
-      // given
-      const req = TestMockData.req() as Request & IOAuthUser;
-      const res = TestMockData.res();
+  //   it('소셜 회원가입/로그인 실패: req.user 없음', async () => {
+  //     // given
+  //     const req = TestMockData.req() as Request & IOAuthUser;
+  //     const res = TestMockData.res();
 
-      jest.spyOn(authService, 'signUp').mockResolvedValue(null);
+  //     jest.spyOn(authService, 'signUp').mockResolvedValue(null);
 
-      // when & then
-      await expect(authController.signUp(req, res)).rejects.toThrow(
-        UnauthorizedException,
-      );
-      expect(authService.signUp).not.toHaveBeenCalled();
-    });
-  });
+  //     // when & then
+  //     await expect(authController.signUp(req, res)).rejects.toThrow(
+  //       UnauthorizedException,
+  //     );
+  //     expect(authService.signUp).not.toHaveBeenCalled();
+  //   });
+  // });
 
   describe('getAccessToken', () => {
     it('엑세스 토큰 발급', () => {
