@@ -45,7 +45,7 @@ export class AuthController {
     }
     await this.authService.signUp({ ...req, res });
     const frontURL = this.configService.getOrThrow(envKeys.frontURL);
-    res.redirect(`${frontURL}/redirect/${social}`);
+    res.redirect(frontURL);
   }
 
   @Public()
