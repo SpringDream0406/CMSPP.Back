@@ -162,7 +162,7 @@ export class AuthService {
       // 배포
       res.setHeader(
         'set-Cookie',
-        `refreshToken=${refreshToken}; path=/; domain=.cmspp.kr; SameSite=None; Secure; httpOnly`,
+        `refreshToken=${refreshToken}; path=/; SameSite=None; Secure; httpOnly`,
       );
       res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
     }
