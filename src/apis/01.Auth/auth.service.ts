@@ -155,34 +155,34 @@ export class AuthService {
     const refreshToken = this.getToken({ userId, isRefresh: true });
     const env = this.configService.getOrThrow(envKeys.env);
 
-    // // 개발/테스트
-    // if (env === 'dev' || env === 'test') {
-    //   res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
-    // } else {
-    //   // 배포
-    //   res.setHeader(
-    //     'set-Cookie',
-    //     `refreshToken=${refreshToken}; path=/; SameSite=None; Secure; httpOnly`,
-    //   );
-    //   res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
-    // }
-
     // 개발/테스트
     if (env === 'dev' || env === 'test') {
-      res.cookie('refreshToken', refreshToken, {
-        path: '/',
-      });
+      res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
     } else {
-      res.cookie('refreshToken', refreshToken, {
-        expires: new Date(Date.now() + 3600000),
-        path: '/',
-        // domain: '.cmspp.store',
-        sameSite: 'none',
-        secure: true,
-        httpOnly: true,
-      });
-
+      // 배포
+      res.setHeader(
+        'set-Cookie',
+        `refreshToken=${refreshToken}; path=/; domain=.cmspp.kr; SameSite=None; Secure; httpOnly`,
+      );
       res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
     }
+
+    // // 개발/테스트
+    // if (env === 'dev' || env === 'test') {
+    //   res.cookie('refreshToken', refreshToken, {
+    //     path: '/',
+    //   });
+    // } else {
+    //   res.cookie('refreshToken', refreshToken, {
+    //     path: '/',
+    //     domain: '.cmspp.store',
+    //     sameSite: 'none',
+    //     secure: true,
+    //     httpOnly: true,
+    //   });
+
+    //   res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
+    //   res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // }
   }
 }
