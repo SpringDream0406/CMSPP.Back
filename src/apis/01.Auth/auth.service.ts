@@ -13,9 +13,6 @@ import { ConfigService } from '@nestjs/config';
 import { envKeys } from 'src/common/config/validation.schema';
 import { Role } from '../02.User/entity/user.entity';
 import { UserService } from '../02.User/user.service';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +22,6 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly httpService: HttpService,
   ) {}
 
   /* istanbul ignore next */
@@ -84,42 +80,6 @@ export class AuthService {
     this.setRefreshToken({ userId, res });
   }
 
-  // // /** 로그인/회원가입__ Auth에서 검색해보고 없으면 회원가입 후 userId 쿠키에 넣기 */
-  // async signUp({ social, code }: ISignUp): Promise<void> {
-  //   console.log(social, code);
-
-  //   const googleTokenURL = 'https://oauth2.googleapis.com/token';
-  //   const googleClientId = this.configService.getOrThrow<string>(envKeys.socailGoogleId);
-  //   const googleClientSecret = this.configService.getOrThrow<string>(
-  //     envKeys.socailGoogleSecet,
-  //   );
-  //   const googleRedirectURI = 'http://localhost:3009/signup/google';
-  //   try {
-  //     const tokenResponse = await axios.post(googleTokenURL, null, {
-  //       params: {
-  //         code,
-  //         client_id: googleClientId,
-  //         client_secret: googleClientSecret,
-  //         redirect_uri: googleRedirectURI,
-  //         grant_type: 'authorization_code',
-  //       },
-  //     });
-  //     console.log(tokenResponse);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-
-  //   let auth = await this.findOneByUserFromAuth({ user });
-  //   if (auth && auth.user.deletedAt) {
-  //     await this.userService.restoreUser(auth);
-  //   }
-  //   if (!auth) {
-  //     auth = await this.saveUser({ user });
-  //   }
-  //   const userId = auth.user.id;
-  //   this.setRefreshToken({ userId, res });
-  // }
-
   /* istanbul ignore next */
   /** 만료된 토큰 발급__ e2e Test */
   getExpiredToken({ userId, isRefresh = false }: IGetToken): string {
@@ -170,23 +130,5 @@ export class AuthService {
       );
       res.setHeader('Access-Control-Allow-Credentials', 'true');
     }
-
-    // // 개발/테스트
-    // if (env === 'dev' || env === 'test') {
-    //   res.cookie('refreshToken', refreshToken, {
-    //     path: '/',
-    //   });
-    // } else {
-    //   res.cookie('refreshToken', refreshToken, {
-    //     path: '/',
-    //     domain: '.cmspp.store',
-    //     sameSite: 'none',
-    //     secure: true,
-    //     httpOnly: true,
-    //   });
-
-    //   res.setHeader('Access-Control-Allow-Origin', 'https://cmspp.kr');
-    //   res.setHeader('Access-Control-Allow-Credentials', 'true');
-    // }
   }
 }

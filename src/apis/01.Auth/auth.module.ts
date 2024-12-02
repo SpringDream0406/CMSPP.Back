@@ -8,7 +8,6 @@ import { JwtGoogleStrategy } from 'src/common/auth/jwt-social-google.strategy';
 import { JwtKakaoStrategy } from 'src/common/auth/jwt-social-kakao.strategy';
 import { JwtNaverStrategy } from 'src/common/auth/jwt-social-naver.strategy';
 import { UserModule } from '../02.User/user.module';
-import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { HttpModule } from '@nestjs/axios';
     ]), //
     JwtModule.register({}),
     UserModule,
-    HttpModule,
   ],
   providers: [
     AuthService, //
