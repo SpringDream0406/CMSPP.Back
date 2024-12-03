@@ -46,6 +46,7 @@ export class AuthController {
 
   // 로그아웃 = 쿠키 삭제
   @Get('logout')
+  @Public()
   logOut(@Res() res: Response) {
     res.clearCookie('refreshToken');
     res.redirect(this.configService.getOrThrow(envKeys.frontURL));
