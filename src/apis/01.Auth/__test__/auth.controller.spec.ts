@@ -55,7 +55,7 @@ describe('AuthController_Unit', () => {
 
       // then
       expect(authService.signUp).toHaveBeenCalledWith({ ...req, res });
-      expect(res.redirect).toHaveBeenCalledWith(secret);
+      expect(res.redirect).toHaveBeenCalledWith(`${secret}/setLogin`);
     });
 
     it('소셜 회원가입/로그인 실패: req.user 없음', async () => {

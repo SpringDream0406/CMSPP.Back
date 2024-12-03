@@ -40,6 +40,14 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     await this.authService.signUp({ ...req, res });
+    const frontULR = this.configService.getOrThrow(envKeys.frontURL);
+    res.redirect(`${frontULR}/setLogin`);
+  }
+
+  // 로그아웃 = 쿠키 삭제
+  @Get('logout')
+  logOut(@Res() res: Response) {
+    res.clearCookie('refreshToken');
     res.redirect(this.configService.getOrThrow(envKeys.frontURL));
   }
 

@@ -88,26 +88,27 @@ export class AuthService {
     const refreshToken = this.getToken({ userId, isRefresh: true });
     const isProd = this.configService.getOrThrow(envKeys.env) === 'prod';
 
-    // 개발/테스트
-    if (!isProd) {
-      res.cookie('refreshToken', refreshToken, {
-        path: '/',
-      });
-    } else {
-      // 배포
+    // 배포
+    if (isProd) {
       res.cookie('refreshToken', refreshToken, {
         path: '/',
         domain: '.cmspp.kr',
         sameSite: 'none',
         secure: true,
         httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24시간
       });
       res.setHeader(
         'Access-Control-Allow-Origin',
         `${this.configService.getOrThrow<string>(envKeys.frontURL)}`,
       );
       res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else {
+      // 그외
+      res.cookie('refreshToken', refreshToken, {
+        path: '/',
+        expires: new Date(Date.now() + 1000 * 60 * 1), // 1분
+      });
     }
   }
 }
