@@ -106,6 +106,7 @@ export class AuthService {
         sameSite: 'none',
         secure: true,
         httpOnly: true,
+        expires: new Date(Date.now() + 60 * 1000),
       });
       res.setHeader(
         'Access-Control-Allow-Origin',
