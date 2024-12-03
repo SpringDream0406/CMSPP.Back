@@ -48,7 +48,7 @@ export class AuthController {
   @Get('logout')
   @Public()
   logOut(@Res() res: Response) {
-    this.authService.logout(res);
+    this.authService.logOut(res);
     res.redirect(this.configService.getOrThrow(envKeys.frontURL));
   }
 

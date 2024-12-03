@@ -1,5 +1,4 @@
 import { ExecutionContext } from '@nestjs/common';
-import { Request, Response } from 'express';
 import { IOAuthUserData } from 'src/apis/01.Auth/interface/auth.interface';
 import { UpdateMyInfoDto } from 'src/apis/02.User/dto/user-container.dto';
 import { Role, User } from 'src/apis/02.User/entity/user.entity';
@@ -14,7 +13,6 @@ import { FixedExpense } from 'src/apis/03.SPP/entity/fixedExpense.entity';
 import { Solar } from 'src/apis/03.SPP/entity/solar.entity';
 import { SRec } from 'src/apis/03.SPP/entity/sRec.entity';
 import { UpdateResult, DeleteResult } from 'typeorm';
-import { createResponse, createRequest } from 'node-mocks-http';
 import {
   MDIAddExpenseDto,
   MDIAddFixedExpenseDto,
@@ -74,14 +72,6 @@ export const TestMockData = {
       ...reqUser,
       user: { id, deletedAt },
     } as Auth;
-  },
-
-  req(): Request {
-    return createRequest();
-  },
-
-  res(): Response {
-    return createResponse();
   },
 
   token({ token = 'mockToken' }: MDIToken): string {

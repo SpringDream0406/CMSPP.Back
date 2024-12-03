@@ -114,7 +114,7 @@ export class AuthService {
   }
 
   // 로그아웃
-  logout(res: Response) {
+  logOut(res: Response) {
     const isProd = this.configService.getOrThrow(envKeys.env) === 'prod';
     res.clearCookie(
       'refreshToken',

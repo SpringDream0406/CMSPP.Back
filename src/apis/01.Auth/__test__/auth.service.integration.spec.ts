@@ -12,6 +12,7 @@ import { TestMockData } from 'src/common/data/test.mockdata';
 import { IBackup, newDb } from 'pg-mem';
 import { initPgMem } from 'src/common/config/initPgMem';
 import { DBDataFactory, getEntitis } from 'src/common/data/db.mockdata';
+import { createResponse } from 'node-mocks-http';
 
 describe('AuthServcie_Integration', () => {
   let authService: AuthService;
@@ -80,8 +81,8 @@ describe('AuthServcie_Integration', () => {
       // given
       const user_1 = TestMockData.reqUser({ id: 'test_1' });
       const user_2 = TestMockData.reqUser({ id: 'test_2' });
-      const res_1 = TestMockData.res() as any;
-      const res_2 = TestMockData.res() as any;
+      const res_1 = createResponse();
+      const res_2 = createResponse();
 
       // when
       await authService.signUp({ user: user_1, res: res_1 }); // 회원 가입
@@ -100,7 +101,7 @@ describe('AuthServcie_Integration', () => {
       // given
       await dBDataFactory.insertUsersAndAuths([1, 2]);
       const user_1 = TestMockData.reqUser({ id: 'test_1' });
-      const res = TestMockData.res() as any;
+      const res = createResponse();
       const authOfUser_1 = await authRepository.findOne({
         where: { id: 'test_1' },
         relations: { user: true },
@@ -133,7 +134,7 @@ describe('AuthServcie_Integration', () => {
       // given
       await dBDataFactory.insertUsersAndAuths([1, 2]);
       const user_1 = TestMockData.reqUser({ id: 'test_1' });
-      const res = TestMockData.res() as any;
+      const res = createResponse();
 
       // when
       await authService.signUp({ user: user_1, res }); // 로그인
@@ -144,6 +145,24 @@ describe('AuthServcie_Integration', () => {
       expect(auths).toHaveLength(2); // 회원수 이상 없나
       expect(users).toHaveLength(2);
       expect(res.cookies.refreshToken.value).toBeDefined(); // 쿠키에 refreshToken 있나
+    });
+  });
+
+  describe('로그아웃', () => {
+    it.each(['test', 'dev', 'prod'])('로그아웃 = 쿠키 삭제, env = %s', (env) => {
+      // given
+      const res = createResponse();
+
+      jest.spyOn(configService, 'getOrThrow').mockReturnValue(env);
+
+      authService.setCookie({ userId: 1, res });
+      expect(res.cookies.refreshToken.value).not.toBe('');
+
+      // when
+      authService.logOut(res);
+
+      //then
+      expect(res.cookies.refreshToken.value).toBe('');
     });
   });
 
@@ -166,21 +185,18 @@ describe('AuthServcie_Integration', () => {
   });
 
   describe('setCookie', () => {
-    it.each(['test', 'dev', 'prod'])(
-      '리프래시토큰 쿠키에 담기 - 테스트 환경: %s',
-      (env) => {
-        // given
-        const userId = 1;
-        const res = TestMockData.res() as any;
+    it.each(['test', 'dev', 'prod'])('리프래시토큰 쿠키에 담기, env = %s', (env) => {
+      // given
+      const userId = 1;
+      const res = createResponse();
 
-        jest.spyOn(configService, 'get').mockReturnValue(env);
+      jest.spyOn(configService, 'get').mockReturnValue(env);
 
-        // when
-        authService.setCookie({ userId, res });
+      // when
+      authService.setCookie({ userId, res });
 
-        // then
-        expect(res.cookies.refreshToken.value).toBeDefined();
-      },
-    );
+      // then
+      expect(res.cookies.refreshToken.value).toBeDefined();
+    });
   });
 });

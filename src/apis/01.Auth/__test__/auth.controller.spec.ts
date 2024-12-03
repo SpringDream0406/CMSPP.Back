@@ -6,6 +6,7 @@ import { UnauthorizedException } from '@nestjs/common';
 import { TestMockData } from 'src/common/data/test.mockdata';
 import { Request } from 'express';
 import { IOAuthUser } from '../interface/auth.interface';
+import { createRequest, createResponse } from 'node-mocks-http';
 
 describe('AuthController_Unit', () => {
   let authController: AuthController;
@@ -41,9 +42,9 @@ describe('AuthController_Unit', () => {
   describe('signUp', () => {
     it('소셜 회원가입/로그인', async () => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest() as Request & IOAuthUser;
       req.user = TestMockData.reqUser({});
-      const res = TestMockData.res();
+      const res = createResponse();
       const secret = TestMockData.secret({});
 
       jest.spyOn(authService, 'signUp').mockResolvedValue(null);
@@ -51,7 +52,7 @@ describe('AuthController_Unit', () => {
       jest.spyOn(res, 'redirect');
 
       // when
-      await authController.signUp(req as Request & IOAuthUser, res);
+      await authController.signUp(req, res);
 
       // then
       expect(authService.signUp).toHaveBeenCalledWith({ ...req, res });
@@ -60,8 +61,8 @@ describe('AuthController_Unit', () => {
 
     it('소셜 회원가입/로그인 실패: req.user 없음', async () => {
       // given
-      const req = TestMockData.req() as Request & IOAuthUser;
-      const res = TestMockData.res();
+      const req = createRequest() as Request & IOAuthUser;
+      const res = createResponse();
 
       jest.spyOn(authService, 'signUp').mockResolvedValue(null);
 
@@ -70,6 +71,24 @@ describe('AuthController_Unit', () => {
         UnauthorizedException,
       );
       expect(authService.signUp).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('logOut', () => {
+    it('로그아웃 = 쿠키 삭제', () => {
+      // given
+      const secret = TestMockData.secret({});
+      const res = createResponse();
+
+      jest.spyOn(authService, 'logOut');
+      jest.spyOn(configService, 'getOrThrow').mockReturnValue(secret);
+
+      // when
+      authController.logOut(res);
+
+      // then
+      expect(authService.logOut).toHaveBeenCalledWith(res);
+      expect(configService.getOrThrow).toHaveReturnedWith(secret);
     });
   });
 

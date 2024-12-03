@@ -1,10 +1,10 @@
 import { CommonService } from '../common.service';
 import { JwtService } from '@nestjs/jwt';
-import { TestMockData } from '../data/test.mockdata';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { envKeys, validationSchema } from '../config/validation.schema';
 import { UnauthorizedException } from '@nestjs/common';
+import { createRequest } from 'node-mocks-http';
 
 describe('CommonService_Unit', () => {
   let commonService: CommonService;
@@ -42,7 +42,7 @@ describe('CommonService_Unit', () => {
     it('쿠키에서 refreshToken 가져오기 성공', () => {
       // given
       const refreshToken = 'mockRefreshToken';
-      const req = TestMockData.req();
+      const req = createRequest();
       req.headers.cookie = `refreshToken=${refreshToken}`;
 
       // when
@@ -60,7 +60,7 @@ describe('CommonService_Unit', () => {
       ['잘못된 토큰 형식', 'test'],
     ])('쿠키에서 refreshToken 가져오기 실패: %s', (_, cookie) => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       req.headers.cookie = cookie;
 
       // when
@@ -75,7 +75,7 @@ describe('CommonService_Unit', () => {
     it('authorization에서 accessToken 가져오기 성공', () => {
       // given
       const accessToken = 'mockAccessToken';
-      const req = TestMockData.req();
+      const req = createRequest();
       req.headers.authorization = `Bearer ${accessToken}`;
 
       // when
@@ -93,7 +93,7 @@ describe('CommonService_Unit', () => {
       ['잘못된 토큰 형식', 'test'],
     ])('authorization에서 accessToken 가져오기 실패: %s', (_, Bearer) => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       req.headers.authorization = `${Bearer}`;
 
       // when
@@ -110,7 +110,7 @@ describe('CommonService_Unit', () => {
       ['cookie에 문제가 있을 때', '', false],
     ])('refresh 일 때: %s', (_, cookie, expectResult) => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       req.headers.cookie = cookie;
 
       // when
@@ -125,7 +125,7 @@ describe('CommonService_Unit', () => {
       ['authorization에 문제가 있을 때', '', false],
     ])('access 일 때, mockReturnValue: %s', (_, Bearer, expectResult) => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       req.headers.authorization = Bearer;
 
       // when
@@ -144,7 +144,7 @@ describe('CommonService_Unit', () => {
       // given
       const secret = configService.get(envKeys[`${env}Secret`]);
       const token = jwtService.sign({ sub: 1 }, { secret, expiresIn });
-      const req = TestMockData.req();
+      const req = createRequest();
 
       // when
       const result = await commonService.validateToken({ token, req, isRefresh });
@@ -159,7 +159,7 @@ describe('CommonService_Unit', () => {
       ['accessToken 일 때', false],
     ])('검증 실패: %s', async (_, isRefresh) => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       const token = 'token';
 
       // when & then

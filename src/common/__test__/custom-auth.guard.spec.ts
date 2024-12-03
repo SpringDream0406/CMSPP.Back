@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { envKeys, validationSchema } from '../config/validation.schema';
 import { UnauthorizedException } from '@nestjs/common';
 import { CustomAuthGuard } from '../guard/custom-auth.guard';
+import { createRequest } from 'node-mocks-http';
 
 describe('CustomAuthGuard', () => {
   let customAuthGuard: CustomAuthGuard;
@@ -48,7 +49,7 @@ describe('CustomAuthGuard', () => {
   describe('canActivate', () => {
     it('Public()가 있고, refresh가 아닌 경우', async () => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       const context = TestMockData.executionContext(req);
 
       jest.spyOn(commonService, 'getMetaData').mockReturnValue({});
@@ -85,7 +86,7 @@ describe('CustomAuthGuard', () => {
       ['authorization', undefined],
     ])('통과 %s', async (header, isPublic) => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       req.headers[header] = makeToken[header]();
       const context = TestMockData.executionContext(req);
 
@@ -104,7 +105,7 @@ describe('CustomAuthGuard', () => {
       ['authorization', undefined],
     ])('실패, 토큰 잘못됨 %s', async (header, isPublic) => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       req.headers[header] = 'token';
       const context = TestMockData.executionContext(req);
 
@@ -124,7 +125,7 @@ describe('CustomAuthGuard', () => {
       ['잘못된', 'authorization', undefined],
     ])('오류, %s token', async (message, header, isPublic) => {
       // given
-      const req = TestMockData.req();
+      const req = createRequest();
       const expired = message === 'expired';
       req.headers[header] = expired ? makeToken[header](-1) : makeToken[header]('w');
       const context = TestMockData.executionContext(req);
