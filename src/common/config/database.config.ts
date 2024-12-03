@@ -5,7 +5,7 @@ import * as fs from 'fs';
 
 export const databaseConfig = {
   useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
-    const isProd = configService.get<string>(envKeys.env);
+    const isProd = configService.get<string>(envKeys.env) === 'prod';
 
     return {
       type: configService.get<string>(envKeys.dbType) as 'postgres',

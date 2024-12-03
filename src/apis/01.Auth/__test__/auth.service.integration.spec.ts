@@ -80,8 +80,8 @@ describe('AuthServcie_Integration', () => {
       // given
       const user_1 = TestMockData.reqUser({ id: 'test_1' });
       const user_2 = TestMockData.reqUser({ id: 'test_2' });
-      const res_1 = TestMockData.res();
-      const res_2 = TestMockData.res();
+      const res_1 = TestMockData.res() as any;
+      const res_2 = TestMockData.res() as any;
 
       // when
       await authService.signUp({ user: user_1, res: res_1 }); // 회원 가입
@@ -92,15 +92,15 @@ describe('AuthServcie_Integration', () => {
       // then
       expect(AfterAuth).toHaveLength(2); // 가입된 회원수 이상 없나
       expect(AfterUser).toHaveLength(2);
-      expect(res_1.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
-      expect(res_2.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+      expect(res_1.cookies.refreshToken.value).toBeDefined(); // 쿠키에 refreshToken 있나
+      expect(res_2.cookies.refreshToken.value).toBeDefined(); // 쿠키에 refreshToken 있나
     });
 
     it('회원 탈퇴 후 재가입', async () => {
       // given
       await dBDataFactory.insertUsersAndAuths([1, 2]);
       const user_1 = TestMockData.reqUser({ id: 'test_1' });
-      const res = TestMockData.res();
+      const res = TestMockData.res() as any;
       const authOfUser_1 = await authRepository.findOne({
         where: { id: 'test_1' },
         relations: { user: true },
@@ -126,14 +126,14 @@ describe('AuthServcie_Integration', () => {
       expect(auth.user).not.toBeNull(); // restore 제대로 되었나
       expect(user.deletedAt).toBeNull();
       expect(auth.user.id).toBe(user.id);
-      expect(res.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+      expect(res.cookies.refreshToken.value).toBeDefined(); // 쿠키에 refreshToken 있나
     });
 
     it('로그인', async () => {
       // given
       await dBDataFactory.insertUsersAndAuths([1, 2]);
       const user_1 = TestMockData.reqUser({ id: 'test_1' });
-      const res = TestMockData.res();
+      const res = TestMockData.res() as any;
 
       // when
       await authService.signUp({ user: user_1, res }); // 로그인
@@ -143,7 +143,7 @@ describe('AuthServcie_Integration', () => {
       // then
       expect(auths).toHaveLength(2); // 회원수 이상 없나
       expect(users).toHaveLength(2);
-      expect(res.getHeader('set-cookie')).toContain(`refreshToken=`); // 쿠키에 refreshToken 있나
+      expect(res.cookies.refreshToken.value).toBeDefined(); // 쿠키에 refreshToken 있나
     });
   });
 
@@ -171,7 +171,7 @@ describe('AuthServcie_Integration', () => {
       (env) => {
         // given
         const userId = 1;
-        const res = TestMockData.res();
+        const res = TestMockData.res() as any;
 
         jest.spyOn(configService, 'get').mockReturnValue(env);
 
@@ -179,7 +179,7 @@ describe('AuthServcie_Integration', () => {
         authService.setRefreshToken({ userId, res });
 
         // then
-        expect(res.getHeader('set-cookie')).toContain(`refreshToken=`);
+        expect(res.cookies.refreshToken.value).toBeDefined();
       },
     );
   });

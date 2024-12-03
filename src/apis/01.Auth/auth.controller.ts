@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Req,
   Res,
   UnauthorizedException,
@@ -23,10 +22,10 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
-  @Public()
   @Get()
-  healthCheck(): string {
-    return 'OK';
+  @Public()
+  serverCheck(): string {
+    return 'Server is working..';
   }
 
   // 소셜 회원가입/로그인
@@ -42,14 +41,6 @@ export class AuthController {
     }
     await this.authService.signUp({ ...req, res });
     res.redirect(this.configService.getOrThrow(envKeys.frontURL));
-  }
-
-  @Public()
-  @Post('test')
-  test(@Res() res: Response) {
-    this.authService.setRefreshToken({ userId: 1, res });
-    console.log('aa');
-    res.status(200).send('로그인 성공');
   }
 
   // 엑세스 토큰 발급

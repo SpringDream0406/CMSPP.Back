@@ -28,6 +28,16 @@ describe('AuthController_Unit', () => {
     expect(authController).toBeDefined();
   });
 
+  describe('serverCheck', () => {
+    it('서버 체크', () => {
+      // when
+      const result = authController.serverCheck();
+
+      // then
+      expect(result).toBe('Server is working..');
+    });
+  });
+
   describe('signUp', () => {
     it('소셜 회원가입/로그인', async () => {
       // given

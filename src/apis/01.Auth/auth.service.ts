@@ -35,28 +35,6 @@ export class AuthService {
     });
   }
 
-  // 회원 추가
-  // async saveUser({ user }: IOAuthUser): Promise<Auth> {
-  //   const queyRunner = this.dataSource.createQueryRunner();
-  //   await queyRunner.connect();
-  //   await queyRunner.startTransaction();
-  //   try {
-  //     const userData = await queyRunner.manager.save(User, { recWeight: 1.0 });
-  //     const auth = await queyRunner.manager.save(Auth, {
-  //       ...user,
-  //       user: { id: userData.id },
-  //     });
-  //     await queyRunner.commitTransaction();
-  //     return auth;
-  //   } catch (error) {
-  //     //   console.log(error);
-  //     await queyRunner.rollbackTransaction();
-  //     throw new InternalServerErrorException('회원 가입 실패(DB)');
-  //   } finally {
-  //     queyRunner.release();
-  //   }
-  // }
-
   /* istanbul ignore next */
   /** 회원 추가__ User에 role 넣어주면서 Auth와 관계설정 */
   saveUser({ user }: IOAuthUser): Promise<Auth> {
@@ -117,13 +95,18 @@ export class AuthService {
 
     // 개발/테스트
     if (env === 'dev' || env === 'test') {
-      res.setHeader('set-Cookie', `refreshToken=${refreshToken}; path=/;`);
+      res.cookie('refreshToken', refreshToken, {
+        path: '/',
+      });
     } else {
       // 배포
-      res.setHeader(
-        'set-Cookie',
-        `refreshToken=${refreshToken}; path=/; domain=.cmspp.kr; SameSite=None; Secure; httpOnly`,
-      );
+      res.cookie('refreshToken', refreshToken, {
+        path: '/',
+        domain: '.cmspp.kr',
+        sameSite: 'none',
+        secure: true,
+        httpOnly: true,
+      });
       res.setHeader(
         'Access-Control-Allow-Origin',
         `${this.configService.getOrThrow<string>(envKeys.frontURL)}`,

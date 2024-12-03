@@ -89,6 +89,16 @@ describe('Auth_e2e', () => {
     await app.close();
   });
 
+  describe('[GET /]', () => {
+    it('서버 체크', async () => {
+      // when
+      const { text } = await request(app.getHttpServer()).get('/');
+
+      // then
+      expect(text).toBe('Server is working..');
+    });
+  });
+
   describe('[GET /signup/:social]', () => {
     it.each(SOCIAL_PROVIDERS)('회원가입 성공: %s', async (social) => {
       // when
