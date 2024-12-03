@@ -165,7 +165,7 @@ describe('AuthServcie_Integration', () => {
     });
   });
 
-  describe('setRefreshToken', () => {
+  describe('setCookie', () => {
     it.each(['test', 'dev', 'prod'])(
       '리프래시토큰 쿠키에 담기 - 테스트 환경: %s',
       (env) => {
@@ -176,7 +176,7 @@ describe('AuthServcie_Integration', () => {
         jest.spyOn(configService, 'get').mockReturnValue(env);
 
         // when
-        authService.setRefreshToken({ userId, res });
+        authService.setCookie({ userId, res });
 
         // then
         expect(res.cookies.refreshToken.value).toBeDefined();

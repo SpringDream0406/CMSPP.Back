@@ -2,12 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Auth } from './entity/auth.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  IGetToken,
-  IOAuthUser,
-  ISetRefreshToken,
-  ISignUp,
-} from './interface/auth.interface';
+import { IGetToken, IOAuthUser, ISetCookie, ISignUp } from './interface/auth.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { envKeys } from 'src/common/config/validation.schema';
@@ -55,7 +50,7 @@ export class AuthService {
       auth = await this.saveUser({ user });
     }
     const userId = auth.user.id;
-    this.setRefreshToken({ userId, res });
+    this.setCookie({ userId, res });
   }
 
   /* istanbul ignore next */
@@ -88,31 +83,23 @@ export class AuthService {
     return token;
   }
 
-  /** 리프래시토큰 세팅__ */
-  setRefreshToken({ userId, res }: ISetRefreshToken): void {
+  /** 쿠키 세팅__ */
+  setCookie({ userId, res }: ISetCookie): void {
     const refreshToken = this.getToken({ userId, isRefresh: true });
-    const env = this.configService.getOrThrow(envKeys.env);
+    const isProd = this.configService.getOrThrow(envKeys.env) === 'prod';
 
-    // 개발/테스트
-    if (env === 'dev' || env === 'test') {
-      res.cookie('refreshToken', refreshToken, {
-        path: '/',
-      });
-    } else {
-      // 배포
-      res.cookie('refreshToken', refreshToken, {
-        path: '/',
-        domain: '.cmspp.kr',
-        sameSite: 'none',
-        secure: true,
-        httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-      });
-      res.setHeader(
-        'Access-Control-Allow-Origin',
-        `${this.configService.getOrThrow<string>(envKeys.frontURL)}`,
-      );
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-    }
+    res.cookie('refreshToken', refreshToken, {
+      path: '/',
+      domain: isProd ? '.cmspp.kr' : 'localhost',
+      sameSite: 'none',
+      secure: isProd ? true : false,
+      httpOnly: isProd ? true : false,
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+    });
+    res.setHeader(
+      'Access-Control-Allow-Origin',
+      `${this.configService.getOrThrow<string>(envKeys.frontURL)}`,
+    );
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
 }

@@ -32,6 +32,6 @@ export interface IGetToken extends userId {
   isRefresh?: boolean;
 }
 
-export interface ISetRefreshToken extends userId {
+export interface ISetCookie extends userId {
   res: Response;
 }
