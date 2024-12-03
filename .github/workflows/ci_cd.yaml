@@ -1,101 +1,101 @@
-# name: AWS EC2 CI/CD
+name: AWS EC2 CI/CD
 
-# on:
-#   push:
-#     branches: ['main']
+on:
+  push:
+    branches: ['main']
 
-# jobs:
-#   #
-#   test:
-#     runs-on: ubuntu-latest
+jobs:
+  #
+  test:
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v3
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-#       - name: Create Env File
-#         env:
-#           ENV: ${{secrets.ENV}}
-#           DB_TYPE: ${{secrets.DB_TYPE}}
-#           DB_HOST: ${{secrets.DB_HOST}}
-#           DB_PORT: ${{secrets.DB_PORT}}
-#           DB_USERNAME: ${{secrets.DB_USERNAME}}
-#           DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-#           DB_DATABASE: ${{secrets.DB_DATABASE}}
-#           REFRESHTOKEN_SECRET: ${{secrets.REFRESHTOKEN_SECRET}}
-#           ACCESSTOKEN_SECRET: ${{secrets.ACCESSTOKEN_SECRET}}
-#           FRONT_URL: ${{secrets.FRONT_URL}}
-#           SOCIAL_CALLBACK_URL: ${{secrets.SOCIAL_CALLBACK_URL}}
-#           SOCIAL_GOOGLE_ID: ${{secrets.SOCIAL_GOOGLE_ID}}
-#           SOCIAL_GOOGLE_SECRET: ${{secrets.SOCIAL_GOOGLE_SECRET}}
-#           SOCIAL_KAKAO_ID: ${{secrets.SOCIAL_KAKAO_ID}}
-#           SOCIAL_KAKAO_SECRET: ${{secrets.SOCIAL_KAKAO_SECRET}}
-#           SOCIAL_NAVER_ID: ${{secrets.SOCIAL_NAVER_ID}}
-#           SOCIAL_NAVER_SECRET: ${{secrets.SOCIAL_NAVER_SECRET}}
-#         run: |
-#           touch .env.test
-#           echo ENV="test" >> .env.test
-#           echo DB_TYPE="$DB_TYPE" >> .env.test
-#           echo DB_HOST="localhost" >> .env.test
-#           echo DB_PORT="$DB_PORT" >> .env.test
-#           echo DB_USERNAME="$DB_USERNAME" >> .env.test
-#           echo DB_PASSWORD="$DB_PASSWORD" >> .env.test
-#           echo DB_DATABASE="$DB_DATABASE" >> .env.test
-#           echo REFRESHTOKEN_SECRET="$REFRESHTOKEN_SECRET" >> .env.test
-#           echo ACCESSTOKEN_SECRET="$ACCESSTOKEN_SECRET" >> .env.test
-#           echo FRONT_URL="$FRONT_URL" >> .env.test
-#           echo SOCIAL_CALLBACK_URL="$SOCIAL_CALLBACK_URL" >> .env.test
-#           echo SOCIAL_GOOGLE_ID="$SOCIAL_GOOGLE_ID" >> .env.test
-#           echo SOCIAL_GOOGLE_SECRET="$SOCIAL_GOOGLE_SECRET" >> .env.test
-#           echo SOCIAL_KAKAO_ID="$SOCIAL_KAKAO_ID" >> .env.test
-#           echo SOCIAL_KAKAO_SECRET="$SOCIAL_KAKAO_SECRET" >> .env.test
-#           echo SOCIAL_NAVER_ID="$SOCIAL_NAVER_ID" >> .env.test
-#           echo SOCIAL_NAVER_SECRET="$SOCIAL_NAVER_SECRET" >> .env.test
+      - name: Create Env File
+        env:
+          ENV: ${{secrets.ENV}}
+          DB_TYPE: ${{secrets.DB_TYPE}}
+          DB_HOST: ${{secrets.DB_HOST}}
+          DB_PORT: ${{secrets.DB_PORT}}
+          DB_USERNAME: ${{secrets.DB_USERNAME}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          DB_DATABASE: ${{secrets.DB_DATABASE}}
+          REFRESHTOKEN_SECRET: ${{secrets.REFRESHTOKEN_SECRET}}
+          ACCESSTOKEN_SECRET: ${{secrets.ACCESSTOKEN_SECRET}}
+          FRONT_URL: ${{secrets.FRONT_URL}}
+          SOCIAL_CALLBACK_URL: ${{secrets.SOCIAL_CALLBACK_URL}}
+          SOCIAL_GOOGLE_ID: ${{secrets.SOCIAL_GOOGLE_ID}}
+          SOCIAL_GOOGLE_SECRET: ${{secrets.SOCIAL_GOOGLE_SECRET}}
+          SOCIAL_KAKAO_ID: ${{secrets.SOCIAL_KAKAO_ID}}
+          SOCIAL_KAKAO_SECRET: ${{secrets.SOCIAL_KAKAO_SECRET}}
+          SOCIAL_NAVER_ID: ${{secrets.SOCIAL_NAVER_ID}}
+          SOCIAL_NAVER_SECRET: ${{secrets.SOCIAL_NAVER_SECRET}}
+        run: |
+          touch .env.test
+          echo ENV="test" >> .env.test
+          echo DB_TYPE="$DB_TYPE" >> .env.test
+          echo DB_HOST="localhost" >> .env.test
+          echo DB_PORT="$DB_PORT" >> .env.test
+          echo DB_USERNAME="$DB_USERNAME" >> .env.test
+          echo DB_PASSWORD="$DB_PASSWORD" >> .env.test
+          echo DB_DATABASE="$DB_DATABASE" >> .env.test
+          echo REFRESHTOKEN_SECRET="$REFRESHTOKEN_SECRET" >> .env.test
+          echo ACCESSTOKEN_SECRET="$ACCESSTOKEN_SECRET" >> .env.test
+          echo FRONT_URL="$FRONT_URL" >> .env.test
+          echo SOCIAL_CALLBACK_URL="$SOCIAL_CALLBACK_URL" >> .env.test
+          echo SOCIAL_GOOGLE_ID="$SOCIAL_GOOGLE_ID" >> .env.test
+          echo SOCIAL_GOOGLE_SECRET="$SOCIAL_GOOGLE_SECRET" >> .env.test
+          echo SOCIAL_KAKAO_ID="$SOCIAL_KAKAO_ID" >> .env.test
+          echo SOCIAL_KAKAO_SECRET="$SOCIAL_KAKAO_SECRET" >> .env.test
+          echo SOCIAL_NAVER_ID="$SOCIAL_NAVER_ID" >> .env.test
+          echo SOCIAL_NAVER_SECRET="$SOCIAL_NAVER_SECRET" >> .env.test
 
-#       - name: Setup node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '20'
+      - name: Setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-#       - name: Install pnpm
-#         run: npm i -g pnpm
+      - name: Install pnpm
+        run: npm i -g pnpm
 
-#       - name: Install dependencies
-#         run: pnpm i
+      - name: Install dependencies
+        run: pnpm i
 
-#       - name: Run tests
-#         run: pnpm test
+      - name: Run tests
+        run: pnpm test
 
-#   build:
-#     # test가 완료되어야 함
-#     needs: test
-#     runs-on: ubuntu-latest
+  build:
+    # test가 완료되어야 함
+    needs: test
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Login to Dockerhub
-#         uses: docker/login-action@v2
-#         with:
-#           username: ${{secrets.DOCKERHUB_USERNAME}}
-#           password: ${{secrets.DOCKERHUB_ACCESSTOKEN}}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_ACCESSTOKEN}}
 
-#       - name: Build and  Push Dokcer image
-#         run: |
-#           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{secrets.PROJECT_NAME}}:latest -f Dockerfile.prod .
-#           docker push ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
+      - name: Build and  Push Dokcer image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{secrets.PROJECT_NAME}}:latest -f Dockerfile.prod .
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
 
-#   deploy:
-#     runs-on: ubuntu-latest
-#     needs: build
-#     steps:
-#       - name: SSH to EC2 and deploy
-#         uses: appleboy/ssh-action@v0.1.3
-#         with:
-#           host: ${{secrets.EC2_HOST}}
-#           username: ${{secrets.EC2_USER}}
-#           key: ${{secrets.EC2_SSH_KEY}}
-#           script: |
-#             sudo docker compose down
-#             sudo docker rmi ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
-#             sudo docker pull ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
-#             sudo docker compose up -d
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: SSH to EC2 and deploy
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{secrets.EC2_HOST}}
+          username: ${{secrets.EC2_USER}}
+          key: ${{secrets.EC2_SSH_KEY}}
+          script: |
+            sudo docker compose down
+            sudo docker rmi ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
+            sudo docker pull ${{secrets.DOCKERHUB_USERNAME}}/${{secrets.PROJECT_NAME}}:latest
+            sudo docker compose up -d
