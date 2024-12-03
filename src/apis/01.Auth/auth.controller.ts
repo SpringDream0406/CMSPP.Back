@@ -48,7 +48,7 @@ export class AuthController {
   @Get('logout')
   @Public()
   logOut(@Res() res: Response) {
-    res.clearCookie('refreshToken');
+    this.authService.logout(res);
     res.redirect(this.configService.getOrThrow(envKeys.frontURL));
   }
 

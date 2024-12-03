@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { envKeys } from 'src/common/config/validation.schema';
 import { Role } from '../02.User/entity/user.entity';
 import { UserService } from '../02.User/user.service';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -110,5 +111,22 @@ export class AuthService {
         expires: new Date(Date.now() + 1000 * 60 * 1), // 1분
       });
     }
+  }
+
+  // 로그아웃
+  logout(res: Response) {
+    const isProd = this.configService.getOrThrow(envKeys.env) === 'prod';
+    res.clearCookie(
+      'refreshToken',
+      isProd
+        ? {
+            path: '/',
+            domain: '.cmspp.kr',
+            sameSite: 'none',
+            secure: true,
+            httpOnly: true,
+          }
+        : {},
+    );
   }
 }
