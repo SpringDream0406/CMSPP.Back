@@ -9,7 +9,7 @@ import { IBackup, newDb } from 'pg-mem';
 import { initPgMem } from 'src/common/config/initPgMem';
 import { TestMockData } from 'src/common/data/test.mockdata';
 
-describe('SppService_Integation', () => {
+describe('SppService_Integration', () => {
   let sppService: SppService;
 
   let dataSource: DataSource;
@@ -19,7 +19,7 @@ describe('SppService_Integation', () => {
   beforeAll(async () => {
     const db = newDb();
     const entities = getEntitis();
-    dataSource = await initPgMem('SppService_Integation', db, entities);
+    dataSource = await initPgMem('SppService_Integration', db, entities);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [TypeOrmModule.forRoot(), TypeOrmModule.forFeature(entities)],
