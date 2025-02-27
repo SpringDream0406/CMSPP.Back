@@ -33,24 +33,24 @@ jobs:
           SOCIAL_NAVER_ID: ${{secrets.SOCIAL_NAVER_ID}}
           SOCIAL_NAVER_SECRET: ${{secrets.SOCIAL_NAVER_SECRET}}
         run: |
-          touch .env.test
-          echo ENV="test" >> .env.test
-          echo DB_TYPE="$DB_TYPE" >> .env.test
-          echo DB_HOST="localhost" >> .env.test
-          echo DB_PORT="$DB_PORT" >> .env.test
-          echo DB_USERNAME="$DB_USERNAME" >> .env.test
-          echo DB_PASSWORD="$DB_PASSWORD" >> .env.test
-          echo DB_DATABASE="$DB_DATABASE" >> .env.test
-          echo REFRESHTOKEN_SECRET="$REFRESHTOKEN_SECRET" >> .env.test
-          echo ACCESSTOKEN_SECRET="$ACCESSTOKEN_SECRET" >> .env.test
-          echo FRONT_URL="$FRONT_URL" >> .env.test
-          echo SOCIAL_CALLBACK_URL="$SOCIAL_CALLBACK_URL" >> .env.test
-          echo SOCIAL_GOOGLE_ID="$SOCIAL_GOOGLE_ID" >> .env.test
-          echo SOCIAL_GOOGLE_SECRET="$SOCIAL_GOOGLE_SECRET" >> .env.test
-          echo SOCIAL_KAKAO_ID="$SOCIAL_KAKAO_ID" >> .env.test
-          echo SOCIAL_KAKAO_SECRET="$SOCIAL_KAKAO_SECRET" >> .env.test
-          echo SOCIAL_NAVER_ID="$SOCIAL_NAVER_ID" >> .env.test
-          echo SOCIAL_NAVER_SECRET="$SOCIAL_NAVER_SECRET" >> .env.test
+          touch .env
+          echo ENV="test" >> .env
+          echo DB_TYPE="$DB_TYPE" >> .env
+          echo DB_HOST="localhost" >> .env
+          echo DB_PORT="$DB_PORT" >> .env
+          echo DB_USERNAME="$DB_USERNAME" >> .env
+          echo DB_PASSWORD="$DB_PASSWORD" >> .env
+          echo DB_DATABASE="$DB_DATABASE" >> .env
+          echo REFRESHTOKEN_SECRET="$REFRESHTOKEN_SECRET" >> .env
+          echo ACCESSTOKEN_SECRET="$ACCESSTOKEN_SECRET" >> .env
+          echo FRONT_URL="$FRONT_URL" >> .env
+          echo SOCIAL_CALLBACK_URL="$SOCIAL_CALLBACK_URL" >> .env
+          echo SOCIAL_GOOGLE_ID="$SOCIAL_GOOGLE_ID" >> .env
+          echo SOCIAL_GOOGLE_SECRET="$SOCIAL_GOOGLE_SECRET" >> .env
+          echo SOCIAL_KAKAO_ID="$SOCIAL_KAKAO_ID" >> .env
+          echo SOCIAL_KAKAO_SECRET="$SOCIAL_KAKAO_SECRET" >> .env
+          echo SOCIAL_NAVER_ID="$SOCIAL_NAVER_ID" >> .env
+          echo SOCIAL_NAVER_SECRET="$SOCIAL_NAVER_SECRET" >> .env
 
       - name: Setup node.js
         uses: actions/setup-node@v3
