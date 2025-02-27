@@ -16,7 +16,6 @@ describe('CommonService_Unit', () => {
       imports: [
         ConfigModule.forRoot({
           validationSchema: validationSchema,
-          envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
         }),
       ],
       providers: [

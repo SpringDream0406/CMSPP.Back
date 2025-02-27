@@ -16,7 +16,7 @@ import { CustomAuthGuard } from './common/guard/custom-auth.guard';
     ConfigModule.forRoot({
       isGlobal: true, //
       validationSchema: validationSchema,
-      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+      // envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
     }), //
     AuthModule,
     UserModule,
