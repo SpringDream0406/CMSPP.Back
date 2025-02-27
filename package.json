@@ -122,6 +122,7 @@
     "coveragePathIgnorePatterns": [
       "main.ts",
       "module.ts",
+      "controller.ts",
       "entity.ts",
       "dto.ts",
       "strategy.ts",

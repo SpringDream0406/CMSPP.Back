@@ -89,21 +89,11 @@ describe('Auth_e2e', () => {
     await app.close();
   });
 
-  describe('[GET /]', () => {
-    it('서버 체크', async () => {
-      // when
-      const { text } = await request(app.getHttpServer()).get('/');
-
-      // then
-      expect(text).toBe('Server is working..');
-    });
-  });
-
   describe('[GET /signup/:social]', () => {
     it.each(SOCIAL_PROVIDERS)('회원가입 성공: %s', async (social) => {
       // when
       const { statusCode, headers } = await request(app.getHttpServer()).get(
-        `/signup/${social}`,
+        `/auth/signup/${social}`,
       );
 
       // then
@@ -116,7 +106,7 @@ describe('Auth_e2e', () => {
     it.each(SOCIAL_PROVIDERS)('로그인: %s', async (social) => {
       // when
       const { statusCode, headers } = await request(app.getHttpServer()).get(
-        `/signup/${social}`,
+        `/auth/signup/${social}`,
       );
 
       // then
@@ -129,7 +119,7 @@ describe('Auth_e2e', () => {
     it('회원가입/로그인 실패: 잘못된 소셜 요청', async () => {
       // when
       const { statusCode, body }: E2eError = await request(app.getHttpServer()).get(
-        '/signup/test',
+        '/auth/signup/test',
       );
 
       //then
@@ -149,7 +139,7 @@ describe('Auth_e2e', () => {
 
       // when
       const { statusCode, headers } = await request(app.getHttpServer()).get(
-        `/signup/google`,
+        `/auth/signup/google`,
       );
 
       // then
@@ -164,7 +154,7 @@ describe('Auth_e2e', () => {
     it('엑세스토큰 발급 성공', async () => {
       // when
       const { statusCode, text } = await request(app.getHttpServer())
-        .get('/getAccessToken')
+        .get('/auth/getAccessToken')
         .set('cookie', `refreshToken=${refreshToken}`);
 
       // then
@@ -176,7 +166,7 @@ describe('Auth_e2e', () => {
     it('엑세스토큰 발급 실패: refreshToken 만료', async () => {
       // when
       const { statusCode } = await request(app.getHttpServer())
-        .get('/getAccessToken')
+        .get('/auth/getAccessToken')
         .set('cookie', `refreshToken=${expiredRefreshToken}`);
 
       // then
@@ -192,7 +182,7 @@ describe('Auth_e2e', () => {
     ])('엑세스토큰 발급 실패: %s', async (_, token) => {
       //when
       const { statusCode } = await request(app.getHttpServer())
-        .get('/getAccessToken')
+        .get('/auth/getAccessToken')
         .set('cookie', token);
 
       // then

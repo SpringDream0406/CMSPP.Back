@@ -8,9 +8,9 @@ import { Injectable } from '@nestjs/common';
 export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private readonly configService: ConfigService) {
     super({
-      clientID: configService.get<string>(envKeys.socailGoogleId),
-      clientSecret: configService.get<string>(envKeys.socailGoogleSecet),
-      callbackURL: `${configService.get<string>(envKeys.socailCallBackURL)}/google`,
+      clientID: configService.get<string>(envKeys.socialGoogleId),
+      clientSecret: configService.get<string>(envKeys.socialGoogleSecet),
+      callbackURL: `${configService.get<string>(envKeys.socialCallBackURL)}/google`,
       scope: ['email'],
     });
   }

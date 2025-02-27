@@ -8,9 +8,9 @@ import { Injectable } from '@nestjs/common';
 export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor(private readonly configService: ConfigService) {
     super({
-      clientID: configService.get<string>(envKeys.socailKakaoId),
-      clientSecret: configService.get<string>(envKeys.socailKakaoSecet),
-      callbackURL: `${configService.get<string>(envKeys.socailCallBackURL)}/kakao`,
+      clientID: configService.get<string>(envKeys.socialKakaoId),
+      clientSecret: configService.get<string>(envKeys.socialKakaoSecet),
+      callbackURL: `${configService.get<string>(envKeys.socialCallBackURL)}/kakao`,
       // scope: ['email'],
     });
   }

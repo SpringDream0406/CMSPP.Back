@@ -8,9 +8,9 @@ import { Injectable } from '@nestjs/common';
 export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor(private readonly configService: ConfigService) {
     super({
-      clientID: configService.get<string>(envKeys.socailNaverId),
-      clientSecret: configService.get<string>(envKeys.socailNaverSecet),
-      callbackURL: `${configService.get<string>(envKeys.socailCallBackURL)}/naver`,
+      clientID: configService.get<string>(envKeys.socialNaverId),
+      clientSecret: configService.get<string>(envKeys.socialNaverSecet),
+      callbackURL: `${configService.get<string>(envKeys.socialCallBackURL)}/naver`,
       // scope: ['email'],
     });
   }

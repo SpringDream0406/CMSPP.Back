@@ -15,18 +15,12 @@ import { envKeys } from 'src/common/config/validation.schema';
 import { Public } from 'src/common/decorator/public.decorator';
 import { UserId } from 'src/common/decorator/userId.decorator';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
-
-  @Get()
-  @Public()
-  serverCheck(): string {
-    return 'Server is working..';
-  }
 
   // 소셜 회원가입/로그인
   @Get('signup/:social')

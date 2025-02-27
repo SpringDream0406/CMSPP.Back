@@ -31,7 +31,7 @@ export class CommonService {
       return false;
     }
     const [auth, refreshToken] = cookie.split('=');
-    if (!auth || auth.toLocaleLowerCase() != 'refreshtoken' || !refreshToken) {
+    if (auth?.toLowerCase() != 'refreshtoken' || !refreshToken) {
       return false;
     }
     return refreshToken;
@@ -44,7 +44,7 @@ export class CommonService {
       return false;
     }
     const [auth, accessToken] = authorization.split(' ');
-    if (!auth || auth.toLocaleLowerCase() != 'bearer' || !accessToken) {
+    if (auth?.toLowerCase() != 'bearer' || !accessToken) {
       return false;
     }
     return accessToken;

@@ -55,17 +55,17 @@ export enum envKeys {
   frontURL = 'FRONT_URL',
 
   // 소셜 로그인 콜백
-  socailCallBackURL = 'SOCIAL_CALLBACK_URL',
+  socialCallBackURL = 'SOCIAL_CALLBACK_URL',
 
   // 구글
-  socailGoogleId = 'SOCIAL_GOOGLE_ID',
-  socailGoogleSecet = 'SOCIAL_GOOGLE_SECRET',
+  socialGoogleId = 'SOCIAL_GOOGLE_ID',
+  socialGoogleSecet = 'SOCIAL_GOOGLE_SECRET',
 
   // 카카오
-  socailKakaoId = 'SOCIAL_KAKAO_ID',
-  socailKakaoSecet = 'SOCIAL_KAKAO_SECRET',
+  socialKakaoId = 'SOCIAL_KAKAO_ID',
+  socialKakaoSecet = 'SOCIAL_KAKAO_SECRET',
 
   // 네이버
-  socailNaverId = 'SOCIAL_NAVER_ID',
-  socailNaverSecet = 'SOCIAL_NAVER_SECRET',
+  socialNaverId = 'SOCIAL_NAVER_ID',
+  socialNaverSecet = 'SOCIAL_NAVER_SECRET',
 }
