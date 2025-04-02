@@ -25,6 +25,8 @@ import { CustomAuthGuard } from './common/guard/custom-auth.guard';
     TypeOrmModule.forRootAsync(databaseConfig),
     ScheduleModule.forRoot(),
   ],
-  providers: [{ provide: APP_GUARD, useClass: CustomAuthGuard }],
+  providers: [
+    { provide: APP_GUARD, useClass: CustomAuthGuard }, //
+  ],
 })
 export class AppModule {}

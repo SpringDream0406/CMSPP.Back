@@ -34,8 +34,8 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     await this.authService.signUp({ ...req, res });
-    const frontULR = this.configService.getOrThrow(envKeys.frontURL);
-    res.redirect(`${frontULR}/setLogin`);
+    const frontURL = this.configService.getOrThrow(envKeys.frontURL);
+    res.redirect(`${frontURL}/setLogin`);
   }
 
   // 로그아웃 = 쿠키 삭제

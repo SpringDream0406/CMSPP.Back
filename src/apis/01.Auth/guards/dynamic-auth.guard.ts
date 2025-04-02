@@ -15,7 +15,16 @@ export const DYNAMISC_AUTH_GUARD = SOCIAL_PROVIDERS.reduce((prev, curr) => {
 
 export class DynamicAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
-    const { social } = context.switchToHttp().getRequest().params;
+    const req = context.switchToHttp().getRequest();
+    const { social } = req.params;
+
+    // 로그인 취소했을 경우 = denied
+    if (req.query.error) {
+      const res = context.switchToHttp().getResponse();
+      const frontURL = process.env.FRONT_URL;
+      res.redirect(`${frontURL}`);
+    }
+
     if (!SOCIAL_PROVIDERS.includes(social)) {
       throw new BadRequestException('잘못된 소셜 요청');
     }
