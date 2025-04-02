@@ -19,7 +19,7 @@ export class DynamicAuthGuard implements CanActivate {
     const { social } = req.params;
 
     // 로그인 취소했을 경우 = denied
-    if (req.query.error) {
+    if (req.query?.error) {
       const res = context.switchToHttp().getResponse();
       const frontURL = process.env.FRONT_URL;
       res.redirect(`${frontURL}`);
