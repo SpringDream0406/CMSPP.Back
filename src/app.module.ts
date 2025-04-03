@@ -10,6 +10,7 @@ import { CommonModule } from './common/common.module';
 import { validationSchema } from './common/config/validation.schema';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CustomAuthGuard } from './common/guard/custom-auth.guard';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -27,6 +28,9 @@ import { CustomAuthGuard } from './common/guard/custom-auth.guard';
   ],
   providers: [
     { provide: APP_GUARD, useClass: CustomAuthGuard }, //
+  ],
+  controllers: [
+    AppController, //
   ],
 })
 export class AppModule {}
