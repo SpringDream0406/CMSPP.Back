@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import {
@@ -9,6 +8,7 @@ import {
 } from './interface/user-service.interface';
 import { userId } from '../01.Auth/interface/auth.interface';
 import { Auth } from '../01.Auth/entity/auth.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
